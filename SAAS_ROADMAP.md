@@ -25,7 +25,14 @@ Actualmente la aplicación corre 100% en el navegador del usuario (Client-Side).
 
 ## 3. Hoja de Ruta de Implementación
 
-### Fase 1: Identidad y Persistencia (2 Semanas)
+### Fase 0: Baseline & Despliegue (COMPLETADO ✅)
+
+1.  **Limpieza de Arquitectura:** Refactorización a Clean Architecture.
+2.  **Persistencia Local:** Implementación de `useLocalStorage`.
+3.  **Sistema de Reportes:** Fix de UTF-8 y Overlaps en PDFs.
+4.  **Despliegue:** Integración de GitHub + Vercel + SEO/OG.
+
+### Fase 1: Identidad y Persistencia (Siguiente Paso)
 
 1.  **Autenticación:** Implementar Login (Google/Email) usando Supabase Auth o Clerk.
 2.  **Base de Datos:** Crear tablas para `Users`, `Operations`, `Products`.

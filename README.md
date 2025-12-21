@@ -1,6 +1,10 @@
-# Valuation Check - Herramienta de Cálculo Auxiliar Aduanero
+# Valuation Check - Herramienta de Cálculo Aduanero
+
+[![Vercel Deployment](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://valuation-check.vercel.app/)
 
 Herramienta especializada para la determinación del Valor en Aduana según los lineamientos del Acuerdo del Art. VII del GATT y la Ley 23.311.
+
+**Sitio Web en Vivo:** [valuation-check.vercel.app](https://valuation-check.vercel.app/)
 
 ## Características Principales
 
@@ -11,6 +15,12 @@ Herramienta especializada para la determinación del Valor en Aduana según los 
   - **Técnico:** Hoja de trabajo detallada para auditoría interna.
   - **Comercial:** Resumen ejecutivo para clientes.
   - **Legal:** Dictamen formal adaptable para presentaciones oficiales.
+
+## Optimización y SEO
+
+- **Social Media Ready:** Integración de Meta Tags (Open Graph y Twitter Cards) para previsualizaciones profesionales en WhatsApp, LinkedIn y Twitter.
+- **Imagen de Marca:** Imagen de previsualización personalizada con estética "Maritime Premium".
+- **Performance:** Despliegue optimizado en Vercel con carga instantánea.
 
 ## Estructura del Proyecto (Clean Architecture)
 
