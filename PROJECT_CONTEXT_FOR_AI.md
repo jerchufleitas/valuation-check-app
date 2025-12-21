@@ -24,8 +24,10 @@ El proyecto ha completado su fase de refactorización hacia una **Clean Architec
 2.  **Corrección de Caracteres y Overlaps:** Se implementó saneamiento UTF-8 manual para evitar errores visuales en PDF y se ajustó el layout dinámico para evitar solapamiento de textos.
 3.  **Persistencia del Estado:** Los datos del formulario se guardan automáticamente en `localStorage` mediante el hook `useLocalStorage`.
 4.  **Diseño Maritime Premium:** Centralizado en `App.css` usando variables CSS para consistencia de marca.
-5.  **Despliegue y CI/CD:** Aplicación desplegada en Vercel con integración continua desde GitHub.
-6.  **SEO & Social Sharing:** Implementación de rutas absolutas para Meta Tags de Open Graph, garantizando previsualizaciones correctas en WhatsApp.
+5.  **Buscador NCM (VUCE-like):** Implementación de `NCMTreeSelector` con búsqueda por keywords y navegación jerárquica.
+6.  **Splash Screen:** Sistema de video intro (Sora generated) con persistencia en `sessionStorage` para reproducirse una sola vez por visita.
+7.  **Despliegue y CI/CD:** Aplicación desplegada en Vercel con integración continua desde GitHub.
+8.  **SEO & Social Sharing:** Implementación de rutas absolutas para Meta Tags de Open Graph, garantizando previsualizaciones correctas en WhatsApp.
 
 ## URLs Críticas
 

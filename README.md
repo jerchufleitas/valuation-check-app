@@ -15,6 +15,8 @@ Herramienta especializada para la determinación del Valor en Aduana según los 
   - **Técnico:** Hoja de trabajo detallada para auditoría interna.
   - **Comercial:** Resumen ejecutivo para clientes.
   - **Legal:** Dictamen formal adaptable para presentaciones oficiales.
+- **Búsqueda NCM Inteligente:** Buscador por palabra clave y explorador en árbol de la Nomenclatura Común del Mercosur (estilo VUCE).
+- **Splash Screen Cinemática:** Introducción de alto impacto visual con video 4K y branding integrado para una experiencia premium.
 
 ## Optimización y SEO
 
