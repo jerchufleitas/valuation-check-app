@@ -1,0 +1,95 @@
+export const adjustmentQuestions = [
+  {
+    id: "commissions",
+    type: "addition",
+    text: "¿El comprador paga comisiones de venta o gastos de corretaje?",
+    detail: "No incluya comisiones de compra.",
+    legal: "Art. 8.1.a.i",
+    inputLabel: "Monto de la comisión",
+  },
+  {
+    id: "containers",
+    type: "addition",
+    text: "¿El comprador suministra envases o embalajes?",
+    detail:
+      "Envases que se consideran un todo con la mercadería o gastos de embalaje (mano de obra/materiales).",
+    legal: "Art. 8.1.a.ii / 8.1.a.iii",
+    inputLabel: "Costo de envases/embalajes",
+  },
+  {
+    id: "assists_materials",
+    type: "addition",
+    text: "¿El comprador suministró materiales, piezas o partes incorporadas?",
+    detail:
+      "Materiales suministrados gratuitamente o a precio reducido para la producción de la mercadería.",
+    legal: "Art. 8.1.b.i (Prestaciones)",
+    inputLabel: "Valor de los materiales",
+  },
+  {
+    id: "assists_tools",
+    type: "addition",
+    text: "¿El comprador suministró herramientas, matrices o moldes?",
+    detail: "Utilizados para la producción de la mercadería importada.",
+    legal: "Art. 8.1.b.ii (Prestaciones)",
+    inputLabel: "Valor de las herramientas",
+  },
+  {
+    id: "assists_design",
+    type: "addition",
+    text: "¿El comprador suministró ingeniería, arte o diseños?",
+    detail:
+      "Realizados FUERA del país de importación y necesarios para la producción.",
+    legal: "Art. 8.1.b.iv (Prestaciones)",
+    inputLabel: "Valor del diseño/ingeniería",
+  },
+  {
+    id: "royalties",
+    type: "addition",
+    text: "¿Debe pagar cánones o derechos de licencia (Regalías)?",
+    detail: "Como condición de venta de las mercancías.",
+    legal: "Art. 8.1.c",
+    inputLabel: "Monto de las regalías",
+  },
+  {
+    id: "proceeds",
+    type: "addition",
+    text: "¿Hay reversión del producto de la reventa al vendedor?",
+    detail: "Parte de la ganancia posterior que vuelve al vendedor.",
+    legal: "Art. 8.1.d",
+    inputLabel: "Monto de la reversión",
+  },
+  {
+    id: "post_transport",
+    type: "deduction",
+    text: "¿El precio incluye transporte posterior a la importación?",
+    detail:
+      "Gastos de transporte dentro del país de destino si están incluidos en la factura.",
+    legal: "Nota al Art. 1 (Gastos a distinguir)",
+    inputLabel: "Monto del transporte posterior",
+  },
+  {
+    id: "assembly",
+    type: "deduction",
+    text: "¿El precio incluye construcción, armado o mantenimiento post-importación?",
+    detail:
+      "Realizados después de la importación (ej. instalación de maquinaria).",
+    legal: "Nota al Art. 1",
+    inputLabel: "Monto del servicio posterior",
+  },
+  {
+    id: "interest",
+    type: "deduction",
+    text: "¿El precio incluye intereses por financiación?",
+    detail: "Si están distinguidos del precio pagado.",
+    legal: "Decisión 3.1 del Comité de Valoración",
+    inputLabel: "Monto de los intereses",
+  },
+  {
+    id: "duties",
+    type: "deduction",
+    text: "¿El precio incluye derechos e impuestos del país de importación?",
+    detail: "Ej. si la venta es DDP.",
+    legal: "Nota al Art. 1",
+    inputLabel: "Monto de los derechos/impuestos",
+  },
+];
