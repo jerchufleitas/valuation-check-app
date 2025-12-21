@@ -6,9 +6,25 @@ import './App.css';
 
 import LegalFooter from './components/ui/LegalFooter';
 import ChatBot from './components/ui/ChatBot';
+import SplashScreen from './components/ui/SplashScreen';
+import { useEffect } from 'react';
 
 function App() {
   const [result, setResult] = useState(null);
+  const [showSplash, setShowSplash] = useState(false);
+
+  useEffect(() => {
+    const hasSeenSplash = sessionStorage.getItem('valuation-check-splash-seen');
+    if (!hasSeenSplash) {
+      setShowSplash(true);
+    }
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    sessionStorage.setItem('valuation-check-splash-seen', 'true');
+  };
+
 
   const handleCalculate = (data) => {
     setResult(data);
@@ -19,7 +35,9 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+      <div className="app-container">
       <header className="app-header">
         <div className="logo">
           <ShieldCheck size={32} />
@@ -62,6 +80,7 @@ function App() {
       
       <ChatBot />
     </div>
+    </>
   );
 }
 
