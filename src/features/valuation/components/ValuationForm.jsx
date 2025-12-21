@@ -1,7 +1,9 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { adjustmentQuestions } from '../data/valuationLogic';
 import { incoterms } from '../data/incotermsLogic';
-import { DollarSign, HelpCircle, ArrowRight, Truck, Shield } from 'lucide-react';
+import { DollarSign, HelpCircle, ArrowRight, Truck, Shield, Search } from 'lucide-react';
+import NCMTreeSelector from './NCMTreeSelector';
+import { useState } from 'react';
 
 const ValuationForm = ({ onCalculate }) => {
   const [formData, setFormData] = useLocalStorage('valuation_check_draft', {
@@ -14,6 +16,8 @@ const ValuationForm = ({ onCalculate }) => {
     insurance: '',
     answers: {}
   });
+
+  const [isNcmModalOpen, setIsNcmModalOpen] = useState(false);
 
   const { productDesc, reference, basePrice, currency, selectedIncoterm, freight, insurance, answers } = formData;
 
@@ -106,7 +110,10 @@ const ValuationForm = ({ onCalculate }) => {
       adjustments: activeAdjustments 
     });
   };
-
+  const handleNcmSelect = (node) => {
+    updateField('productDesc', `[NCM ${node.code}] ${node.name}`);
+    setIsNcmModalOpen(false);
+  };
 
   return (
     <form className="valuation-form fade-in" onSubmit={handleSubmit}>
@@ -129,12 +136,24 @@ const ValuationForm = ({ onCalculate }) => {
         <div className="input-group-row" style={{marginBottom: '1.5rem'}}>
           <div className="input-field" style={{flex: 2}}>
             <label>Descripción de la Mercadería</label>
-            <input 
-              type="text" 
-              placeholder="Ej. Tornos CNC, Mermelada..." 
-              value={productDesc}
-              onChange={(e) => updateField('productDesc', e.target.value)}
-            />
+            <div style={{position: 'relative', display: 'flex', gap: '0.5rem'}}>
+              <input 
+                type="text" 
+                placeholder="Ej. Tornos CNC, Mermelada..." 
+                value={productDesc}
+                onChange={(e) => updateField('productDesc', e.target.value)}
+                style={{flex: 1}}
+              />
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                style={{padding: '0 0.75rem'}}
+                onClick={() => setIsNcmModalOpen(true)}
+                title="Búsqueda por Nomenclatura (NCM)"
+              >
+                <Search size={18} />
+              </button>
+            </div>
           </div>
           <div className="input-field" style={{flex: 1}}>
             <label>Referencia / Cliente</label>
@@ -269,6 +288,13 @@ const ValuationForm = ({ onCalculate }) => {
           Verificar Valoración <ArrowRight />
         </button>
       </div>
+
+      {isNcmModalOpen && (
+        <NCMTreeSelector 
+          onSelect={handleNcmSelect} 
+          onClose={() => setIsNcmModalOpen(false)} 
+        />
+      )}
     </form>
   );
 };
