@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
-import { CheckCircle, AlertTriangle, FileText, ArrowRight, Download } from 'lucide-react';
+import { CheckCircle, AlertTriangle, FileText, Download } from 'lucide-react';
+import { adjustmentQuestions } from '../data/valuationLogic';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
 import ReportSelector from './ReportSelector';
 
-const ReportCard = ({ baseValue, adjustments, currency, incoterm, productDesc, ncmCode, exporter, transport, documents, onReset }) => {
+const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
   const [reportFormat, setReportFormat] = useState('technical');
+  const { header, transaction, item, adjustments, documentation } = blocks;
 
-  const totalAdditions = adjustments
-    .filter(a => a.type === 'addition')
-    .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-  
-  const totalDeductions = adjustments
-    .filter(a => a.type === 'deduction')
-    .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-  
-  const finalValue = parseFloat(baseValue) + totalAdditions - totalDeductions;
-  const hasAdjustments = adjustments.length > 0;
+  const activeAdds = Object.entries(adjustments.additions)
+    .filter(([_, val]) => val.active && val.amount)
+    .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
+
+  const activeSubs = Object.entries(adjustments.deductions)
+    .filter(([_, val]) => val.active && val.amount)
+    .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
+
+  const totalAdditions = activeAdds.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+  const totalDeductions = activeSubs.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+  const hasAdjustments = (activeAdds.length + activeSubs.length) > 0;
 
   return (
     <div className="report-card fade-in">
@@ -28,31 +31,43 @@ const ReportCard = ({ baseValue, adjustments, currency, incoterm, productDesc, n
         <div style={{ marginBottom: '1.5rem', padding: '1rem', borderBottom: '1px solid #eee' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.85rem' }}>
             <div>
-              <strong>Exportador:</strong> {exporter?.name} <br/>
-              <strong>ID Fiscal:</strong> {exporter?.id} <br/>
-              <strong>Posición NCM:</strong> {ncmCode}
+              <strong>Exportador:</strong> {header.exporterName} <br/>
+              <strong>ID Fiscal:</strong> {header.exporterTaxId} <br/>
+              <strong>Posición NCM:</strong> {item.ncmCode}
             </div>
             <div>
-              <strong>Transporte:</strong> {transport?.mode} <br/>
-              <strong>Lugar/Paso:</strong> {transport?.loading} / {transport?.crossing} <br/>
-              <strong>CRT/Origen:</strong> {documents?.crt} / {documents?.origin}
+              <strong>Transporte:</strong> {header.transportMode} <br/>
+              <strong>Lugar/Paso:</strong> {transaction.loadingPlace} / {header.borderCrossing} <br/>
+              <strong>CRT/Origen:</strong> {header.transportDocument} / {documentation.originCertificate}
             </div>
           </div>
         </div>
 
         <div className="summary-item">
-          <span className="label">Valor de Factura ({incoterm})</span>
-          <span className="value">{currency} {parseFloat(baseValue).toLocaleString()}</span>
+          <span className="label">Valor Total del Ítem ({transaction.incoterm})</span>
+          <span className="value">{transaction.currency} {parseFloat(item.totalValue || 0).toLocaleString()}</span>
         </div>
         
-        {adjustments.map((adj, index) => (
-          <div key={index} className={`summary-item adjustment ${adj.type}`}>
+        {activeAdds.map((adj, index) => (
+          <div key={`add-${index}`} className="summary-item adjustment addition">
             <div className="adj-info">
               <span className="adj-label">{adj.text}</span>
               <span className="adj-legal">{adj.legal}</span>
             </div>
             <span className="value">
-              {adj.type === 'addition' ? '+' : '-'} {currency} {parseFloat(adj.amount).toLocaleString()}
+              + {transaction.currency} {parseFloat(adj.amount).toLocaleString()}
+            </span>
+          </div>
+        ))}
+
+        {activeSubs.map((adj, index) => (
+          <div key={`sub-${index}`} className="summary-item adjustment deduction">
+            <div className="adj-info">
+              <span className="adj-label">{adj.text}</span>
+              <span className="adj-legal">{adj.legal}</span>
+            </div>
+            <span className="value">
+              - {transaction.currency} {parseFloat(adj.amount).toLocaleString()}
             </span>
           </div>
         ))}
@@ -61,7 +76,7 @@ const ReportCard = ({ baseValue, adjustments, currency, incoterm, productDesc, n
 
         <div className="summary-total">
           <span className="label">Valor Imponible (FOB/FCA)</span>
-          <span className="value total">{currency} {finalValue.toLocaleString()}</span>
+          <span className="value total">{transaction.currency} {finalValue.toLocaleString()}</span>
         </div>
       </div>
 
@@ -94,7 +109,17 @@ const ReportCard = ({ baseValue, adjustments, currency, incoterm, productDesc, n
 
       <div className="report-actions">
         <button className="btn-secondary" onClick={onReset}>Volver a Editar</button>
-        <button className="btn-primary" onClick={() => generateValuationPDF({ baseValue, adjustments, currency, incoterm, productDesc, ncmCode, exporter, transport, documents }, reportFormat)}>
+        <button className="btn-primary" onClick={() => generateValuationPDF({ 
+          baseValue: item.totalValue, 
+          adjustments: [...activeAdds, ...activeSubs.map(s => ({...s, type: 'deduction'}))], 
+          currency: transaction.currency, 
+          incoterm: transaction.incoterm, 
+          productDesc: item.description, 
+          ncmCode: item.ncmCode, 
+          exporter: { name: header.exporterName, id: header.exporterTaxId }, 
+          transport: { mode: header.transportMode, loading: transaction.loadingPlace, crossing: header.borderCrossing }, 
+          documents: { crt: header.transportDocument, origin: documentation.originCertificate } 
+        }, reportFormat)}>
           <Download size={18} /> Descargar {reportFormat === 'legal' ? 'Dictamen' : 'Reporte'} PDF
         </button>
       </div>

@@ -817,3 +817,314 @@ select:focus {
   background: #f1f5f9;
   border-color: #cbd5e1;
 }
+
+/* --- Official Look - Bloc Based UI --- */
+.official-paper {
+  background: white !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 4px !important;
+  padding: 0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+  overflow: hidden;
+}
+
+.block-header {
+  background: var(--primary-color);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 2px solid var(--gold-accent);
+}
+
+.block-tag {
+  background: var(--gold-accent);
+  color: var(--primary-color);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+.block-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.block-info {
+  margin: 0;
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  font-style: italic;
+}
+
+.official-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0;
+  background: #e5e7eb;
+}
+
+.official-cell {
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.official-cell label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.official-cell input, 
+.official-cell select, 
+.official-cell textarea {
+  border: none !important;
+  padding: 0.25rem 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 500 !important;
+  background: transparent !important;
+  color: var(--primary-color) !important;
+  width: 100%;
+  outline: none !important;
+}
+
+.official-cell input::placeholder {
+  color: #d1d5db;
+  font-weight: 400;
+}
+
+.official-cell.highlight {
+  background: #fffbeb;
+}
+
+.official-cell.highlight label {
+  color: var(--gold-accent);
+}
+
+.bold-input {
+  font-weight: 800 !important;
+  font-size: 1.1rem !important;
+}
+
+.span-12 { grid-column: span 12; }
+.span-10 { grid-column: span 10; }
+.span-8 { grid-column: span 8; }
+.span-6 { grid-column: span 6; }
+.span-4 { grid-column: span 4; }
+.span-2 { grid-column: span 2; }
+
+/* Adjustments Block */
+.adjustments-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #e5e7eb;
+}
+
+.adjustment-column {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+}
+
+.col-label {
+  padding: 0.5rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.col-label.addition { color: #1e40af; border-left: 4px solid #1e40af; }
+.col-label.deduction { color: #991b1b; border-left: 4px solid #991b1b; }
+
+.adjustment-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.adj-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s;
+}
+
+.adj-item:hover {
+  background: #f8fafc;
+}
+
+.adj-item.active {
+  background: #f1f5f9;
+}
+
+.adj-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.adj-check {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--primary-color);
+  background: white;
+}
+
+.adj-item.active .adj-check {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+}
+
+.adj-text {
+  font-size: 0.82rem;
+  color: #374151;
+  line-height: 1.2;
+}
+
+.adj-input-row {
+  margin-top: 0.5rem;
+  margin-left: 2rem;
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+}
+
+.adj-currency {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 0.5rem;
+}
+
+.adj-input-row input {
+  border: none;
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+  font-weight: 600;
+}
+
+.adj-item.highlighted {
+  border-left: 3px solid var(--gold-accent);
+  background: rgba(196, 161, 89, 0.05);
+}
+
+/* Footer Section */
+.valuation-footer {
+  margin-top: 2rem;
+  background: var(--primary-color);
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.total-display {
+  text-align: center;
+}
+
+.total-display span {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.grand-total {
+  font-size: 2.25rem !important;
+  color: white !important;
+  font-weight: 800 !important;
+  margin-top: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-official-large {
+  background: var(--gold-accent);
+  color: var(--primary-color);
+  border: none;
+  padding: 1.25rem 3.5rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 0 #a08144;
+}
+
+.btn-official-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #a08144;
+  background: #d4b16a;
+}
+
+.btn-official-large:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #a08144;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: white;
+}
+
+.input-with-action {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  background: #f3f4f6;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.btn-icon:hover {
+  background: #e5e7eb;
+  color: var(--primary-color);
+}

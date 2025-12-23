@@ -6,77 +6,147 @@ import NCMTreeSelector from './NCMTreeSelector';
 import { useState } from 'react';
 
 const ValuationForm = ({ onCalculate }) => {
-  const [formData, setFormData] = useLocalStorage('valuation_data', {
-    productDesc: '',
-    ncmCode: '',
-    exporterName: '',
-    exporterTaxId: '',
-    incoterm: 'FOB',
-    currency: 'USD',
-    transportMode: 'Acuática',
-    loadingPlace: '',
-    borderCrossing: '',
-    crtNumber: '',
-    originCertificate: '',
-    freight: '',
-    insurance: '',
-    answers: {}
+  const [formData, setFormData] = useLocalStorage('valuation_data_v2', {
+    header: {
+      exporterName: '',
+      exporterTaxId: '',
+      importerName: '',
+      importerDetails: '',
+      transportDocument: '',
+      transportMode: 'Terrestre',
+      borderCrossing: '',
+    },
+    transaction: {
+      currency: 'USD',
+      incoterm: 'FOB',
+      loadingPlace: '',
+    },
+    item: {
+      ncmCode: '',
+      quantity: '',
+      unit: '',
+      unitValue: '',
+      totalValue: '',
+      description: '',
+    },
+    adjustments: {
+      additions: {}, // Schema: { [id]: { active: boolean, amount: string } }
+      deductions: {},
+    },
+    documentation: {
+      originCertificate: '',
+      invoiceNumber: '',
+      insuranceContract: '',
+      freightContract: '',
+    }
   });
 
   const [isNcmModalOpen, setIsNcmModalOpen] = useState(false);
 
-  const { 
-    productDesc, ncmCode, exporterName, exporterTaxId, incoterm, 
-    currency, transportMode, loadingPlace, borderCrossing, 
-    crtNumber, originCertificate, freight, insurance, answers 
-  } = formData;
+  const { header, transaction, item, adjustments, documentation } = formData;
 
-  const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const updateSection = (section, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [section]: { ...prev[section], [field]: value }
+    }));
   };
 
-  const currentIncotermData = incoterms.find(i => i.code === incoterm) || incoterms[3];
+  const handleAdjustmentToggle = (type, id) => {
+    const list = type === 'addition' ? 'additions' : 'deductions';
+    setFormData(prev => ({
+      ...prev,
+      adjustments: {
+        ...prev.adjustments,
+        [list]: { 
+          ...prev.adjustments[list], 
+          [id]: { 
+            active: !prev.adjustments[list][id]?.active, 
+            amount: '' 
+          }
+        }
+      }
+    }));
+  };
+
+  const handleAdjustmentAmount = (type, id, amount) => {
+    const list = type === 'addition' ? 'additions' : 'deductions';
+    setFormData(prev => ({
+      ...prev,
+      adjustments: {
+        ...prev.adjustments,
+        [list]: { 
+          ...prev.adjustments[list], 
+          [id]: { 
+            ...prev.adjustments[list][id], 
+            amount 
+          }
+        }
+      }
+    }));
+  };
+
+  const currentIncotermData = incoterms.find(i => i.code === transaction.incoterm) || incoterms[3];
 
   const loadExample = () => {
     setFormData({
-      productDesc: 'Mermelada de Frambuesa (Frascos 250g)',
-      reference: 'Caso: Importación España -> Argentina',
-      basePrice: '10000',
-      currency: 'USD',
-      selectedIncoterm: 'FOB',
-      freight: '1500',
-      insurance: '150',
-      answers: {
-        'containers': { active: true, amount: '2000' }
+      header: {
+        exporterName: 'Vinos del Sur S.A.',
+        exporterTaxId: '30-12345678-9',
+        importerName: 'Global Imports LLC',
+        importerDetails: '5th Ave, New York, USA',
+        transportDocument: 'CRT-AR-2025-001',
+        transportMode: 'Terrestre',
+        borderCrossing: 'Paso de los Libres',
+      },
+      transaction: {
+        currency: 'USD',
+        incoterm: 'FOB',
+        loadingPlace: 'Mendoza, Argentina',
+      },
+      item: {
+        ncmCode: '2204.21.00',
+        quantity: '1200',
+        unit: 'Botellas',
+        unitValue: '8.50',
+        totalValue: '10200',
+        description: 'Vino Tinto Malbec Premium - Cosecha 2023. Estuches de madera.',
+      },
+      adjustments: {
+        additions: { 'packaging_expo': { active: true, amount: '450' } },
+        deductions: {},
+      },
+      documentation: {
+        originCertificate: 'COD-2025-9988',
+        invoiceNumber: 'FC-A-0001-000045',
+        insuranceContract: 'POL-99122',
+        freightContract: 'CTR-TX-55',
       }
     });
   };
 
   const clearForm = () => {
     setFormData({
-      productDesc: '',
-      ncmCode: '',
-      exporterName: '',
-      exporterTaxId: '',
-      incoterm: 'FOB',
-      currency: 'USD',
-      transportMode: 'Acuática',
-      loadingPlace: '',
-      borderCrossing: '',
-      crtNumber: '',
-      originCertificate: '',
-      basePrice: '',
-      freight: '',
-      insurance: '',
-      answers: {}
+      header: { exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', borderCrossing: '' },
+      transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
+      item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
+      adjustments: { additions: {}, deductions: {} },
+      documentation: { originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
     });
   };
 
-  const getCalculatedCIF = () => {
-    const base = parseFloat(basePrice || 0);
-    const f = currentIncotermData.requiresFreight ? parseFloat(freight || 0) : 0;
-    const i = currentIncotermData.requiresInsurance ? parseFloat(insurance || 0) : 0;
-    return base + f + i;
+  const getCalculatedValue = () => {
+    const base = parseFloat(item.totalValue || 0);
+    
+    const adds = Object.values(adjustments.additions)
+      .filter(a => a.active)
+      .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+      
+    const subs = Object.values(adjustments.deductions)
+      .filter(a => a.active)
+      .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+      
+    return base + adds - subs;
   };
 
   const handleToggle = (id) => {
@@ -101,42 +171,34 @@ const ValuationForm = ({ onCalculate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!basePrice) return alert("Por favor ingrese el Precio Base");
+    if (!item.totalValue) return alert("Por favor ingrese los datos del ítem y el valor total");
     
-    const cifValue = getCalculatedCIF();
+    const finalValue = getCalculatedValue();
     
-    const activeAdjustments = Object.entries(answers)
+    const activeAdds = Object.entries(adjustments.additions)
       .filter(([_, val]) => val.active && val.amount)
-      .map(([key, val]) => {
-        const question = adjustmentQuestions.find(q => q.id === key);
-        return { ...question, amount: val.amount };
-      });
+      .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
+
+    const activeSubs = Object.entries(adjustments.deductions)
+      .filter(([_, val]) => val.active && val.amount)
+      .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
 
     onCalculate({ 
-      baseValue: cifValue, 
-      productDesc,
-      ncmCode,
-      reference,
-      breakdown: {
-        basePrice,
-        incoterm: incoterm,
-        freight: currentIncotermData.requiresFreight ? freight : '0',
-        insurance: currentIncotermData.requiresInsurance ? insurance : '0',
-      },
-      currency, 
-      incoterm: incoterm, 
-      adjustments: activeAdjustments,
-      exporter: { name: exporterName, id: exporterTaxId },
-      transport: { mode: transportMode, loading: loadingPlace, crossing: borderCrossing },
-      documents: { crt: crtNumber, origin: originCertificate }
+      finalValue,
+      blocks: formData,
+      summary: {
+        exporter: header.exporterName,
+        importer: header.importerName,
+        ncm: item.ncmCode,
+        incoterm: transaction.incoterm,
+        currency: transaction.currency
+      }
     });
   };
+
   const handleNcmSelect = (node) => {
-    setFormData(prev => ({
-      ...prev,
-      ncmCode: node.code,
-      productDesc: node.name
-    }));
+    updateSection('item', 'ncmCode', node.code);
+    updateSection('item', 'description', node.name);
     setIsNcmModalOpen(false);
   };
 
@@ -151,231 +213,270 @@ const ValuationForm = ({ onCalculate }) => {
   return (
     <form className="valuation-form fade-in" onSubmit={handleSubmit}>
       
-      {/* SECTION 1: PRICE BUILD-UP */}
-      <section className="form-section">
-        <div className="section-header-row" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <h3>1. Datos de la Operación</h3>
-          <div className="header-actions" style={{display: 'flex', gap: '0.5rem'}}>
-            <button type="button" onClick={clearForm} className="btn-secondary" style={{fontSize: '0.8rem', padding: '0.25rem 0.75rem'}}>
-              Nueva Consulta
-            </button>
-            <button type="button" onClick={loadExample} className="btn-secondary" style={{fontSize: '0.8rem', padding: '0.25rem 0.75rem'}}>
-              Cargar Ejemplo
-            </button>
+      {/* BLOQUE A: CABECERA */}
+      <section className="form-block official-paper">
+        <div className="block-header">
+          <span className="block-tag">BLOQUE A</span>
+          <h3>IDENTIFICACIÓN Y CABECERA</h3>
+          <div className="header-actions">
+            <button type="button" onClick={loadExample} className="btn-ghost">Ejemplo</button>
+            <button type="button" onClick={clearForm} className="btn-ghost">Limpiar</button>
           </div>
         </div>
 
-        {/* Product & Reference Inputs */}
-        <div className="input-group-row" style={{marginBottom: '1rem'}}>
-          <div className="input-field" style={{flex: 1.5}}>
-            <label>Exportador (Razón Social)</label>
+        <div className="official-grid">
+          <div className="official-cell span-8">
+            <label>1. EXPORTADOR (RAZÓN SOCIAL)</label>
             <input 
               type="text" 
-              placeholder="Nombre de la empresa" 
-              value={exporterName}
-              onChange={(e) => updateField('exporterName', e.target.value)}
+              value={header.exporterName}
+              onChange={(e) => updateSection('header', 'exporterName', e.target.value)}
+              placeholder="Nombre Legal de la Empresa"
             />
           </div>
-          <div className="input-field" style={{flex: 1}}>
-            <label>ID Fiscal (RUC/CUIT/NIF)</label>
+          <div className="official-cell span-4">
+            <label>ID FISCAL (CUIT/RUC/NIF)</label>
             <input 
               type="text" 
-              placeholder="Número de identificación" 
-              value={exporterTaxId}
-              onChange={(e) => updateField('exporterTaxId', e.target.value)}
+              value={header.exporterTaxId}
+              onChange={(e) => updateSection('header', 'exporterTaxId', e.target.value)}
+              placeholder="ID Tributario"
             />
           </div>
-        </div>
+          
+          <div className="official-cell span-8">
+            <label>2. IMPORTADOR (CLIENTE EXTRANJERO)</label>
+            <input 
+              type="text" 
+              value={header.importerName}
+              onChange={(e) => updateSection('header', 'importerName', e.target.value)}
+              placeholder="Razón Social del Comprador"
+            />
+          </div>
+          <div className="official-cell span-4">
+            <label>PAÍS / DETALLES</label>
+            <input 
+              type="text" 
+              value={header.importerDetails}
+              onChange={(e) => updateSection('header', 'importerDetails', e.target.value)}
+              placeholder="Ejem: Brasil / São Paulo"
+            />
+          </div>
 
-        {/* Product & NCM */}
-        <div className="input-group-row" style={{marginBottom: '1rem'}}>
-          <div className="input-field" style={{flex: 1}}>
-            <label>Posición NCM</label>
-            <div style={{display: 'flex', gap: '0.4rem'}}>
-              <input 
-                type="text" 
-                placeholder="8806.xx" 
-                value={ncmCode}
-                onChange={(e) => updateField('ncmCode', e.target.value)}
-              />
-              <button type="button" className="btn-secondary" style={{padding: '0 0.6rem'}} onClick={() => setIsNcmModalOpen(true)}>
-                <Search size={16} />
-              </button>
-            </div>
-          </div>
-          <div className="input-field" style={{flex: 2}}>
-            <label>Descripción de la Mercadería</label>
+          <div className="official-cell span-4">
+            <label>3. DOC. TRANSPORTE (CRT/B.L.)</label>
             <input 
               type="text" 
-              placeholder="Ej. Tornos CNC, Mermelada..." 
-              value={productDesc}
-              onChange={(e) => updateField('productDesc', e.target.value)}
+              value={header.transportDocument}
+              onChange={(e) => updateSection('header', 'transportDocument', e.target.value)}
+              placeholder="Código Documento"
             />
           </div>
-        </div>
-
-        {/* Transport & Documents */}
-        <div className="input-group-row" style={{marginBottom: '1rem'}}>
-          <div className="input-field">
-            <label>Vía de Transporte</label>
-            <select value={transportMode} onChange={(e) => updateField('transportMode', e.target.value)}>
-              <option value="Acuática">Acuática</option>
+          <div className="official-cell span-4">
+            <label>4. VÍA DE TRANSPORTE</label>
+            <select 
+              value={header.transportMode} 
+              onChange={(e) => updateSection('header', 'transportMode', e.target.value)}
+            >
               <option value="Terrestre">Terrestre</option>
+              <option value="Acuática">Acuática (Marítimo/Fluvial)</option>
               <option value="Aérea">Aérea</option>
               <option value="Multimodal">Multimodal</option>
             </select>
           </div>
-          <div className="input-field">
-            <label>Lugar de Embarque</label>
-            <input type="text" value={loadingPlace} onChange={(e) => updateField('loadingPlace', e.target.value)} />
-          </div>
-          <div className="input-field">
-            <label>Paso Fronterizo</label>
-            <input type="text" value={borderCrossing} onChange={(e) => updateField('borderCrossing', e.target.value)} />
+          <div className="official-cell span-4">
+            <label>5. PASO FRONTERIZO / ADUANA</label>
+            <input 
+              type="text" 
+              value={header.borderCrossing}
+              onChange={(e) => updateSection('header', 'borderCrossing', e.target.value)}
+              placeholder="Nombre del Paso"
+            />
           </div>
         </div>
+      </section>
 
-        <div className="input-group-row" style={{marginBottom: '1rem'}}>
-          <div className="input-field">
-            <label>Nro. CRT / Documento Transporte</label>
-            <input type="text" value={crtNumber} onChange={(e) => updateField('crtNumber', e.target.value)} />
-          </div>
-          <div className="input-field">
-            <label>Certificado Origen MERCOSUR</label>
-            <input type="text" value={originCertificate} onChange={(e) => updateField('originCertificate', e.target.value)} />
-          </div>
+      {/* BLOQUE B: CONDICIONES */}
+      <section className="form-block official-paper">
+        <div className="block-header">
+          <span className="block-tag">BLOQUE B</span>
+          <h3>CONDICIONES DE LA TRANSACCIÓN</h3>
         </div>
-        
-        <div className="input-group-row">
-          <div className="input-field">
-            <label>INCOTERM</label>
-            <select value={incoterm} onChange={(e) => updateField('incoterm', e.target.value)}>
+        <div className="official-grid">
+          <div className="official-cell span-4">
+            <label>6. MONEDA DE FACTURACIÓN</label>
+            <select value={transaction.currency} onChange={(e) => updateSection('transaction', 'currency', e.target.value)}>
+              <option value="USD">USD - Dólar Estadounidense</option>
+              <option value="EUR">EUR - Euro</option>
+              <option value="BRL">BRL - Real Brasileño</option>
+            </select>
+          </div>
+          <div className="official-cell span-4">
+            <label>7. INCOTERM</label>
+            <select value={transaction.incoterm} onChange={(e) => updateSection('transaction', 'incoterm', e.target.value)}>
               {incoterms.map(i => (
                 <option key={i.code} value={i.code}>{i.code} - {i.name}</option>
               ))}
             </select>
           </div>
-          <div className="input-field">
-             <label>Moneda</label>
-             <select value={currency} onChange={(e) => updateField('currency', e.target.value)}>
-               <option value="USD">USD</option>
-               <option value="EUR">EUR</option>
-             </select>
+          <div className="official-cell span-4">
+            <label>8. LUGAR DE EMBARQUE</label>
+            <input 
+              type="text" 
+              value={transaction.loadingPlace}
+              onChange={(e) => updateSection('transaction', 'loadingPlace', e.target.value)}
+              placeholder="Puerto/Terminal de Carga"
+            />
           </div>
-        </div>
-
-        <div className="input-group-row" style={{marginTop: '1rem'}}>
-          <div className="input-field">
-            <label>Precio de Factura ({incoterm})</label>
-            <div className="input-wrapper">
-              <DollarSign size={16} className="icon" />
-              <input 
-                type="number" 
-                placeholder="0.00" 
-                value={basePrice}
-                onChange={(e) => updateField('basePrice', e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          {currentIncotermData?.requiresFreight && (
-            <div className="input-field fade-in">
-              <label>Flete Internacional</label>
-              <div className="input-wrapper">
-                <Truck size={16} className="icon" />
-                <input 
-                  type="number" 
-                  placeholder="Costo Flete" 
-                  value={freight}
-                  onChange={(e) => updateField('freight', e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-
-          {currentIncotermData?.requiresInsurance && (
-             <div className="input-field fade-in">
-               <label>Seguro Internacional</label>
-               <div className="input-wrapper">
-                 <Shield size={16} className="icon" />
-                 <input 
-                   type="number" 
-                   placeholder="Prima Seguro" 
-                   value={insurance}
-                   onChange={(e) => updateField('insurance', e.target.value)}
-                 />
-               </div>
-             </div>
-          )}
-        </div>
-
-        {/* Real-time CIF Summary */}
-        <div style={{marginTop: '1.5rem', padding: '1rem', background: '#f8fafc', borderRadius: '0.5rem', border: '1px solid #e2e8f0'}}>
-           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-             <span style={{fontSize: '0.9rem', color: '#64748b'}}>Base Imponible (CIF Calculado):</span>
-             <span style={{fontSize: '1.2rem', fontWeight: 'bold', color: '#0f172a'}}>
-               {currency} {getCalculatedCIF().toLocaleString()}
-             </span>
-           </div>
         </div>
       </section>
 
-      {/* SECTION 2: ADJUSTMENTS */}
-      <section className="form-section">
-        <h3>2. Ajustes de Valoración (Art. 8)</h3>
-        <p className="section-desc">¿Existen conceptos adicionales no incluidos en el precio CIF?</p>
+      {/* BLOQUE C: EL ÍTEM */}
+      <section className="form-block official-paper">
+        <div className="block-header">
+          <span className="block-tag">BLOQUE C</span>
+          <h3>DETALLE DE LA MERCADERÍA (NCM)</h3>
+        </div>
+        <div className="official-grid">
+          <div className="official-cell span-4">
+            <label>9. POSICIÓN NCM</label>
+            <div className="input-with-action">
+              <input 
+                type="text" 
+                value={item.ncmCode}
+                onChange={(e) => updateSection('item', 'ncmCode', e.target.value)}
+                placeholder="0000.00.00"
+              />
+              <button type="button" onClick={() => setIsNcmModalOpen(true)} className="btn-icon">
+                <Search size={16} />
+              </button>
+            </div>
+          </div>
+          <div className="official-cell span-2">
+            <label>CANTIDAD</label>
+            <input type="number" value={item.quantity} onChange={(e) => updateSection('item', 'quantity', e.target.value)} />
+          </div>
+          <div className="official-cell span-2">
+            <label>UNIDAD</label>
+            <input type="text" value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)} placeholder="Ej: UN, KG" />
+          </div>
+          <div className="official-cell span-2">
+            <label>VALOR UNIT.</label>
+            <input type="number" value={item.unitValue} onChange={(e) => updateSection('item', 'unitValue', e.target.value)} />
+          </div>
+          <div className="official-cell span-2 highlight">
+            <label>TOTAL ÍTEM</label>
+            <input type="number" value={item.totalValue} onChange={(e) => updateSection('item', 'totalValue', e.target.value)} className="bold-input" />
+          </div>
+          <div className="official-cell span-12">
+            <label>11. DESCRIPCIÓN COMERCIAL DE LA MERCADERÍA</label>
+            <textarea 
+              rows="3"
+              value={item.description}
+              onChange={(e) => updateSection('item', 'description', e.target.value)}
+              placeholder="Indicar marcas, modelos, y especificaciones técnicas..."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* BLOQUE D: AJUSTES */}
+      <section className="form-block official-paper">
+        <div className="block-header">
+          <span className="block-tag">BLOQUE D</span>
+          <h3>AJUSTES AL VALOR (ART. 8)</h3>
+          <p className="block-info">Conceptos a incluir o deducir para llegar al Valor Imponible.</p>
+        </div>
         
-        <div className="checklist">
-          {adjustmentQuestions
-            .filter(q => {
-              // Lógica condicional básica: 
-              // Si el Incoterm es CIF/CIP/DAP/DPU/DDP, no suelen aplicar adiciones de transporte/seguro ya que están incluidos.
-              // En EXPO MERCOSUR, si es EXW se deben adicionar para llegar al valor imponible (FOB approx).
-              if (incoterm === 'EXW' || incoterm === 'FCA' || incoterm === 'FAS' || incoterm === 'FOB') {
-                return q.type === 'addition';
-              }
-              return true; // Mostrar todos por defecto si no hay regla clara
-            })
-            .map((q) => (
-            <div key={q.id} className={`checklist-item ${answers[q.id]?.active ? 'active' : ''}`}>
-              <div className="checklist-header">
-                <div className="checklist-label">
-                  <span className="badge">{q.type === 'addition' ? 'SUMAR (Art 8)' : 'RESTAR (Art 1)'}</span>
-                  <h4>{q.text}</h4>
-                </div>
-                <div className="toggle-switch" onClick={() => handleToggle(q.id)}>
-                  {answers[q.id]?.active ? 'SÍ' : 'NO'}
-                </div>
-              </div>
-              
-              {answers[q.id]?.active && (
-                <div className="checklist-detail slide-down">
-                  <p className="detail-text"><HelpCircle size={14} /> {q.detail}</p>
-                  <p className="legal-ref">{q.legal}</p>
-                  <div className="checklist-input">
-                    <label>{q.inputLabel}</label>
-                    <div className="input-wrapper small">
-                      <span className="currency-prefix">{currency}</span>
+        <div className="adjustments-container">
+          <div className="adjustment-column">
+            <span className="col-label addition">ADICIONES (A INCLUIR)</span>
+            <div className="adjustment-list">
+              {adjustmentQuestions.filter(q => q.type === 'addition').map(q => {
+                const isHighlighted = (transaction.incoterm === 'EXW' || transaction.incoterm === 'FCA') && (q.id === 'inland_freight' || q.id === 'packaging_expo');
+                return (
+                  <div key={q.id} className={`adj-item ${adjustments.additions[q.id]?.active ? 'active' : ''} ${isHighlighted ? 'highlighted' : ''}`}>
+                    <div className="adj-row" onClick={() => handleAdjustmentToggle('addition', q.id)}>
+                      <div className="adj-check">{adjustments.additions[q.id]?.active ? '✓' : ''}</div>
+                      <span className="adj-text">{q.text}</span>
+                    </div>
+                    {adjustments.additions[q.id]?.active && (
+                      <div className="adj-input-row slide-down">
+                        <span className="adj-currency">{transaction.currency}</span>
+                        <input 
+                          type="number" 
+                          value={adjustments.additions[q.id]?.amount || ''} 
+                          onChange={(e) => handleAdjustmentAmount('addition', q.id, e.target.value)}
+                          placeholder="0.00"
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="adjustment-column">
+            <span className="col-label deduction">DEDUCCIONES (A RESTAR)</span>
+            <div className="adjustment-list">
+              {adjustmentQuestions.filter(q => q.type === 'deduction').map(q => (
+                <div key={q.id} className={`adj-item ${adjustments.deductions[q.id]?.active ? 'active' : ''}`}>
+                  <div className="adj-row" onClick={() => handleAdjustmentToggle('deduction', q.id)}>
+                    <div className="adj-check">{adjustments.deductions[q.id]?.active ? '✓' : ''}</div>
+                    <span className="adj-text">{q.text}</span>
+                  </div>
+                  {adjustments.deductions[q.id]?.active && (
+                    <div className="adj-input-row slide-down">
+                      <span className="adj-currency">{transaction.currency}</span>
                       <input 
                         type="number" 
-                        placeholder="Monto"
-                        value={answers[q.id]?.amount || ''}
-                        onChange={(e) => handleAmountChange(q.id, e.target.value)}
-                        required={answers[q.id]?.active}
+                        value={adjustments.deductions[q.id]?.amount || ''} 
+                        onChange={(e) => handleAdjustmentAmount('deduction', q.id, e.target.value)}
+                        placeholder="0.00"
                       />
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
-      <div className="form-actions">
-        <button type="submit" className="btn-primary large">
-          Verificar Valoración <ArrowRight />
+      {/* DOCUMENTACIÓN ADJUNTA */}
+      <section className="form-block official-paper">
+        <div className="block-header">
+          <span className="block-tag">DOCS</span>
+          <h3>DOCUMENTACIÓN ADJUNTA</h3>
+        </div>
+        <div className="official-grid">
+          <div className="official-cell span-6">
+            <label>NRO. CERTIFICADO ORIGEN (COD)</label>
+            <input type="text" value={documentation.originCertificate} onChange={(e) => updateSection('documentation', 'originCertificate', e.target.value)} />
+          </div>
+          <div className="official-cell span-6">
+            <label>NRO. FACTURA (PROFORMA/LEGAL)</label>
+            <input type="text" value={documentation.invoiceNumber} onChange={(e) => updateSection('documentation', 'invoiceNumber', e.target.value)} />
+          </div>
+          <div className="official-cell span-6">
+            <label>CONTRATO DE SEGURO</label>
+            <input type="text" value={documentation.insuranceContract} onChange={(e) => updateSection('documentation', 'insuranceContract', e.target.value)} />
+          </div>
+          <div className="official-cell span-6">
+            <label>CONTRATO DE FLETE</label>
+            <input type="text" value={documentation.freightContract} onChange={(e) => updateSection('documentation', 'freightContract', e.target.value)} />
+          </div>
+        </div>
+      </section>
+
+      <div className="valuation-footer">
+        <div className="total-display">
+          <span>VALOR DECLARADO TOTAL:</span>
+          <span className="grand-total">{transaction.currency} {getCalculatedValue().toLocaleString()}</span>
+        </div>
+        <button type="submit" className="btn-official-large">
+          GENERAR DECLARACIÓN DE VALOR
         </button>
       </div>
 
