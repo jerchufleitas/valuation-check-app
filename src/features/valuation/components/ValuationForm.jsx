@@ -6,14 +6,18 @@ import NCMTreeSelector from './NCMTreeSelector';
 import { useState } from 'react';
 
 const ValuationForm = ({ onCalculate }) => {
-  const [formData, setFormData] = useLocalStorage('valuation_data_v2', {
+  const [formData, setFormData] = useLocalStorage('valuation_data_v3', {
     header: {
+      userType: 'EXPORTADOR', // 'IMPORTADOR' | 'EXPORTADOR'
       exporterName: '',
       exporterTaxId: '',
       importerName: '',
       importerDetails: '',
       transportDocument: '',
       transportMode: 'Terrestre',
+      presence: 'NO',
+      airport: '',
+      airportOther: '',
       borderCrossing: '',
     },
     transaction: {
@@ -30,16 +34,19 @@ const ValuationForm = ({ onCalculate }) => {
       description: '',
     },
     adjustments: {
-      additions: {}, // Schema: { [id]: { active: boolean, amount: string } }
+      additions: {}, 
       deductions: {},
     },
     documentation: {
+      originCertificateAttached: 'SI',
       originCertificate: '',
       invoiceNumber: '',
       insuranceContract: '',
       freightContract: '',
     }
   });
+
+  const [simError, setSimError] = useState('');
 
   const [isNcmModalOpen, setIsNcmModalOpen] = useState(false);
 
@@ -91,12 +98,16 @@ const ValuationForm = ({ onCalculate }) => {
   const loadExample = () => {
     setFormData({
       header: {
+        userType: 'EXPORTADOR',
         exporterName: 'Vinos del Sur S.A.',
         exporterTaxId: '30-12345678-9',
         importerName: 'Global Imports LLC',
-        importerDetails: '5th Ave, New York, USA',
+        importerDetails: 'Estados Unidos / NY',
         transportDocument: 'CRT-AR-2025-001',
         transportMode: 'Terrestre',
+        presence: 'SI',
+        airport: '',
+        airportOther: '',
         borderCrossing: 'Paso de los Libres',
       },
       transaction: {
@@ -105,7 +116,7 @@ const ValuationForm = ({ onCalculate }) => {
         loadingPlace: 'Mendoza, Argentina',
       },
       item: {
-        ncmCode: '2204.21.00',
+        ncmCode: '2204.21.00.100G',
         quantity: '1200',
         unit: 'Botellas',
         unitValue: '8.50',
@@ -117,6 +128,7 @@ const ValuationForm = ({ onCalculate }) => {
         deductions: {},
       },
       documentation: {
+        originCertificateAttached: 'SI',
         originCertificate: 'COD-2025-9988',
         invoiceNumber: 'FC-A-0001-000045',
         insuranceContract: 'POL-99122',
@@ -127,12 +139,34 @@ const ValuationForm = ({ onCalculate }) => {
 
   const clearForm = () => {
     setFormData({
-      header: { exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', borderCrossing: '' },
+      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: 'NO', airport: '', airportOther: '', borderCrossing: '' },
       transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
-      documentation: { originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
+      documentation: { originCertificateAttached: 'SI', originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
     });
+  };
+
+  const getCurrencySymbol = (ccy) => {
+    const symbols = { 'USD': '$', 'EUR': '€', 'BRL': 'R$', 'ARS': '$', 'PYG': '₲', 'CLP': '$', 'UYU': '$' };
+    return symbols[ccy] || '$';
+  };
+
+  const getTransportDocLabel = (mode) => {
+    if (mode === 'Terrestre') return 'CRT';
+    if (mode === 'Acuática') return 'B/L';
+    if (mode === 'Aérea') return 'GUÍA AÉREA';
+    return 'DOC. TRANSPORTE';
+  };
+
+  const validateSimFormat = (value) => {
+    // Format: XXXX.XX.XX.XXXA (12 digits/dots + 1 letter)
+    const simRegex = /^\d{4}\.\d{2}\.\d{2}\.\d{3}[A-Z]$/;
+    if (value && !simRegex.test(value)) {
+      setSimError('Formato SIM inválido (XXXX.XX.XX.XXXA)');
+    } else {
+      setSimError('');
+    }
   };
 
   const getCalculatedValue = () => {
@@ -146,7 +180,25 @@ const ValuationForm = ({ onCalculate }) => {
       .filter(a => a.active)
       .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
       
-    return base + adds - subs;
+    let total = base + adds - subs;
+    
+    // Lógica de Multa: 1% si no adjunta Certificado
+    if (documentation.originCertificateAttached === 'NO') {
+      const fine = total * 0.01;
+      total += fine;
+    }
+
+    return total;
+  };
+
+  const getFineAmount = () => {
+    if (documentation.originCertificateAttached === 'NO') {
+      const baseTotal = parseFloat(item.totalValue || 0);
+      const adds = Object.values(adjustments.additions).filter(a => a.active).reduce((s, a) => s + parseFloat(a.amount || 0), 0);
+      const subs = Object.values(adjustments.deductions).filter(a => a.active).reduce((s, a) => s + parseFloat(a.amount || 0), 0);
+      return (baseTotal + adds - subs) * 0.01;
+    }
+    return 0;
   };
 
   const handleToggle = (id) => {
@@ -172,6 +224,7 @@ const ValuationForm = ({ onCalculate }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!item.totalValue) return alert("Por favor ingrese los datos del ítem y el valor total");
+    if (simError) return alert("Por favor corrija el formato de la Posición SIM");
     
     const finalValue = getCalculatedValue();
     
@@ -219,61 +272,64 @@ const ValuationForm = ({ onCalculate }) => {
           <span className="block-tag">BLOQUE A</span>
           <h3>IDENTIFICACIÓN Y CABECERA</h3>
           <div className="header-actions">
-            <button type="button" onClick={loadExample} className="btn-ghost">Ejemplo</button>
+            <div className="user-type-toggle">
+              <button 
+                type="button"
+                className={header.userType === 'EXPORTADOR' ? 'active' : ''} 
+                onClick={() => updateSection('header', 'userType', 'EXPORTADOR')}
+              >EXPORTADOR</button>
+              <button 
+                type="button"
+                className={header.userType === 'IMPORTADOR' ? 'active' : ''} 
+                onClick={() => updateSection('header', 'userType', 'IMPORTADOR')}
+              >IMPORTADOR</button>
+            </div>
+            <button type="button" onClick={loadExample} className="btn-ghost" style={{marginLeft: '10px'}}>Ejemplo</button>
             <button type="button" onClick={clearForm} className="btn-ghost">Limpiar</button>
           </div>
         </div>
 
         <div className="official-grid">
           <div className="official-cell span-8">
-            <label>1. EXPORTADOR (RAZÓN SOCIAL)</label>
+            <label>1. {header.userType} (RAZÓN SOCIAL)</label>
             <input 
               type="text" 
               value={header.exporterName}
               onChange={(e) => updateSection('header', 'exporterName', e.target.value)}
-              placeholder="Nombre Legal de la Empresa"
+              placeholder="Nombre Legal"
             />
           </div>
           <div className="official-cell span-4">
-            <label>ID FISCAL (CUIT/RUC/NIF)</label>
+            <label>ID FISCAL</label>
             <input 
               type="text" 
               value={header.exporterTaxId}
               onChange={(e) => updateSection('header', 'exporterTaxId', e.target.value)}
-              placeholder="ID Tributario"
+              placeholder="CUIT / NIF"
             />
           </div>
           
           <div className="official-cell span-8">
-            <label>2. IMPORTADOR (CLIENTE EXTRANJERO)</label>
+            <label>2. {header.userType === 'EXPORTADOR' ? 'CLIENTE EXTRANJERO' : 'PROVEEDOR EXTRANJERO'}</label>
             <input 
               type="text" 
               value={header.importerName}
               onChange={(e) => updateSection('header', 'importerName', e.target.value)}
-              placeholder="Razón Social del Comprador"
+              placeholder="Razón Social"
             />
           </div>
           <div className="official-cell span-4">
-            <label>PAÍS / DETALLES</label>
+            <label>PAÍS / JURISDICCIÓN / TERRITORIO ADUANERO</label>
             <input 
               type="text" 
               value={header.importerDetails}
               onChange={(e) => updateSection('header', 'importerDetails', e.target.value)}
-              placeholder="Ejem: Brasil / São Paulo"
+              placeholder="Ej: Brasil"
             />
           </div>
 
-          <div className="official-cell span-4">
-            <label>3. DOC. TRANSPORTE (CRT/B.L.)</label>
-            <input 
-              type="text" 
-              value={header.transportDocument}
-              onChange={(e) => updateSection('header', 'transportDocument', e.target.value)}
-              placeholder="Código Documento"
-            />
-          </div>
-          <div className="official-cell span-4">
-            <label>4. VÍA DE TRANSPORTE</label>
+          <div className="official-cell span-5">
+            <label>3. VÍA DE TRANSPORTE</label>
             <select 
               value={header.transportMode} 
               onChange={(e) => updateSection('header', 'transportMode', e.target.value)}
@@ -281,17 +337,68 @@ const ValuationForm = ({ onCalculate }) => {
               <option value="Terrestre">Terrestre</option>
               <option value="Acuática">Acuática (Marítimo/Fluvial)</option>
               <option value="Aérea">Aérea</option>
-              <option value="Multimodal">Multimodal</option>
             </select>
           </div>
+
           <div className="official-cell span-4">
-            <label>5. PASO FRONTERIZO / ADUANA</label>
+            <label>{getTransportDocLabel(header.transportMode)}</label>
+            <input 
+              type="text" 
+              value={header.transportDocument}
+              onChange={(e) => updateSection('header', 'transportDocument', e.target.value)}
+              placeholder="Código Documento"
+            />
+          </div>
+
+          <div className="official-cell span-3">
+            <label>PRESENCIA</label>
+            <div className="presence-toggle">
+               <button 
+                 type="button" 
+                 className={header.presence === 'SI' ? 'active' : ''} 
+                 onClick={() => updateSection('header', 'presence', 'SI')}
+               >SI</button>
+               <button 
+                 type="button" 
+                 className={header.presence === 'NO' ? 'active' : ''} 
+                 onClick={() => updateSection('header', 'presence', 'NO')}
+               >NO</button>
+            </div>
+          </div>
+
+          <div className="official-cell span-6">
+            <label>4. PASO FRONTERIZO / ADUANA</label>
             <input 
               type="text" 
               value={header.borderCrossing}
               onChange={(e) => updateSection('header', 'borderCrossing', e.target.value)}
               placeholder="Nombre del Paso"
             />
+          </div>
+
+          <div className="official-cell span-6">
+            <label>5. AEROPUERTOS / DEPÓSITOS</label>
+            <div className="input-with-action">
+              <select 
+                value={header.airport} 
+                onChange={(e) => updateSection('header', 'airport', e.target.value)}
+                style={{flex: 1}}
+              >
+                <option value="">Seleccionar...</option>
+                {['EZE', 'AEP', 'COR', 'MDZ', 'SLA', 'IGR', 'BRC', 'ROS', 'Otros'].map(a => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+              {header.airport === 'Otros' && (
+                <input 
+                  type="text" 
+                  value={header.airportOther}
+                  onChange={(e) => updateSection('header', 'airportOther', e.target.value)}
+                  placeholder="Especificar..."
+                  style={{borderLeft: '1px solid #eee', paddingLeft: '10px'}}
+                />
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -308,7 +415,11 @@ const ValuationForm = ({ onCalculate }) => {
             <select value={transaction.currency} onChange={(e) => updateSection('transaction', 'currency', e.target.value)}>
               <option value="USD">USD - Dólar Estadounidense</option>
               <option value="EUR">EUR - Euro</option>
+              <option value="ARS">ARS - Peso Argentino</option>
               <option value="BRL">BRL - Real Brasileño</option>
+              <option value="PYG">PYG - Guaraní Paraguayo</option>
+              <option value="CLP">CLP - Peso Chileno</option>
+              <option value="UYU">UYU - Peso Uruguayo</option>
             </select>
           </div>
           <div className="official-cell span-4">
@@ -325,7 +436,7 @@ const ValuationForm = ({ onCalculate }) => {
               type="text" 
               value={transaction.loadingPlace}
               onChange={(e) => updateSection('transaction', 'loadingPlace', e.target.value)}
-              placeholder="Puerto/Terminal de Carga"
+              placeholder="Ej: Puerto Buenos Aires"
             />
           </div>
         </div>
@@ -335,22 +446,24 @@ const ValuationForm = ({ onCalculate }) => {
       <section className="form-block official-paper">
         <div className="block-header">
           <span className="block-tag">BLOQUE C</span>
-          <h3>DETALLE DE LA MERCADERÍA (NCM)</h3>
+          <h3>DETALLE DE LA MERCADERÍA (SIM)</h3>
         </div>
         <div className="official-grid">
           <div className="official-cell span-4">
-            <label>9. POSICIÓN NCM</label>
+            <label>9. POSICIÓN ARANCELARIA A NIVEL SIM</label>
             <div className="input-with-action">
               <input 
                 type="text" 
                 value={item.ncmCode}
-                onChange={(e) => updateSection('item', 'ncmCode', e.target.value)}
-                placeholder="0000.00.00"
+                onChange={(e) => {
+                  updateSection('item', 'ncmCode', e.target.value.toUpperCase());
+                  validateSimFormat(e.target.value.toUpperCase());
+                }}
+                placeholder="XXXX.XX.XX.XXXA"
+                className={simError ? 'error-input' : ''}
               />
-              <button type="button" onClick={() => setIsNcmModalOpen(true)} className="btn-icon">
-                <Search size={16} />
-              </button>
             </div>
+            {simError && <span className="error-text">{simError}</span>}
           </div>
           <div className="official-cell span-2">
             <label>CANTIDAD</label>
@@ -358,15 +471,21 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
           <div className="official-cell span-2">
             <label>UNIDAD</label>
-            <input type="text" value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)} placeholder="Ej: UN, KG" />
+            <input type="text" value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)} placeholder="Ej: UN" />
           </div>
           <div className="official-cell span-2">
             <label>VALOR UNIT.</label>
-            <input type="number" value={item.unitValue} onChange={(e) => updateSection('item', 'unitValue', e.target.value)} />
+            <div className="currency-input-wrapper">
+              <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
+              <input type="number" value={item.unitValue} onChange={(e) => updateSection('item', 'unitValue', e.target.value)} />
+            </div>
           </div>
           <div className="official-cell span-2 highlight">
             <label>TOTAL ÍTEM</label>
-            <input type="number" value={item.totalValue} onChange={(e) => updateSection('item', 'totalValue', e.target.value)} className="bold-input" />
+            <div className="currency-input-wrapper">
+              <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
+              <input type="number" value={item.totalValue} onChange={(e) => updateSection('item', 'totalValue', e.target.value)} className="bold-input" />
+            </div>
           </div>
           <div className="official-cell span-12">
             <label>11. DESCRIPCIÓN COMERCIAL DE LA MERCADERÍA</label>
@@ -451,19 +570,46 @@ const ValuationForm = ({ onCalculate }) => {
           <h3>DOCUMENTACIÓN ADJUNTA</h3>
         </div>
         <div className="official-grid">
-          <div className="official-cell span-6">
-            <label>NRO. CERTIFICADO ORIGEN (COD)</label>
-            <input type="text" value={documentation.originCertificate} onChange={(e) => updateSection('documentation', 'originCertificate', e.target.value)} />
+          <div className="official-cell span-4">
+             <label>CERTIFICADO DE ORIGEN (cod)</label>
+             <div className="presence-toggle">
+               <button 
+                 type="button" 
+                 className={documentation.originCertificateAttached === 'SI' ? 'active' : ''} 
+                 onClick={() => updateSection('documentation', 'originCertificateAttached', 'SI')}
+               >SI</button>
+               <button 
+                 type="button" 
+                 className={documentation.originCertificateAttached === 'NO' ? 'active' : ''} 
+                 onClick={() => updateSection('documentation', 'originCertificateAttached', 'NO')}
+               >NO</button>
+            </div>
           </div>
-          <div className="official-cell span-6">
+          <div className="official-cell span-8">
+            <label>DETALLE CERTIFICADO / ESTADO</label>
+            {documentation.originCertificateAttached === 'SI' ? (
+              <input 
+                type="text" 
+                value={documentation.originCertificate} 
+                onChange={(e) => updateSection('documentation', 'originCertificate', e.target.value)} 
+                placeholder="Número de Certificado"
+              />
+            ) : (
+              <div className="fine-warning">
+                <span className="fine-label">A GARANTIZAR</span>
+                <span className="fine-value">Multa Estimada (1%): {transaction.currency} {getFineAmount().toLocaleString()}</span>
+              </div>
+            )}
+          </div>
+          <div className="official-cell span-4">
             <label>NRO. FACTURA (PROFORMA/LEGAL)</label>
             <input type="text" value={documentation.invoiceNumber} onChange={(e) => updateSection('documentation', 'invoiceNumber', e.target.value)} />
           </div>
-          <div className="official-cell span-6">
+          <div className="official-cell span-4">
             <label>CONTRATO DE SEGURO</label>
             <input type="text" value={documentation.insuranceContract} onChange={(e) => updateSection('documentation', 'insuranceContract', e.target.value)} />
           </div>
-          <div className="official-cell span-6">
+          <div className="official-cell span-4">
             <label>CONTRATO DE FLETE</label>
             <input type="text" value={documentation.freightContract} onChange={(e) => updateSection('documentation', 'freightContract', e.target.value)} />
           </div>
@@ -472,20 +618,13 @@ const ValuationForm = ({ onCalculate }) => {
 
       <div className="valuation-footer">
         <div className="total-display">
-          <span>VALOR DECLARADO TOTAL:</span>
+          <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
           <span className="grand-total">{transaction.currency} {getCalculatedValue().toLocaleString()}</span>
         </div>
         <button type="submit" className="btn-official-large">
           GENERAR DECLARACIÓN DE VALOR
         </button>
       </div>
-
-      {isNcmModalOpen && (
-        <NCMTreeSelector 
-          onSelect={handleNcmSelect} 
-          onClose={() => setIsNcmModalOpen(false)} 
-        />
-      )}
     </form>
   );
 };

@@ -1105,6 +1105,93 @@ select:focus {
   border-color: white;
 }
 
+/* --- New Official Aduana Components --- */
+.user-type-toggle, .presence-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.user-type-toggle button, .presence-toggle button {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-type-toggle button.active {
+  background: var(--gold-accent);
+  color: var(--primary-color);
+}
+
+.presence-toggle {
+  background: #f3f4f6;
+  width: fit-content;
+}
+
+.presence-toggle button {
+  color: #9ca3af;
+  padding: 4px 16px;
+}
+
+.presence-toggle button.active {
+  background: var(--primary-color);
+  color: white;
+}
+
+.currency-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ccy-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9ca3af;
+  min-width: 1.2rem;
+}
+
+.error-input {
+  color: #ef4444 !important;
+  border-bottom: 2px solid #ef4444 !important;
+}
+
+.error-text {
+  font-size: 0.6rem;
+  color: #ef4444;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.fine-warning {
+  background: #fef2f2;
+  border: 1px dashed #f87171;
+  padding: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fine-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #dc2626;
+}
+
+.fine-value {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #991b1b;
+}
+
 .input-with-action {
   display: flex;
   align-items: center;
@@ -1128,3 +1215,7 @@ select:focus {
   background: #e5e7eb;
   color: var(--primary-color);
 }
+
+.span-5 { grid-column: span 5; }
+.span-4 { grid-column: span 4; }
+.span-3 { grid-column: span 3; }
