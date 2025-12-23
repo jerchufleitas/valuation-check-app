@@ -64,7 +64,7 @@ const drawFooter = (doc, verificationId, pageHeight, isLegal = false) => {
 
 // --- RENDERER A: TECHNICAL (Auditoría) ---
 const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
-  drawHeader(doc, "PLANILLA TÉCNICA DE VALOR", "Análisis de Auditoría Interna (Legajo del Despacho)", verificationId, pageWidth);
+  drawHeader(doc, "PLANILLA TÉCNICA DE EXPORTACIÓN", "Análisis de Valor Imponible MERCOSUR", verificationId, pageWidth);
   
   const { totalAdditions, totalDeductions, finalValue } = getFinancials(data);
   let yPos = 50;
@@ -77,13 +77,16 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
 
   const breakdown = data.breakdown || {};
   const techData = [
+    [t("Exportador"), t(`${data.exporter?.name || 'N/A'} (ID: ${data.exporter?.id || '-'})`)],
+    [t("Posición NCM"), t(data.ncmCode || "N/A")],
     [t("Mercadería"), t(data.productDesc || "N/A")],
-    ["Referencia", t(data.reference || "N/A")],
+    [t("Vía/Embarque"), t(`${data.transport?.mode || 'N/A'} / ${data.transport?.loading || '-'}`)],
+    [t("CRT/Certificado"), t(`${data.documents?.crt || 'N/A'} / ${data.documents?.origin || '-'}`)],
     ["Incoterm", breakdown.incoterm || data.incoterm],
     [t("Precio Factura"), `${data.currency} ${parseFloat(breakdown.basePrice || data.baseValue).toLocaleString()}`],
     [t("Flete Int."), `${data.currency} ${parseFloat(breakdown.freight || 0).toLocaleString()}`],
     [t("Seguro Int."), `${data.currency} ${parseFloat(breakdown.insurance || 0).toLocaleString()}`],
-    ["Base CIF", `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
+    [t("V. Imponible Base"), `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
   ];
 
   autoTable(doc, {
@@ -137,11 +140,11 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
   doc.setFontSize(10);
   doc.setTextColor(0);
   doc.text(t("CÁLCULO FINAL:"), 25, yPos + 10);
-  doc.text(`Base CIF: ${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`, 25, yPos + 20);
-  doc.text(`Total Ajustes: ${data.currency} ${(totalAdditions - totalDeductions).toLocaleString()}`, 25, yPos + 30);
+  doc.text(t(`Base Factura: ${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`), 25, yPos + 20);
+  doc.text(t(`Total Ajustes: ${data.currency} ${(totalAdditions - totalDeductions).toLocaleString()}`), 25, yPos + 30);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text(t(`VALOR ADUANA: ${data.currency} ${finalValue.toLocaleString()}`), 25, yPos + 40);
+  doc.text(t(`VALOR IMPONIBLE EXPO: ${data.currency} ${finalValue.toLocaleString()}`), 25, yPos + 40);
 
   drawFooter(doc, verificationId, pageHeight, false);
 };
@@ -168,14 +171,14 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
 
   // Client Info
   doc.setFontSize(14);
-  const clientText = `Cliente: ${data.reference || "General"}`;
+  const clientText = `Exportador: ${data.exporter?.name || "General"}`;
   doc.text(t(clientText.substring(0, 45) + (clientText.length>45?"...":"")), 20, yPos);
   
   yPos += 8;
   doc.setFontSize(12);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100);
-  doc.text(t((data.productDesc || "Mercadería General").substring(0, 70)), 20, yPos);
+  doc.text(t(`${data.productDesc || "Mercadería"} - NCM ${data.ncmCode || '-'}`), 20, yPos);
   
   yPos += 20;
 
@@ -185,7 +188,7 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
   
   doc.setTextColor(255);
   doc.setFontSize(10);
-  doc.text(t("VALOR IMPONIBLE DEFINITIVO (CIF + AJUSTES)"), 35, yPos + 15);
+  doc.text(t("VALOR IMPONIBLE DEFINITIVO (FOB/FCA + AJUSTES)"), 35, yPos + 15);
   doc.setFontSize(26);
   doc.setFont('helvetica', 'bold');
   doc.text(`${data.currency} ${finalValue.toLocaleString()}`, 35, yPos + 35);
@@ -222,7 +225,7 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
 
 // --- RENDERER C: LEGAL (Arca/Aduana) ---
 const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
-  drawHeader(doc, "DICTAMEN DE VALORACIÓN", "Instrumento de Declaración - Ley 23.311", verificationId, pageWidth);
+  drawHeader(doc, "DICTAMEN TÉCNICO DE EXPORTACIÓN", "Determinación de Valor Imponible MERCOSUR", verificationId, pageWidth);
   
   const { totalAdditions, totalDeductions, finalValue } = getFinancials(data);
   let yPos = 60; // Start lower to give breathing room
@@ -239,7 +242,7 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   doc.text(t("VISTO:"), marginX, yPos);
   
   doc.setFont('helvetica', 'normal');
-  const vistoText = t(`La operación de importación referente a "${data.productDesc || 'mercadería'}" documentada bajo la referencia "${data.reference || 'S/Ref'}", y considerando las disposiciones del Acuerdo Relativo a la Aplicación del Artículo VII del Acuerdo General sobre Aranceles Aduaneros y Comercio de 1994.`);
+  const vistoText = t(`La operación de exportación de "${data.productDesc || 'mercadería'}" realizada por el exportador "${data.exporter?.name || 'S/D'}" (ID Fiscal ${data.exporter?.id || '-'}), bajo condiciones de venta ${data.incoterm || 'S/D'}, amparada por CRT ${data.documents?.crt || '-'} y Certificado de Origen ${data.documents?.origin || '-'}.`);
   const splitVisto = doc.splitTextToSize(vistoText, maxContentWidth);
   
   doc.text(splitVisto, contentX, yPos);
@@ -253,7 +256,7 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   doc.text(t("CONSIDERANDO:"), marginX, yPos);
   
   doc.setFont('helvetica', 'normal');
-  const condText = t("Que el Artículo 1 establece el Valor de Transacción como método principal. Que el Artículo 8 determina los ajustes obligatorios a incluir en la base imponible. Que se ha realizado el análisis de los elementos constitutivos del precio.");
+  const condText = t("Que se ha procedido a la determinación del valor imponible según las normas de valoración del MERCOSUR. Que se han analizado los ajustes de valor previstos en la normativa para alcanzar la base de imposición a la exportación.");
   const splitCond = doc.splitTextToSize(condText, maxContentWidth);
   
   doc.text(splitCond, contentX, yPos);
@@ -267,9 +270,9 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   yPos += 8;
 
   const legalBody = [
-      [t("BASE DE CÁLCULO (CIF)"), `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
-      ...data.adjustments.map(a => [t(`AJUSTE ART. 8 (${a.text})`), `${a.type==='addition'?'+':'-'} ${parseFloat(a.amount).toLocaleString()}`]),
-      [t("VALOR EN ADUANA DETERMINADO"), `${data.currency} ${finalValue.toLocaleString()}`]
+      [t("PRECIO FACTURA BASE"), `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
+      ...data.adjustments.map(a => [t(`AJUSTE (${a.text})`), `${a.type==='addition'?'+':'-'} ${parseFloat(a.amount).toLocaleString()}`]),
+      [t("VALOR IMPONIBLE DETERMINADO"), `${data.currency} ${finalValue.toLocaleString()}`]
   ];
 
   autoTable(doc, {
@@ -294,7 +297,7 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   doc.setFontSize(7);
   doc.setTextColor(80);
   doc.setFont('helvetica', 'normal');
-  const disclaimerText = t("AVISO LEGAL IMPORTANTE: Este documento es un Dictamen Técnico Auxiliar basado en el Acuerdo del GATT (Art. 1 y 8) y la Ley 23.311. Su uso es responsabilidad exclusiva del profesional aduanero. Valuation Check no se responsabiliza por la exactitud de los datos ingresados ni por resoluciones de la autoridad aduanera. Este reporte carece de validez oficial si no está acompañado por la firma del despachante.");
+  const disclaimerText = t("AVISO LEGAL IMPORTANTE: Este documento es un Dictamen Técnico Auxiliar basado en las Normas de Valoración del MERCOSUR y leyes de exportación vigentes. Su uso es responsabilidad exclusiva del profesional aduanero. Valuation Check no se responsabiliza por la exactitud de los datos ingresados ni por resoluciones de la autoridad aduanera. Este reporte carece de validez oficial si no está acompañado por la firma del despachante.");
   const splitDisclaimer = doc.splitTextToSize(disclaimerText, pageWidth - 50);
   doc.text(splitDisclaimer, 25, pageHeight - 60);
 

@@ -53,24 +53,10 @@ function App() {
 
       <main className="main-content">
         {!result ? (
-            <>
-              <div className="intro-card">
-                <h2>Verificación de Valor en Aduana</h2>
-                <p>
-                  Herramienta experta para determinar el Valor en Aduana correcto mediante el 
-                  análisis de ajustes obligatorios (Art. 8) y deducciones permitidas (Art. 1).
-                </p>
-              </div>
-              <ValuationForm onCalculate={handleCalculate} />
-            </>
+            <ValuationForm onCalculate={handleCalculate} />
         ) : (
           <ReportCard 
-            baseValue={result.baseValue} 
-            adjustments={result.adjustments} 
-            currency={result.currency}
-            incoterm={result.incoterm}
-            productDesc={result.productDesc}
-            reference={result.reference}
+            {...result}
             onReset={handleReset}
           />
         )}
