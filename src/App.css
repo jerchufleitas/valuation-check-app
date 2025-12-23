@@ -1216,6 +1216,120 @@ select:focus {
   color: var(--primary-color);
 }
 
+/* --- OCR Dropzone --- */
+.ocr-dropzone {
+  background: white;
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.ocr-dropzone:hover {
+  border-color: var(--primary-color);
+  background: #f8fafc;
+}
+
+.ocr-dropzone.dragging {
+  border-color: var(--gold-accent);
+  background: rgba(196, 161, 89, 0.05);
+  transform: scale(1.01);
+}
+
+.ocr-dropzone.processing {
+  cursor: wait;
+}
+
+.ocr-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.ocr-icon-group {
+  display: flex;
+  gap: 1rem;
+  color: #94a3b8;
+}
+
+.ocr-dropzone:hover .ocr-icon-group {
+  color: var(--primary-color);
+}
+
+.ocr-text h4 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.ocr-text p {
+  margin: 0.5rem 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.file-types {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Processing State */
+.processing-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.spinner {
+  color: var(--gold-accent);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.progress-bar {
+  width: 300px;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--gold-accent);
+  transition: width 0.3s ease;
+}
+
+/* Highlight for auto-filled fields */
+.highlighted-fill {
+  background: #fdf9e7 !important;
+  transition: background 1s ease;
+}
+
+.highlighted-fill input,
+.highlighted-fill select,
+.highlighted-fill textarea {
+  background: transparent !important;
+}
+
 .span-5 { grid-column: span 5; }
 .span-4 { grid-column: span 4; }
 .span-3 { grid-column: span 3; }
