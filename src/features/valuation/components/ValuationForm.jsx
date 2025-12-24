@@ -399,11 +399,11 @@ const ValuationForm = ({ onCalculate }) => {
                   <div className="category-reveal-grid">
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'AERO')}>
                       <span className="icon">✈</span>
-                      <span className="label">AEROPUERTOS</span>
+                      <span className="label">AEROPUERTOS INTERNACIONALES</span>
                     </button>
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'PUERTO')}>
                       <span className="icon">⚓</span>
-                      <span className="label">PUERTOS</span>
+                      <span className="label">PUERTOS NACIONALES</span>
                     </button>
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'OTROS')}>
                       <span className="icon">⚙</span>
