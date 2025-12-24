@@ -826,6 +826,53 @@ select:focus {
   padding: 0 !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
   overflow: hidden;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.official-paper.is-collapsed {
+  margin-bottom: 0.5rem;
+}
+
+.official-paper.is-collapsed .official-grid,
+.official-paper.is-collapsed .adjustments-container {
+  display: none;
+}
+
+.block-header.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.block-header.clickable:hover {
+  background: #162a40;
+}
+
+.collapse-icon {
+  color: var(--gold-accent);
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.is-collapsed .collapse-icon {
+  transform: rotate(0deg);
+}
+
+.block-separator {
+  height: var(--block-spacing);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block-separator::before {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, #d1d5db, transparent);
 }
 
 .block-header {

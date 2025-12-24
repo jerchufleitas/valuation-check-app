@@ -1,7 +1,7 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { adjustmentQuestions } from '../data/valuationLogic';
 import { incoterms } from '../data/incotermsLogic';
-import { DollarSign, HelpCircle, ArrowRight, Truck, Shield, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
 import { useState } from 'react';
 
@@ -48,6 +48,19 @@ const ValuationForm = ({ onCalculate }) => {
 
   const [simError, setSimError] = useState('');
   const [highlightedFields, setHighlightedFields] = useState({}); // { 'header.exporterName': true, ... }
+  
+  // Collapse state for sections
+  const [collapsed, setCollapsed] = useState({
+    header: false,
+    transaction: false,
+    item: false,
+    adjustments: false,
+    documentation: false
+  });
+
+  const toggleCollapse = (section) => {
+    setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const { header, transaction, item, adjustments, documentation } = formData;
 
@@ -267,11 +280,14 @@ const ValuationForm = ({ onCalculate }) => {
       <form onSubmit={handleSubmit}>
         
         {/* BLOQUE A: CABECERA */}
-        <section className="form-block official-paper">
-          <div className="block-header">
+        <section className={`form-block official-paper ${collapsed.header ? 'is-collapsed' : ''}`}>
+          <div className="block-header clickable" onClick={() => toggleCollapse('header')}>
             <span className="block-tag">BLOQUE A</span>
             <h3>IDENTIFICACIÓN Y CABECERA</h3>
-            <div className="header-actions">
+            <div className="collapse-icon">
+              {collapsed.header ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
+            <div className="header-actions" onClick={(e) => e.stopPropagation()}>
               <div className="user-type-toggle">
                 <button type="button" className={header.userType === 'EXPORTADOR' ? 'active' : ''} onClick={() => updateSection('header', 'userType', 'EXPORTADOR')}>EXPORTADOR</button>
                 <button type="button" className={header.userType === 'IMPORTADOR' ? 'active' : ''} onClick={() => updateSection('header', 'userType', 'IMPORTADOR')}>IMPORTADOR</button>
@@ -344,11 +360,16 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
         </section>
 
+        <div className="block-separator"></div>
+
         {/* BLOQUE B: CONDICIONES */}
-        <section className="form-block official-paper">
-          <div className="block-header">
+        <section className={`form-block official-paper ${collapsed.transaction ? 'is-collapsed' : ''}`}>
+          <div className="block-header clickable" onClick={() => toggleCollapse('transaction')}>
             <span className="block-tag">BLOQUE B</span>
             <h3>CONDICIONES DE LA TRANSACCIÓN</h3>
+            <div className="collapse-icon">
+              {collapsed.transaction ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
           </div>
           <div className="official-grid">
             <div className={`official-cell span-4 ${isHighlighted('transaction', 'currency')}`}>
@@ -378,11 +399,16 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
         </section>
 
+        <div className="block-separator"></div>
+
         {/* BLOQUE C: EL ÍTEM */}
-        <section className="form-block official-paper">
-          <div className="block-header">
+        <section className={`form-block official-paper ${collapsed.item ? 'is-collapsed' : ''}`}>
+          <div className="block-header clickable" onClick={() => toggleCollapse('item')}>
             <span className="block-tag">BLOQUE C</span>
             <h3>DETALLE DE LA MERCADERÍA (SIM)</h3>
+            <div className="collapse-icon">
+              {collapsed.item ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
           </div>
           <div className="official-grid">
             <div className={`official-cell span-4 ${isHighlighted('item', 'ncmCode')}`}>
@@ -419,11 +445,16 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
         </section>
 
+        <div className="block-separator"></div>
+
         {/* BLOQUE D: AJUSTES */}
-        <section className="form-block official-paper">
-          <div className="block-header">
+        <section className={`form-block official-paper ${collapsed.adjustments ? 'is-collapsed' : ''}`}>
+          <div className="block-header clickable" onClick={() => toggleCollapse('adjustments')}>
             <span className="block-tag">BLOQUE D</span>
             <h3>AJUSTES AL VALOR (ART. 8)</h3>
+            <div className="collapse-icon">
+              {collapsed.adjustments ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
           </div>
           <div className="adjustments-container">
             <div className="adjustment-column">
@@ -475,11 +506,16 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
         </section>
 
+        <div className="block-separator"></div>
+
         {/* DOCUMENTACIÓN ADJUNTA */}
-        <section className="form-block official-paper">
-          <div className="block-header">
+        <section className={`form-block official-paper ${collapsed.documentation ? 'is-collapsed' : ''}`}>
+          <div className="block-header clickable" onClick={() => toggleCollapse('documentation')}>
             <span className="block-tag">DOCS</span>
             <h3>DOCUMENTACIÓN ADJUNTA</h3>
+            <div className="collapse-icon">
+              {collapsed.documentation ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
           </div>
           <div className="official-grid">
             <div className={`official-cell span-4 ${isHighlighted('documentation', 'originCertificateAttached')}`}>
