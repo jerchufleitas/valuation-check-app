@@ -261,7 +261,8 @@ const ValuationForm = ({ onCalculate }) => {
   return (
     <div className="valuation-form fade-in">
       
-      <OcrDropzone onDataExtracted={handleOcrData} />
+      {/* OCR Dropzone hidden for Manual Mode */}
+      {/* <OcrDropzone onDataExtracted={handleOcrData} /> */}
 
       <form onSubmit={handleSubmit}>
         
