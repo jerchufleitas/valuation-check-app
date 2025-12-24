@@ -444,7 +444,7 @@ const ValuationForm = ({ onCalculate }) => {
               <label>4. PASO FRONTERIZO / ADUANA</label>
               <div className="terminal-selector-container">
                 {(!header.customsCategory || header.customsCategory === '') && !header.borderCrossing ? (
-                  <div className="category-reveal-grid">
+                  <div className="category-reveal-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'INTERIOR')}>
                       <span className="icon">🏦</span>
                       <span className="label">INTERIOR / METRO</span>
@@ -510,7 +510,7 @@ const ValuationForm = ({ onCalculate }) => {
               <label>5. PUERTO / AEROPUERTO</label>
               <div className="terminal-selector-container">
                 {(!header.airportCategory || header.airportCategory === '') && !header.airport && !header.airportOther ? (
-                  <div className="category-reveal-grid">
+                  <div className="category-reveal-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'AERO')}>
                       <span className="icon">✈</span>
                       <span className="label">AEROPUERTOS INTERNACIONALES</span>
