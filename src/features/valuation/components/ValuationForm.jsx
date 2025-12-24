@@ -261,14 +261,15 @@ const ValuationForm = ({ onCalculate }) => {
   return (
     <div className="valuation-form fade-in">
       
-      <OcrDropzone onDataExtracted={handleOcrData} />
+      {/* OCR Dropzone hidden for Manual Mode */}
+      {/* <OcrDropzone onDataExtracted={handleOcrData} /> */}
 
       <form onSubmit={handleSubmit}>
         
         {/* BLOQUE A: CABECERA */}
         <section className="form-block official-paper">
           <div className="block-header">
-            <span className="block-tag">BLOQUE A [OCR ACTIVO]</span>
+            <span className="block-tag">BLOQUE A</span>
             <h3>IDENTIFICACIÓN Y CABECERA</h3>
             <div className="header-actions">
               <div className="user-type-toggle">
