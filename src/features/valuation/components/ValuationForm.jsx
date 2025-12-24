@@ -19,7 +19,7 @@ const ValuationForm = ({ onCalculate }) => {
       airportCategory: '', // 'AERO' | 'PUERTO' | 'OTROS'
       airport: '',
       airportOther: '',
-      customsCategory: '', // 'INTERIOR' | 'FRONTERA' | 'PUERTOS'
+      customsCategory: '', // 'INTERIOR' | 'FRONTERA' | 'PUERTOS' | 'ZF'
       borderCrossing: '',
     },
     transaction: {
@@ -88,37 +88,51 @@ const ValuationForm = ({ onCalculate }) => {
     INTERIOR: [
       { id: '001', name: 'BUENOS AIRES (001)' },
       { id: '017', name: 'CORDOBA (017)' },
-      { id: '053', name: 'ROSARIO (053)' },
       { id: '038', name: 'MENDOZA (038)' },
+      { id: '053', name: 'ROSARIO (053)' },
       { id: '060', name: 'SALTA (060)' },
-      { id: '071', name: 'TUCUMAN (071)' },
-      { id: '101', name: 'EZEIZA (101)' },
-      { id: '073', name: 'USHUAIA (073)' }
+      { id: '062', name: 'SANTA FE (062)' },
+      { id: '067', name: 'USHUAIA (067)' },
+      { id: '074', name: 'TUCUMAN (074)' },
+      { id: '089', name: 'SANTIAGO DEL ESTERO (089)' },
+      { id: '094', name: 'VENADO TUERTO (094)' },
+      { id: '101', name: 'EZEIZA (101)' }
     ],
     FRONTERA: [
       { id: '012', name: 'CLORINDA (012)' },
-      { id: '031', name: 'IGUAZU (031)' },
-      { id: '041', name: 'PASO DE LOS LIBRES (041)' },
-      { id: '048', name: 'POSADAS (048)' },
-      { id: '033', name: 'LA QUIACA (033)' },
-      { id: '024', name: 'FORMOSA (024)' },
       { id: '013', name: 'COLON (013)' },
       { id: '016', name: 'CONCORDIA (016)' },
       { id: '022', name: 'GUALEGUAYCHU (022)' },
+      { id: '024', name: 'FORMOSA (024)' },
+      { id: '031', name: 'IGUAZU (031)' },
+      { id: '033', name: 'LA QUIACA (033)' },
+      { id: '041', name: 'PASO DE LOS LIBRES (041)' },
+      { id: '045', name: 'NEUQUEN (045)' },
       { id: '046', name: 'ORAN (046)' },
-      { id: '066', name: 'SANTO TOME (066)' },
-      { id: '045', name: 'NEUQUEN (045)' }
+      { id: '048', name: 'POSADAS (048)' },
+      { id: '066', name: 'TINOGASTA (066)' },
+      { id: '084', name: 'SANTO TOME (084)' }
     ],
     PUERTOS: [
       { id: '003', name: 'BAHIA BLANCA (003)' },
       { id: '008', name: 'CAMPANA (008)' },
-      { id: '091', name: 'ZARATE (091)' },
-      { id: '054', name: 'SAN LORENZO (054)' },
-      { id: '086', name: 'VILLA CONSTITUCION (086)' },
       { id: '037', name: 'MAR DEL PLATA (037)' },
       { id: '049', name: 'PUERTO MADRYN (049)' },
+      { id: '054', name: 'SAN LORENZO (054)' },
       { id: '056', name: 'SAN NICOLAS (056)' },
-      { id: '057', name: 'SANTA FE (057)' }
+      { id: '069', name: 'VILLA CONSTITUCION (069)' },
+      { id: '085', name: 'VILLA REGINA (085)' },
+      { id: '091', name: 'ZARATE (091)' }
+    ],
+    ZF: [
+      { id: '253', name: 'Z.F. RIO GALLEGOS (253)' },
+      { id: '258', name: 'Z.F. GENERAL PICO (258)' },
+      { id: '266', name: 'Z.F. CORONEL ROSALES (266)' },
+      { id: '267', name: 'ZF CONCEP. DEL URUG. (267)' },
+      { id: '268', name: 'Z.F.V.CONSTITUCION (268)' },
+      { id: '269', name: 'Z.F. PUERTO GALVAN (269)' },
+      { id: '274', name: 'Z.F. PERICO (274)' },
+      { id: '275', name: 'Z.F. ZAPALA (275)' }
     ]
   };
 
@@ -441,7 +455,11 @@ const ValuationForm = ({ onCalculate }) => {
                     </button>
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'PUERTOS')}>
                       <span className="icon">🚢</span>
-                      <span className="label">ZONA PORTUARIA</span>
+                      <span className="label">PORTUARIAS</span>
+                    </button>
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'ZF')}>
+                      <span className="icon">🏗️</span>
+                      <span className="label">Z. FRANCAS</span>
                     </button>
                   </div>
                 ) : header.customsCategory && header.customsCategory !== '' && !header.borderCrossing ? (
@@ -449,7 +467,8 @@ const ValuationForm = ({ onCalculate }) => {
                     <div className="reveal-header">
                        <span className="reveal-title">
                          {header.customsCategory === 'INTERIOR' ? 'ADUANAS DE INTERIOR' : 
-                          header.customsCategory === 'FRONTERA' ? 'ADUANAS DE FRONTERA' : 'ADUANAS PORTUARIAS'}
+                          header.customsCategory === 'FRONTERA' ? 'ADUANAS DE FRONTERA' : 
+                          header.customsCategory === 'PUERTOS' ? 'ADUANAS PORTUARIAS' : 'ZONAS FRANCAS'}
                        </span>
                        <button type="button" className="btn-back-link" onClick={() => updateSection('header', 'customsCategory', '')}>← VOLVER</button>
                     </div>
