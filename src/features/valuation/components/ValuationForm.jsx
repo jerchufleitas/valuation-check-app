@@ -84,7 +84,7 @@ const ValuationForm = ({ onCalculate }) => {
     }
   };
 
-  const handleAdjustmentToggle = (type, id) => {
+  const handleAdjustmentSelection = (type, id, selection) => {
     const list = type === 'addition' ? 'additions' : 'deductions';
     setFormData(prev => ({
       ...prev,
@@ -93,8 +93,8 @@ const ValuationForm = ({ onCalculate }) => {
         [list]: { 
           ...prev.adjustments[list], 
           [id]: { 
-            active: !prev.adjustments[list][id]?.active, 
-            amount: '' 
+            status: selection, 
+            amount: selection === 'SI' ? (prev.adjustments[list][id]?.amount || '') : '' 
           }
         }
       }
@@ -193,8 +193,8 @@ const ValuationForm = ({ onCalculate }) => {
 
   const getCalculatedValue = () => {
     const base = parseFloat(item.totalValue || 0);
-    const adds = Object.values(adjustments.additions).filter(a => a.active).reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-    const subs = Object.values(adjustments.deductions).filter(a => a.active).reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+    const adds = Object.values(adjustments.additions).filter(a => a.status === 'SI').reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+    const subs = Object.values(adjustments.deductions).filter(a => a.status === 'SI').reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
     let total = base + adds - subs;
     if (documentation.originCertificateAttached === 'NO') {
       const fine = total * 0.01;
@@ -206,8 +206,8 @@ const ValuationForm = ({ onCalculate }) => {
   const getFineAmount = () => {
     if (documentation.originCertificateAttached === 'NO') {
       const baseTotal = parseFloat(item.totalValue || 0);
-      const adds = Object.values(adjustments.additions).filter(a => a.active).reduce((s, a) => s + parseFloat(a.amount || 0), 0);
-      const subs = Object.values(adjustments.deductions).filter(a => a.active).reduce((s, a) => s + parseFloat(a.amount || 0), 0);
+      const adds = Object.values(adjustments.additions).filter(a => a.status === 'SI').reduce((s, a) => s + parseFloat(a.amount || 0), 0);
+      const subs = Object.values(adjustments.deductions).filter(a => a.status === 'SI').reduce((s, a) => s + parseFloat(a.amount || 0), 0);
       return (baseTotal + adds - subs) * 0.01;
     }
     return 0;
@@ -215,8 +215,21 @@ const ValuationForm = ({ onCalculate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!item.totalValue) return alert("Por favor ingrese los datos del ítem y el valor total");
-    if (simError) return alert("Por favor corrija el formato de la Posición SIM");
+    
+    // Mandatory Validations
+    if (!item.totalValue) return alert("Error: Debe ingresar el valor total del ítem.");
+    if (simError) return alert("Error: Formato de Posición SIM incorrecto.");
+    if (header.presence === null) return alert("Obligatorio: Debe aclarar la PRESENCIA (SI/NO) en Bloque A.");
+    if (documentation.originCertificateAttached === null) return alert("Obligatorio: Debe aclarar el CERTIFICADO DE ORIGEN (SI/NO) en Bloque DOCS.");
+    
+    // Validate all Adjustments
+    const missingAdds = adjustmentQuestions.filter(q => q.type === 'addition').some(q => !adjustments.additions[q.id] || adjustments.additions[q.id].status === null);
+    const missingSubs = adjustmentQuestions.filter(q => q.type === 'deduction').some(q => !adjustments.deductions[q.id] || adjustments.deductions[q.id].status === null);
+    
+    if (missingAdds || missingSubs) {
+      return alert("Obligatorio: Todos los AJUSTES del Bloque D deben ser respondidos expresamente con SI o NO.");
+    }
+
     onCalculate({ 
       finalValue: getCalculatedValue(),
       blocks: formData,
@@ -461,18 +474,18 @@ const ValuationForm = ({ onCalculate }) => {
               <span className="col-label addition">ADICIONES (A INCLUIR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'addition').map(q => {
-                  const isActive = adjustments.additions[q.id]?.active;
+                  const status = adjustments.additions[q.id]?.status || null;
                   const isHighlightAdj = highlightedFields[`adjustments.additions.${q.id}`];
                   return (
-                    <div key={q.id} className={`adj-item ${isActive ? 'active' : ''} ${isHighlightAdj ? 'highlighted-fill' : ''}`}>
+                    <div key={q.id} className={`adj-item ${status === 'SI' ? 'active' : ''} ${isHighlightAdj ? 'highlighted-fill' : ''}`}>
                       <div className="adj-row-unified">
                         <span className="adj-text">{q.text}</span>
                         <div className="si-no-selector small">
-                           <button type="button" className={`btn-si-no ${isActive ? 'si-active' : ''}`} onClick={() => handleAdjustmentToggle('addition', q.id)}>SI</button>
-                           <button type="button" className={`btn-si-no ${!isActive ? 'no-active' : ''}`} onClick={() => !isActive ? null : handleAdjustmentToggle('addition', q.id)}>NO</button>
+                           <button type="button" className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} onClick={() => handleAdjustmentSelection('addition', q.id, 'SI')}>SI</button>
+                           <button type="button" className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} onClick={() => handleAdjustmentSelection('addition', q.id, 'NO')}>NO</button>
                         </div>
                       </div>
-                      {isActive && (
+                      {status === 'SI' && (
                         <div className="adj-input-row slide-down">
                           <span className="adj-currency">{transaction.currency}</span>
                           <input type="number" value={adjustments.additions[q.id]?.amount || ''} onChange={(e) => handleAdjustmentAmount('addition', q.id, e.target.value)} placeholder="0.00" />
@@ -488,17 +501,17 @@ const ValuationForm = ({ onCalculate }) => {
               <span className="col-label deduction">DEDUCCIONES (A RESTAR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'deduction').map(q => {
-                  const isActive = adjustments.deductions[q.id]?.active;
+                  const status = adjustments.deductions[q.id]?.status || null;
                   return (
-                    <div key={q.id} className={`adj-item ${isActive ? 'active' : ''}`}>
+                    <div key={q.id} className={`adj-item ${status === 'SI' ? 'active' : ''}`}>
                       <div className="adj-row-unified">
                         <span className="adj-text">{q.text}</span>
                         <div className="si-no-selector small">
-                           <button type="button" className={`btn-si-no ${isActive ? 'si-active' : ''}`} onClick={() => handleAdjustmentToggle('deduction', q.id)}>SI</button>
-                           <button type="button" className={`btn-si-no ${!isActive ? 'no-active' : ''}`} onClick={() => !isActive ? null : handleAdjustmentToggle('deduction', q.id)}>NO</button>
+                           <button type="button" className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} onClick={() => handleAdjustmentSelection('deduction', q.id, 'SI')}>SI</button>
+                           <button type="button" className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} onClick={() => handleAdjustmentSelection('deduction', q.id, 'NO')}>NO</button>
                         </div>
                       </div>
-                      {isActive && (
+                      {status === 'SI' && (
                         <div className="adj-input-row slide-down">
                           <span className="adj-currency">{transaction.currency}</span>
                           <input type="number" value={adjustments.deductions[q.id]?.amount || ''} onChange={(e) => handleAdjustmentAmount('deduction', q.id, e.target.value)} placeholder="0.00" />
