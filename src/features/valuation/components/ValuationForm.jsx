@@ -357,16 +357,52 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
 
             <div className={`official-cell span-6 ${isHighlighted('header', 'airport')}`}>
-              <label>5. AEROPUERTOS / DEPÓSITOS</label>
+              <label>5. PUERTO / AEROPUERTO</label>
               <div className="input-with-action">
-                <select value={header.airport} onChange={(e) => updateSection('header', 'airport', e.target.value)} style={{flex: 1}}>
-                  <option value="">Seleccionar...</option>
-                  {['EZE', 'AEP', 'COR', 'MDZ', 'SLA', 'IGR', 'BRC', 'ROS', 'Otros'].map(a => (
-                    <option key={a} value={a}>{a}</option>
-                  ))}
+                <select 
+                  value={header.airport} 
+                  onChange={(e) => updateSection('header', 'airport', e.target.value)} 
+                  style={{flex: 1}}
+                  className="premium-select"
+                >
+                  <option value="">Seleccionar ubicación...</option>
+                  
+                  <optgroup label="AEROPUERTOS INTERNACIONALES">
+                    <option value="EZE">Aeropuerto Internacional de Ezeiza (EZE)</option>
+                    <option value="AEP">Aeroparque "Jorge Newbery" (AEP)</option>
+                    <option value="COR">Aeropuerto de Córdoba "Ambrosio Taravella" (COR)</option>
+                    <option value="MDZ">Aeropuerto de Mendoza "El Plumerillo" (MDZ)</option>
+                    <option value="SLA">Aeropuerto de Salta "Martín M. de Güemes" (SLA)</option>
+                    <option value="IGR">Aeropuerto de Iguazú "Mayor Krause" (IGR)</option>
+                    <option value="BRC">Aeropuerto de Bariloche "Luis Candelaria" (BRC)</option>
+                    <option value="ROS-AIR">Aeropuerto de Rosario "Islas Malvinas" (ROS)</option>
+                  </optgroup>
+
+                  <optgroup label="PUERTOS NACIONALES">
+                    <option value="BUE">Puerto de Buenos Aires (BUE)</option>
+                    <option value="DSU">Puerto de Dock Sud (DSU)</option>
+                    <option value="CMP">Puerto de Campana (CMP)</option>
+                    <option value="ZAR">Puerto de Zárate (ZAR)</option>
+                    <option value="ROS-SEA">Puerto de Rosario (ROS)</option>
+                    <option value="SLO">Puerto de San Lorenzo (SLO)</option>
+                    <option value="BBI">Puerto de Bahía Blanca (BBI)</option>
+                    <option value="PMY">Puerto de Puerto Madryn (PMY)</option>
+                    <option value="USH">Puerto de Ushuaia (USH)</option>
+                  </optgroup>
+
+                  <optgroup label="OTRAS TERMINALES">
+                    <option value="Otros">Otro (Especificar manualmente)</option>
+                  </optgroup>
                 </select>
+                
                 {header.airport === 'Otros' && (
-                  <input type="text" value={header.airportOther} onChange={(e) => updateSection('header', 'airportOther', e.target.value)} placeholder="Especificar..." style={{borderLeft: '1px solid #eee', paddingLeft: '10px'}} />
+                  <input 
+                    type="text" 
+                    value={header.airportOther} 
+                    onChange={(e) => updateSection('header', 'airportOther', e.target.value)} 
+                    placeholder="Nombre Terminal..." 
+                    style={{borderLeft: '1px solid #eee', paddingLeft: '10px'}} 
+                  />
                 )}
               </div>
             </div>

@@ -451,6 +451,23 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(13, 27, 42, 0.1);
 }
 
+/* --- Hierarchical Select Styling --- */
+optgroup {
+  font-weight: 700;
+  color: var(--gold-accent);
+  background: #f8fafc;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 8px;
+}
+
+option {
+  font-weight: 400;
+  color: var(--primary-color);
+  background: white;
+  padding: 4px;
+}
+
 /* --- Checklist Items --- */
 .checklist {
   display: flex;
