@@ -15,7 +15,7 @@ const ValuationForm = ({ onCalculate }) => {
       importerDetails: '',
       transportDocument: '',
       transportMode: 'Terrestre',
-      presence: 'NO',
+      presence: null,
       airport: '',
       airportOther: '',
       borderCrossing: '',
@@ -38,7 +38,7 @@ const ValuationForm = ({ onCalculate }) => {
       deductions: {},
     },
     documentation: {
-      originCertificateAttached: 'SI',
+      originCertificateAttached: null,
       originCertificate: '',
       invoiceNumber: '',
       insuranceContract: '',
@@ -162,11 +162,11 @@ const ValuationForm = ({ onCalculate }) => {
 
   const clearForm = () => {
     setFormData({
-      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: 'NO', airport: '', airportOther: '', borderCrossing: '' },
+      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airport: '', airportOther: '', borderCrossing: '' },
       transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
-      documentation: { originCertificateAttached: 'SI', originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
+      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
     });
   };
 
@@ -529,10 +529,14 @@ const ValuationForm = ({ onCalculate }) => {
               <label>DETALLE CERTIFICADO / ESTADO</label>
               {documentation.originCertificateAttached === 'SI' ? (
                 <input type="text" value={documentation.originCertificate} onChange={(e) => updateSection('documentation', 'originCertificate', e.target.value)} placeholder="Número de Certificado" />
-              ) : (
+              ) : documentation.originCertificateAttached === 'NO' ? (
                 <div className="fine-warning">
                   <span className="fine-label">A GARANTIZAR</span>
                   <span className="fine-value">Multa Estimada (1%): {transaction.currency} {getFineAmount().toLocaleString()}</span>
+                </div>
+              ) : (
+                <div className="pending-selection">
+                  <span className="pending-text">Seleccione SI/NO para determinar requisitos</span>
                 </div>
               )}
             </div>

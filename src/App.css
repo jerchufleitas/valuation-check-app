@@ -1182,16 +1182,46 @@ select:focus {
 .presence-toggle {
   background: #f3f4f6;
   width: fit-content;
+  display: flex;
+  gap: 6px; /* Space between buttons */
+  padding: 4px;
+  border-radius: 6px;
 }
 
 .presence-toggle button {
+  background: transparent;
+  border: none;
   color: #9ca3af;
-  padding: 4px 16px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .presence-toggle button.active {
   background: var(--primary-color);
   color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pending-selection {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  padding: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.pending-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+  font-weight: 500;
 }
 
 .currency-input-wrapper {
