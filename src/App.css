@@ -826,17 +826,19 @@ select:focus {
   padding: 0 !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem !important; /* Spacing between blocks */
   transition: all 0.3s ease;
 }
 
-.official-paper.is-collapsed {
-  margin-bottom: 0.5rem;
+/* Hard hide when collapsed */
+.official-paper.is-collapsed .official-grid,
+.official-paper.is-collapsed .adjustments-container,
+.official-paper.is-collapsed > *:not(.block-header) {
+  display: none !important;
 }
 
-.official-paper.is-collapsed .official-grid,
-.official-paper.is-collapsed .adjustments-container {
-  display: none;
+.official-paper.is-collapsed {
+  margin-bottom: 0.75rem !important;
 }
 
 .block-header.clickable {

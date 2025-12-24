@@ -49,8 +49,8 @@ const ValuationForm = ({ onCalculate }) => {
   const [simError, setSimError] = useState('');
   const [highlightedFields, setHighlightedFields] = useState({}); // { 'header.exporterName': true, ... }
   
-  // Collapse state for sections - Only header expanded by default
-  const [collapsed, setCollapsed] = useState({
+  // Collapse state for sections - Persisted in localStorage
+  const [collapsed, setCollapsed] = useLocalStorage('valuation_collapse_v1', {
     header: false,
     transaction: true,
     item: true,
