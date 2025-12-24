@@ -17,6 +17,7 @@ const ValuationForm = ({ onCalculate }) => {
       transportMode: 'Terrestre',
       presence: null,
       airport: '',
+      airportCategory: '', // 'AERO' | 'PUERTO' | 'OTROS'
       airportOther: '',
       borderCrossing: '',
     },
@@ -162,7 +163,7 @@ const ValuationForm = ({ onCalculate }) => {
 
   const clearForm = () => {
     setFormData({
-      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airport: '', airportOther: '', borderCrossing: '' },
+      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', borderCrossing: '' },
       transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
@@ -358,51 +359,77 @@ const ValuationForm = ({ onCalculate }) => {
 
             <div className={`official-cell span-6 ${isHighlighted('header', 'airport')}`}>
               <label>5. PUERTO / AEROPUERTO</label>
-              <div className="input-with-action">
-                <select 
-                  value={header.airport} 
-                  onChange={(e) => updateSection('header', 'airport', e.target.value)} 
-                  style={{flex: 1}}
-                  className="premium-select"
-                >
-                  <option value="">Seleccionar ubicación...</option>
-                  
-                  <optgroup label="AEROPUERTOS INTERNACIONALES">
-                    <option value="EZE">Aeropuerto Internacional de Ezeiza (EZE)</option>
-                    <option value="AEP">Aeroparque "Jorge Newbery" (AEP)</option>
-                    <option value="COR">Aeropuerto de Córdoba "Ambrosio Taravella" (COR)</option>
-                    <option value="MDZ">Aeropuerto de Mendoza "El Plumerillo" (MDZ)</option>
-                    <option value="SLA">Aeropuerto de Salta "Martín M. de Güemes" (SLA)</option>
-                    <option value="IGR">Aeropuerto de Iguazú "Mayor Krause" (IGR)</option>
-                    <option value="BRC">Aeropuerto de Bariloche "Luis Candelaria" (BRC)</option>
-                    <option value="ROS-AIR">Aeropuerto de Rosario "Islas Malvinas" (ROS)</option>
-                  </optgroup>
-
-                  <optgroup label="PUERTOS NACIONALES">
-                    <option value="BUE">Puerto de Buenos Aires (BUE)</option>
-                    <option value="DSU">Puerto de Dock Sud (DSU)</option>
-                    <option value="CMP">Puerto de Campana (CMP)</option>
-                    <option value="ZAR">Puerto de Zárate (ZAR)</option>
-                    <option value="ROS-SEA">Puerto de Rosario (ROS)</option>
-                    <option value="SLO">Puerto de San Lorenzo (SLO)</option>
-                    <option value="BBI">Puerto de Bahía Blanca (BBI)</option>
-                    <option value="PMY">Puerto de Puerto Madryn (PMY)</option>
-                    <option value="USH">Puerto de Ushuaia (USH)</option>
-                  </optgroup>
-
-                  <optgroup label="OTRAS TERMINALES">
-                    <option value="Otros">Otro (Especificar manualmente)</option>
-                  </optgroup>
-                </select>
-                
-                {header.airport === 'Otros' && (
-                  <input 
-                    type="text" 
-                    value={header.airportOther} 
-                    onChange={(e) => updateSection('header', 'airportOther', e.target.value)} 
-                    placeholder="Nombre Terminal..." 
-                    style={{borderLeft: '1px solid #eee', paddingLeft: '10px'}} 
-                  />
+              <div className="terminal-selector-container">
+                {header.airportCategory === '' ? (
+                  <select 
+                    value={header.airportCategory} 
+                    onChange={(e) => updateSection('header', 'airportCategory', e.target.value)} 
+                    className="premium-select primary-select"
+                  >
+                    <option value="">Seleccionar Tipo de Terminal...</option>
+                    <option value="AERO">✈ AEROPUERTOS INTERNACIONALES</option>
+                    <option value="PUERTO">⚓ PUERTOS NACIONALES</option>
+                    <option value="OTROS">⚙ OTRAS TERMINALES / DEPÓSITOS</option>
+                  </select>
+                ) : header.airportCategory === 'AERO' ? (
+                  <div className="input-with-action">
+                    <select 
+                      value={header.airport} 
+                      onChange={(e) => updateSection('header', 'airport', e.target.value)} 
+                      className="premium-select"
+                    >
+                      <option value="">Seleccionar Aeropuerto...</option>
+                      <option value="EZE">Aeropuerto de Ezeiza (EZE)</option>
+                      <option value="AEP">Aeroparque Jorge Newbery (AEP)</option>
+                      <option value="COR">Aeropuerto de Córdoba (COR)</option>
+                      <option value="MDZ">Aeropuerto de Mendoza (MDZ)</option>
+                      <option value="SLA">Aeropuerto de Salta (SLA)</option>
+                      <option value="IGR">Aeropuerto de Iguazú (IGR)</option>
+                      <option value="BRC">Aeropuerto de Bariloche (BRC)</option>
+                      <option value="ROS">Aeropuerto de Rosario (ROS)</option>
+                    </select>
+                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airport', ''); }}>✕</button>
+                  </div>
+                ) : header.airportCategory === 'PUERTO' ? (
+                  <div className="input-with-action">
+                    <select 
+                      value={header.airport} 
+                      onChange={(e) => updateSection('header', 'airport', e.target.value)} 
+                      className="premium-select"
+                    >
+                      <option value="">Seleccionar Puerto...</option>
+                      <option value="BUE">Puerto de Buenos Aires (BUE)</option>
+                      <option value="DSU">Puerto de Dock Sud (DSU)</option>
+                      <option value="CMP">Puerto de Campana (CMP)</option>
+                      <option value="ZAR">Puerto de Zárate (ZAR)</option>
+                      <option value="ROS">Puerto de Rosario (ROS)</option>
+                      <option value="SLO">Puerto de San Lorenzo (SLO)</option>
+                      <option value="BBI">Puerto de Bahía Blanca (BBI)</option>
+                      <option value="PMY">Puerto de Puerto Madryn (PMY)</option>
+                      <option value="USH">Puerto de Ushuaia (USH)</option>
+                      <option value="QUE">Puerto de Quequén (QUE)</option>
+                      <option value="SAO">Puerto de San Antonio Este (SAO)</option>
+                      <option value="CRV">Puerto de Comodoro Rivadavia (CRV)</option>
+                      <option value="VCO">Puerto de Villa Constitución (VCO)</option>
+                      <option value="SFE">Puerto de Santa Fe (SFE)</option>
+                      <option value="COR">Puerto de Corrientes (COR)</option>
+                      <option value="SNI">Puerto de San Nicolás (SNI)</option>
+                      <option value="PSS">Puerto de Posadas (PSS)</option>
+                    </select>
+                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airport', ''); }}>✕</button>
+                  </div>
+                ) : (
+                  <div className="input-with-action">
+                    <input 
+                      type="text" 
+                      value={header.airportOther} 
+                      onChange={(e) => updateSection('header', 'airportOther', e.target.value)} 
+                      placeholder="Nombre de Terminal / Depósito Fiscal..." 
+                      className="premium-input-manual"
+                      autoFocus
+                    />
+                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airportOther', ''); }}>✕</button>
+                  </div>
                 )}
               </div>
             </div>
