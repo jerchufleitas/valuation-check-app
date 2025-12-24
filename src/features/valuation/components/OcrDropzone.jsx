@@ -42,35 +42,27 @@ const OcrDropzone = ({ onDataExtracted }) => {
       await new Promise(resolve => setTimeout(resolve, 150));
     }
 
-    // Mock OCR result based on typical invoice data
-    // In a real scenario, this would be a fetch() to an LLM/OCR endpoint
+    // Updated Mock OCR result based on the Freight Quote provided
     const mockExtractedData = {
       header: {
-        exporterName: 'CHENGDU V-SHINE TECHNOLOGY CO., LTD.',
-        exporterTaxId: '91510100MA6C9Y8X9R',
         importerName: 'IMPORTACIONES MARITIMAS S.A.',
         importerDetails: 'ARGENTINA / BUENOS AIRES',
       },
       transaction: {
         currency: 'USD',
         incoterm: 'CIF',
-        loadingPlace: 'SHANGHAI PORT',
+        loadingPlace: 'QINGDAO, CHINA',
       },
       item: {
         ncmCode: '8517.62.77.100A',
-        quantity: '50',
-        unit: 'UN',
-        unitValue: '125.50',
-        totalValue: '6275.00',
-        description: 'ROUTER INDUSTRIAL AC1200 - MODEL VSH-500. DUAL BAND.',
+        description: 'EQUIPO ELECTRONICO - CARGA GENERAL',
       },
       adjustments: {
         additions: { 
-          'inland_freight': { active: true, amount: '700' } 
+          'inland_freight': { active: true, amount: '1900.00' } 
         }
       },
       documentation: {
-        invoiceNumber: 'CX-1325PI',
         originCertificateAttached: 'SI'
       }
     };
