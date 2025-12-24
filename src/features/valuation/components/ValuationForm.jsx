@@ -49,13 +49,13 @@ const ValuationForm = ({ onCalculate }) => {
   const [simError, setSimError] = useState('');
   const [highlightedFields, setHighlightedFields] = useState({}); // { 'header.exporterName': true, ... }
   
-  // Collapse state for sections
+  // Collapse state for sections - Only header expanded by default
   const [collapsed, setCollapsed] = useState({
     header: false,
-    transaction: false,
-    item: false,
-    adjustments: false,
-    documentation: false
+    transaction: true,
+    item: true,
+    adjustments: true,
+    documentation: true
   });
 
   const toggleCollapse = (section) => {
