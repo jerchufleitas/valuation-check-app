@@ -429,7 +429,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className={`official-cell span-6 ${isHighlighted('header', 'borderCrossing')}`}>
               <label>4. PASO FRONTERIZO / ADUANA</label>
               <div className="terminal-selector-container">
-                {header.customsCategory === '' && header.borderCrossing === '' ? (
+                {(!header.customsCategory || header.customsCategory === '') && !header.borderCrossing ? (
                   <div className="category-reveal-grid">
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'INTERIOR')}>
                       <span className="icon">🏦</span>
@@ -444,7 +444,7 @@ const ValuationForm = ({ onCalculate }) => {
                       <span className="label">ZONA PORTUARIA</span>
                     </button>
                   </div>
-                ) : header.customsCategory !== '' && header.borderCrossing === '' ? (
+                ) : header.customsCategory && header.customsCategory !== '' && !header.borderCrossing ? (
                   <div className="terminal-reveal-panel slide-down">
                     <div className="reveal-header">
                        <span className="reveal-title">
@@ -462,7 +462,7 @@ const ValuationForm = ({ onCalculate }) => {
                       autoFocus
                     />
                     <div className="options-grid">
-                      {customsData[header.customsCategory]
+                      {customsData[header.customsCategory] && customsData[header.customsCategory]
                         .filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.id.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map(c => (
                           <button key={c.id} type="button" className="btn-option-card" onClick={() => { updateSection('header', 'borderCrossing', c.name); updateSection('header', 'customsCategory', ''); setSearchTerm(''); }}>
@@ -490,7 +490,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className={`official-cell span-6 ${isHighlighted('header', 'airport')}`}>
               <label>5. PUERTO / AEROPUERTO</label>
               <div className="terminal-selector-container">
-                {header.airportCategory === '' ? (
+                {(!header.airportCategory || header.airportCategory === '') && !header.airport && !header.airportOther ? (
                   <div className="category-reveal-grid">
                     <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'AERO')}>
                       <span className="icon">✈</span>
@@ -505,7 +505,7 @@ const ValuationForm = ({ onCalculate }) => {
                       <span className="label">OTROS</span>
                     </button>
                   </div>
-                ) : (header.airportCategory === 'AERO' || header.airportCategory === 'PUERTO') && header.airport === '' ? (
+                ) : (header.airportCategory === 'AERO' || header.airportCategory === 'PUERTO') && !header.airport ? (
                   <div className="terminal-reveal-panel slide-down">
                     <div className="reveal-header">
                        <span className="reveal-title">{header.airportCategory === 'AERO' ? 'SELECCIONAR AEROPUERTO' : 'SELECCIONAR PUERTO'}</span>
@@ -520,7 +520,7 @@ const ValuationForm = ({ onCalculate }) => {
                       autoFocus
                     />
                     <div className="options-grid">
-                      {terminalData[header.airportCategory]
+                      {terminalData[header.airportCategory] && terminalData[header.airportCategory]
                         .filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.id.toLowerCase().includes(searchTerm.toLowerCase()))
                         .map(t => (
                           <button key={t.id} type="button" className="btn-option-card" onClick={() => { updateSection('header', 'airport', t.id); setSearchTerm(''); }}>
