@@ -282,7 +282,7 @@ const ValuationForm = ({ onCalculate }) => {
         {/* BLOQUE A: CABECERA */}
         <section className={`form-block official-paper ${collapsed.header ? 'is-collapsed' : ''}`}>
           <div className="block-header clickable" onClick={() => toggleCollapse('header')}>
-            <span className="block-tag">BLOQUE A</span>
+            <span className="block-tag">BLOQUE A [MANUAL]</span>
             <h3>IDENTIFICACIÓN Y CABECERA</h3>
             <div className="collapse-icon">
               {collapsed.header ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
@@ -519,7 +519,7 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
           <div className="official-grid">
             <div className={`official-cell span-4 ${isHighlighted('documentation', 'originCertificateAttached')}`}>
-               <label>CERTIFICADO DE ORIGEN (cod)</label>
+               <label>CERTIFICADO DE ORIGEN (REQUISITO)</label>
                <div className="presence-toggle">
                  <button type="button" className={documentation.originCertificateAttached === 'SI' ? 'active' : ''} onClick={() => updateSection('documentation', 'originCertificateAttached', 'SI')}>SI</button>
                  <button type="button" className={documentation.originCertificateAttached === 'NO' ? 'active' : ''} onClick={() => updateSection('documentation', 'originCertificateAttached', 'NO')}>NO</button>
