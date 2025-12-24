@@ -282,15 +282,15 @@ const ValuationForm = ({ onCalculate }) => {
         {/* BLOQUE A: CABECERA */}
         <section className={`form-block official-paper ${collapsed.header ? 'is-collapsed' : ''}`}>
           <div className="block-header clickable" onClick={() => toggleCollapse('header')}>
-            <span className="block-tag">BLOQUE A [MANUAL]</span>
+            <span className="block-tag">BLOQUE A [V 1.25.1]</span>
             <h3>IDENTIFICACIÓN Y CABECERA</h3>
             <div className="collapse-icon">
               {collapsed.header ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
             </div>
             <div className="header-actions" onClick={(e) => e.stopPropagation()}>
-              <div className="user-type-toggle">
-                <button type="button" className={header.userType === 'EXPORTADOR' ? 'active' : ''} onClick={() => updateSection('header', 'userType', 'EXPORTADOR')}>EXPORTADOR</button>
-                <button type="button" className={header.userType === 'IMPORTADOR' ? 'active' : ''} onClick={() => updateSection('header', 'userType', 'IMPORTADOR')}>IMPORTADOR</button>
+              <div className="si-no-selector" style={{minWidth: '220px'}}>
+                <button type="button" className={`btn-si-no ${header.userType === 'EXPORTADOR' ? 'si-active' : ''}`} onClick={() => updateSection('header', 'userType', 'EXPORTADOR')}>EXPORTADOR</button>
+                <button type="button" className={`btn-si-no ${header.userType === 'IMPORTADOR' ? 'no-active' : ''}`} onClick={() => updateSection('header', 'userType', 'IMPORTADOR')}>IMPORTADOR</button>
               </div>
               <button type="button" onClick={loadExample} className="btn-ghost" style={{marginLeft: '10px'}}>Ejemplo</button>
               <button type="button" onClick={clearForm} className="btn-ghost" style={{marginLeft: '5px'}}>Limpiar</button>
@@ -332,9 +332,9 @@ const ValuationForm = ({ onCalculate }) => {
 
             <div className={`official-cell span-3 ${isHighlighted('header', 'presence')}`}>
               <label>PRESENCIA</label>
-              <div className="presence-toggle">
-                 <button type="button" className={header.presence === 'SI' ? 'active' : ''} onClick={() => updateSection('header', 'presence', 'SI')}>SI</button>
-                 <button type="button" className={header.presence === 'NO' ? 'active' : ''} onClick={() => updateSection('header', 'presence', 'NO')}>NO</button>
+              <div className="si-no-selector">
+                 <button type="button" className={`btn-si-no ${header.presence === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('header', 'presence', 'SI')}>SI</button>
+                 <button type="button" className={`btn-si-no ${header.presence === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('header', 'presence', 'NO')}>NO</button>
               </div>
             </div>
 
@@ -465,9 +465,12 @@ const ValuationForm = ({ onCalculate }) => {
                   const isHighlightAdj = highlightedFields[`adjustments.additions.${q.id}`];
                   return (
                     <div key={q.id} className={`adj-item ${isActive ? 'active' : ''} ${isHighlightAdj ? 'highlighted-fill' : ''}`}>
-                      <div className="adj-row" onClick={() => handleAdjustmentToggle('addition', q.id)}>
-                        <div className="adj-check">{isActive ? '✓' : ''}</div>
+                      <div className="adj-row-unified">
                         <span className="adj-text">{q.text}</span>
+                        <div className="si-no-selector small">
+                           <button type="button" className={`btn-si-no ${isActive ? 'si-active' : ''}`} onClick={() => handleAdjustmentToggle('addition', q.id)}>SI</button>
+                           <button type="button" className={`btn-si-no ${!isActive ? 'no-active' : ''}`} onClick={() => !isActive ? null : handleAdjustmentToggle('addition', q.id)}>NO</button>
+                        </div>
                       </div>
                       {isActive && (
                         <div className="adj-input-row slide-down">
@@ -488,9 +491,12 @@ const ValuationForm = ({ onCalculate }) => {
                   const isActive = adjustments.deductions[q.id]?.active;
                   return (
                     <div key={q.id} className={`adj-item ${isActive ? 'active' : ''}`}>
-                      <div className="adj-row" onClick={() => handleAdjustmentToggle('deduction', q.id)}>
-                        <div className="adj-check">{isActive ? '✓' : ''}</div>
+                      <div className="adj-row-unified">
                         <span className="adj-text">{q.text}</span>
+                        <div className="si-no-selector small">
+                           <button type="button" className={`btn-si-no ${isActive ? 'si-active' : ''}`} onClick={() => handleAdjustmentToggle('deduction', q.id)}>SI</button>
+                           <button type="button" className={`btn-si-no ${!isActive ? 'no-active' : ''}`} onClick={() => !isActive ? null : handleAdjustmentToggle('deduction', q.id)}>NO</button>
+                        </div>
                       </div>
                       {isActive && (
                         <div className="adj-input-row slide-down">
@@ -520,9 +526,9 @@ const ValuationForm = ({ onCalculate }) => {
           <div className="official-grid">
             <div className={`official-cell span-4 ${isHighlighted('documentation', 'originCertificateAttached')}`}>
                <label>CERTIFICADO DE ORIGEN (REQUISITO)</label>
-               <div className="presence-toggle">
-                 <button type="button" className={documentation.originCertificateAttached === 'SI' ? 'active' : ''} onClick={() => updateSection('documentation', 'originCertificateAttached', 'SI')}>SI</button>
-                 <button type="button" className={documentation.originCertificateAttached === 'NO' ? 'active' : ''} onClick={() => updateSection('documentation', 'originCertificateAttached', 'NO')}>NO</button>
+               <div className="si-no-selector">
+                 <button type="button" className={`btn-si-no ${documentation.originCertificateAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'originCertificateAttached', 'SI')}>SI</button>
+                 <button type="button" className={`btn-si-no ${documentation.originCertificateAttached === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'originCertificateAttached', 'NO')}>NO</button>
               </div>
             </div>
             <div className={`official-cell span-8 ${isHighlighted('documentation', 'originCertificate')}`}>

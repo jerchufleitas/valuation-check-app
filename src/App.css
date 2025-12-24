@@ -501,26 +501,11 @@ select:focus {
   background: var(--bg-color);
 }
 
-.checklist-item.active .badge {
-  background: var(--primary-color);
-  color: var(--gold-accent);
-}
-
-.toggle-switch {
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 0.35rem 1rem;
-  border-radius: 999px;
-  background: var(--bg-color);
-  color: var(--text-muted);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-width: 3.5rem;
-  text-align: center;
-}
-
-.checklist-item.active .toggle-switch {
-  background: var(--primary-color);
-  color: #fff;
+/* Obsolete checklist styles removed */
+.checklist-item.active {
+  border-color: var(--primary-color);
+  background: #f8fafc;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
 .checklist-detail {
@@ -1155,55 +1140,60 @@ select:focus {
 }
 
 /* --- New Official Aduana Components --- */
-.user-type-toggle, .presence-toggle {
-  display: flex;
-  background: rgba(255,255,255,0.1);
-  padding: 2px;
-  border-radius: 4px;
-}
-
-.user-type-toggle button, .presence-toggle button {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.6);
+/* --- Unified Button Selectors --- */
+.si-no-selector.small .btn-si-no {
+  padding: 4px 8px;
   font-size: 0.65rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.2s;
+  min-width: 45px;
 }
 
-.user-type-toggle button.active {
-  background: var(--gold-accent);
-  color: var(--primary-color);
-}
-
-.presence-toggle {
-  background: #f3f4f6;
-  width: fit-content;
+.adj-row-unified {
   display: flex;
-  gap: 6px; /* Space between buttons */
-  padding: 4px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+/* --- New Official SI/NO Buttons (Avoid Switch Look) --- */
+.si-no-selector {
+  display: flex;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.btn-si-no {
+  flex: 1;
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 8px 12px;
   border-radius: 6px;
-}
-
-.presence-toggle button {
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 6px 18px;
-  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  text-align: center;
 }
 
-.presence-toggle button.active {
-  background: var(--primary-color);
-  color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.btn-si-no:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.btn-si-no.si-active {
+  background: var(--primary-color) !important;
+  color: white !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 6px -1px rgba(13, 27, 42, 0.2);
+}
+
+.btn-si-no.no-active {
+  background: #64748b !important;
+  color: white !important;
+  border-color: #475569 !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 
 .pending-selection {
