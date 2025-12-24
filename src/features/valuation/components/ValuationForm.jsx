@@ -50,6 +50,41 @@ const ValuationForm = ({ onCalculate }) => {
   const [simError, setSimError] = useState('');
   const [highlightedFields, setHighlightedFields] = useState({}); // { 'header.exporterName': true, ... }
   
+  // Terminal Data Constants
+  const terminalData = {
+    AERO: [
+      { id: 'EZE', name: 'Ezeiza (EZE)' },
+      { id: 'AEP', name: 'Aeroparque (AEP)' },
+      { id: 'COR', name: 'Córdoba (COR)' },
+      { id: 'MDZ', name: 'Mendoza (MDZ)' },
+      { id: 'SLA', name: 'Salta (SLA)' },
+      { id: 'IGR', name: 'Iguazú (IGR)' },
+      { id: 'BRC', name: 'Bariloche (BRC)' },
+      { id: 'ROS', name: 'Rosario (ROS)' }
+    ],
+    PUERTO: [
+      { id: 'BUE', name: 'Buenos Aires (BUE)' },
+      { id: 'DSU', name: 'Dock Sud (DSU)' },
+      { id: 'CMP', name: 'Campana (CMP)' },
+      { id: 'ZAR', name: 'Zárate (ZAR)' },
+      { id: 'ROS', name: 'Puerto Rosario (ROS)' },
+      { id: 'SLO', name: 'San Lorenzo (SLO)' },
+      { id: 'BBI', name: 'Bahía Blanca (BBI)' },
+      { id: 'PMY', name: 'Puerto Madryn (PMY)' },
+      { id: 'USH', name: 'Ushuaia (USH)' },
+      { id: 'QUE', name: 'Quequén (QUE)' },
+      { id: 'SAO', name: 'San Antonio Este (SAO)' },
+      { id: 'CRV', name: 'Comodoro Rivadavia (CRV)' },
+      { id: 'VCO', name: 'Villa Constitución (VCO)' },
+      { id: 'SFE', name: 'Santa Fe (SFE)' },
+      { id: 'COR', name: 'Puerto Corrientes (COR)' },
+      { id: 'SNI', name: 'San Nicolás (SNI)' },
+      { id: 'PSS', name: 'Puerto Posadas (PSS)' }
+    ]
+  };
+
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // Collapse state for sections - Persisted in localStorage
   const [collapsed, setCollapsed] = useLocalStorage('valuation_collapse_v1', {
     header: false,
@@ -361,74 +396,68 @@ const ValuationForm = ({ onCalculate }) => {
               <label>5. PUERTO / AEROPUERTO</label>
               <div className="terminal-selector-container">
                 {header.airportCategory === '' ? (
-                  <select 
-                    value={header.airportCategory} 
-                    onChange={(e) => updateSection('header', 'airportCategory', e.target.value)} 
-                    className="premium-select primary-select"
-                  >
-                    <option value="">Seleccionar Tipo de Terminal...</option>
-                    <option value="AERO">✈ AEROPUERTOS INTERNACIONALES</option>
-                    <option value="PUERTO">⚓ PUERTOS NACIONALES</option>
-                    <option value="OTROS">⚙ OTRAS TERMINALES / DEPÓSITOS</option>
-                  </select>
-                ) : header.airportCategory === 'AERO' ? (
-                  <div className="input-with-action">
-                    <select 
-                      value={header.airport} 
-                      onChange={(e) => updateSection('header', 'airport', e.target.value)} 
-                      className="premium-select"
-                    >
-                      <option value="">Seleccionar Aeropuerto...</option>
-                      <option value="EZE">Aeropuerto de Ezeiza (EZE)</option>
-                      <option value="AEP">Aeroparque Jorge Newbery (AEP)</option>
-                      <option value="COR">Aeropuerto de Córdoba (COR)</option>
-                      <option value="MDZ">Aeropuerto de Mendoza (MDZ)</option>
-                      <option value="SLA">Aeropuerto de Salta (SLA)</option>
-                      <option value="IGR">Aeropuerto de Iguazú (IGR)</option>
-                      <option value="BRC">Aeropuerto de Bariloche (BRC)</option>
-                      <option value="ROS">Aeropuerto de Rosario (ROS)</option>
-                    </select>
-                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airport', ''); }}>✕</button>
+                  <div className="category-reveal-grid">
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'AERO')}>
+                      <span className="icon">✈</span>
+                      <span className="label">AEROPUERTOS</span>
+                    </button>
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'PUERTO')}>
+                      <span className="icon">⚓</span>
+                      <span className="label">PUERTOS</span>
+                    </button>
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'airportCategory', 'OTROS')}>
+                      <span className="icon">⚙</span>
+                      <span className="label">OTROS</span>
+                    </button>
                   </div>
-                ) : header.airportCategory === 'PUERTO' ? (
-                  <div className="input-with-action">
-                    <select 
-                      value={header.airport} 
-                      onChange={(e) => updateSection('header', 'airport', e.target.value)} 
-                      className="premium-select"
-                    >
-                      <option value="">Seleccionar Puerto...</option>
-                      <option value="BUE">Puerto de Buenos Aires (BUE)</option>
-                      <option value="DSU">Puerto de Dock Sud (DSU)</option>
-                      <option value="CMP">Puerto de Campana (CMP)</option>
-                      <option value="ZAR">Puerto de Zárate (ZAR)</option>
-                      <option value="ROS">Puerto de Rosario (ROS)</option>
-                      <option value="SLO">Puerto de San Lorenzo (SLO)</option>
-                      <option value="BBI">Puerto de Bahía Blanca (BBI)</option>
-                      <option value="PMY">Puerto de Puerto Madryn (PMY)</option>
-                      <option value="USH">Puerto de Ushuaia (USH)</option>
-                      <option value="QUE">Puerto de Quequén (QUE)</option>
-                      <option value="SAO">Puerto de San Antonio Este (SAO)</option>
-                      <option value="CRV">Puerto de Comodoro Rivadavia (CRV)</option>
-                      <option value="VCO">Puerto de Villa Constitución (VCO)</option>
-                      <option value="SFE">Puerto de Santa Fe (SFE)</option>
-                      <option value="COR">Puerto de Corrientes (COR)</option>
-                      <option value="SNI">Puerto de San Nicolás (SNI)</option>
-                      <option value="PSS">Puerto de Posadas (PSS)</option>
-                    </select>
-                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airport', ''); }}>✕</button>
-                  </div>
-                ) : (
-                  <div className="input-with-action">
+                ) : (header.airportCategory === 'AERO' || header.airportCategory === 'PUERTO') && header.airport === '' ? (
+                  <div className="terminal-reveal-panel slide-down">
+                    <div className="reveal-header">
+                       <span className="reveal-title">{header.airportCategory === 'AERO' ? 'SELECCIONAR AEROPUERTO' : 'SELECCIONAR PUERTO'}</span>
+                       <button type="button" className="btn-back-link" onClick={() => updateSection('header', 'airportCategory', '')}>← VOLVER</button>
+                    </div>
                     <input 
                       type="text" 
-                      value={header.airportOther} 
-                      onChange={(e) => updateSection('header', 'airportOther', e.target.value)} 
-                      placeholder="Nombre de Terminal / Depósito Fiscal..." 
-                      className="premium-input-manual"
+                      placeholder="Buscar..." 
+                      className="reveal-search" 
+                      value={searchTerm} 
+                      onChange={(e) => setSearchTerm(e.target.value)} 
                       autoFocus
                     />
-                    <button type="button" className="btn-back-selector" onClick={() => { updateSection('header', 'airportCategory', ''); updateSection('header', 'airportOther', ''); }}>✕</button>
+                    <div className="options-grid">
+                      {terminalData[header.airportCategory]
+                        .filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.id.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map(t => (
+                          <button key={t.id} type="button" className="btn-option-card" onClick={() => { updateSection('header', 'airport', t.id); setSearchTerm(''); }}>
+                            <span className="opt-id">{t.id}</span>
+                            <span className="opt-name">{t.name}</span>
+                          </button>
+                        ))
+                      }
+                    </div>
+                  </div>
+                ) : header.airportCategory === 'OTROS' && header.airportOther === '' ? (
+                  <div className="input-with-action slide-down">
+                     <input 
+                        type="text" 
+                        placeholder="Especificar Terminal / Depósito..." 
+                        className="premium-input-manual"
+                        onChange={(e) => updateSection('header', 'airportOther', e.target.value)}
+                        autoFocus
+                     />
+                     <button type="button" className="btn-back-selector" onClick={() => updateSection('header', 'airportCategory', '')}>✕</button>
+                  </div>
+                ) : (
+                  <div className="selection-active-badge slide-down">
+                    <div className="badge-info">
+                       <span className="badge-cat">{header.airportCategory === 'AERO' ? '✈ AEROPUERTO' : header.airportCategory === 'PUERTO' ? '⚓ PUERTO' : '⚙ TERMINAL'}</span>
+                       <span className="badge-val">{header.airport || header.airportOther}</span>
+                    </div>
+                    <button type="button" className="btn-back-selector" onClick={() => { 
+                      updateSection('header', 'airportCategory', ''); 
+                      updateSection('header', 'airport', ''); 
+                      updateSection('header', 'airportOther', '');
+                    }}>✕</button>
                   </div>
                 )}
               </div>

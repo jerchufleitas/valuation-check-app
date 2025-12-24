@@ -1289,45 +1289,159 @@ option {
   color: var(--primary-color);
 }
 
-/* --- Hierarchical Terminal Selector --- */
-.terminal-selector-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* --- Interactive Terminal Discovery UI --- */
+.category-reveal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
   width: 100%;
 }
 
-.primary-select {
-  border-color: var(--gold-accent) !important;
-  font-weight: 700 !important;
-  background: #fffcf0 !important;
-}
-
-.btn-back-selector {
-  background: #f1f5f9;
+.btn-category {
+  background: white;
   border: 1px solid #e2e8f0;
-  color: #94a3b8;
-  width: 32px;
-  height: 38px;
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 10px 4px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.7rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.btn-back-selector:hover {
-  background: #ef4444;
+.btn-category:hover {
+  border-color: var(--gold-accent);
+  background: #fffcf0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(184, 146, 87, 0.1);
+}
+
+.btn-category .icon {
+  font-size: 1.2rem;
+}
+
+.btn-category .label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.02em;
+}
+
+.terminal-reveal-panel {
+  background: white;
+  border: 1px solid var(--gold-accent);
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+}
+
+.reveal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reveal-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--gold-accent);
+}
+
+.btn-back-link {
+  background: transparent;
+  border: none;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.btn-back-link:hover {
+  color: var(--primary-color);
+}
+
+.reveal-search {
+  width: 100%;
+  padding: 6px 10px !important;
+  font-size: 0.75rem !important;
+  border-radius: 4px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid #eee !important;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.btn-option-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 6px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.15s;
+}
+
+.btn-option-card:hover {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-option-card:hover .opt-id,
+.btn-option-card:hover .opt-name {
   color: white;
-  border-color: #ef4444;
 }
 
-.premium-input-manual {
-  flex: 1;
-  padding: 0.85rem 1rem !important;
-  border-radius: 8px !important;
+.opt-id {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--primary-color);
+}
+
+.opt-name {
+  font-size: 0.6rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selection-active-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--primary-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+  color: white;
+}
+
+.badge-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-cat {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--gold-accent);
+  text-transform: uppercase;
+}
+
+.badge-val {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 /* --- OCR Dropzone --- */
