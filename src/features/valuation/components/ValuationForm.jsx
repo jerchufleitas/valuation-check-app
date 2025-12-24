@@ -16,9 +16,10 @@ const ValuationForm = ({ onCalculate }) => {
       transportDocument: '',
       transportMode: 'Terrestre',
       presence: null,
-      airport: '',
       airportCategory: '', // 'AERO' | 'PUERTO' | 'OTROS'
+      airport: '',
       airportOther: '',
+      customsCategory: '', // 'INTERIOR' | 'FRONTERA' | 'PUERTOS'
       borderCrossing: '',
     },
     transaction: {
@@ -80,6 +81,44 @@ const ValuationForm = ({ onCalculate }) => {
       { id: 'COR', name: 'Puerto Corrientes (COR)' },
       { id: 'SNI', name: 'San Nicolás (SNI)' },
       { id: 'PSS', name: 'Puerto Posadas (PSS)' }
+    ]
+  };
+
+  const customsData = {
+    INTERIOR: [
+      { id: '001', name: 'BUENOS AIRES (001)' },
+      { id: '017', name: 'CORDOBA (017)' },
+      { id: '053', name: 'ROSARIO (053)' },
+      { id: '038', name: 'MENDOZA (038)' },
+      { id: '060', name: 'SALTA (060)' },
+      { id: '071', name: 'TUCUMAN (071)' },
+      { id: '101', name: 'EZEIZA (101)' },
+      { id: '073', name: 'USHUAIA (073)' }
+    ],
+    FRONTERA: [
+      { id: '012', name: 'CLORINDA (012)' },
+      { id: '031', name: 'IGUAZU (031)' },
+      { id: '041', name: 'PASO DE LOS LIBRES (041)' },
+      { id: '048', name: 'POSADAS (048)' },
+      { id: '033', name: 'LA QUIACA (033)' },
+      { id: '024', name: 'FORMOSA (024)' },
+      { id: '013', name: 'COLON (013)' },
+      { id: '016', name: 'CONCORDIA (016)' },
+      { id: '022', name: 'GUALEGUAYCHU (022)' },
+      { id: '046', name: 'ORAN (046)' },
+      { id: '066', name: 'SANTO TOME (066)' },
+      { id: '045', name: 'NEUQUEN (045)' }
+    ],
+    PUERTOS: [
+      { id: '003', name: 'BAHIA BLANCA (003)' },
+      { id: '008', name: 'CAMPANA (008)' },
+      { id: '091', name: 'ZARATE (091)' },
+      { id: '054', name: 'SAN LORENZO (054)' },
+      { id: '086', name: 'VILLA CONSTITUCION (086)' },
+      { id: '037', name: 'MAR DEL PLATA (037)' },
+      { id: '049', name: 'PUERTO MADRYN (049)' },
+      { id: '056', name: 'SAN NICOLAS (056)' },
+      { id: '057', name: 'SANTA FE (057)' }
     ]
   };
 
@@ -198,7 +237,7 @@ const ValuationForm = ({ onCalculate }) => {
 
   const clearForm = () => {
     setFormData({
-      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', borderCrossing: '' },
+      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
       transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
@@ -389,7 +428,63 @@ const ValuationForm = ({ onCalculate }) => {
 
             <div className={`official-cell span-6 ${isHighlighted('header', 'borderCrossing')}`}>
               <label>4. PASO FRONTERIZO / ADUANA</label>
-              <input type="text" value={header.borderCrossing} onChange={(e) => updateSection('header', 'borderCrossing', e.target.value)} placeholder="Nombre del Paso" />
+              <div className="terminal-selector-container">
+                {header.customsCategory === '' && header.borderCrossing === '' ? (
+                  <div className="category-reveal-grid">
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'INTERIOR')}>
+                      <span className="icon">🏦</span>
+                      <span className="label">INTERIOR / METRO</span>
+                    </button>
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'FRONTERA')}>
+                      <span className="icon">🛂</span>
+                      <span className="label">FRONTERIZAS</span>
+                    </button>
+                    <button type="button" className="btn-category" onClick={() => updateSection('header', 'customsCategory', 'PUERTOS')}>
+                      <span className="icon">🚢</span>
+                      <span className="label">ZONA PORTUARIA</span>
+                    </button>
+                  </div>
+                ) : header.customsCategory !== '' && header.borderCrossing === '' ? (
+                  <div className="terminal-reveal-panel slide-down">
+                    <div className="reveal-header">
+                       <span className="reveal-title">
+                         {header.customsCategory === 'INTERIOR' ? 'ADUANAS DE INTERIOR' : 
+                          header.customsCategory === 'FRONTERA' ? 'ADUANAS DE FRONTERA' : 'ADUANAS PORTUARIAS'}
+                       </span>
+                       <button type="button" className="btn-back-link" onClick={() => updateSection('header', 'customsCategory', '')}>← VOLVER</button>
+                    </div>
+                    <input 
+                      type="text" 
+                      placeholder="Buscar por código o nombre..." 
+                      className="reveal-search" 
+                      value={searchTerm} 
+                      onChange={(e) => setSearchTerm(e.target.value)} 
+                      autoFocus
+                    />
+                    <div className="options-grid">
+                      {customsData[header.customsCategory]
+                        .filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.id.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .map(c => (
+                          <button key={c.id} type="button" className="btn-option-card" onClick={() => { updateSection('header', 'borderCrossing', c.name); updateSection('header', 'customsCategory', ''); setSearchTerm(''); }}>
+                            <span className="opt-id">{c.id}</span>
+                            <span className="opt-name">{c.name.split(' (')[0]}</span>
+                          </button>
+                        ))
+                      }
+                    </div>
+                  </div>
+                ) : (
+                  <div className="selection-active-badge slide-down">
+                    <div className="badge-content">
+                      <span className="badge-icon">🏛️</span>
+                      <span className="badge-text">{header.borderCrossing}</span>
+                    </div>
+                    <button type="button" className="btn-clear-badge" onClick={() => { updateSection('header', 'borderCrossing', ''); updateSection('header', 'customsCategory', ''); }}>
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className={`official-cell span-6 ${isHighlighted('header', 'airport')}`}>
