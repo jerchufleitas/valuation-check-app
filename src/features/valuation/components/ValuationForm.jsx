@@ -8,7 +8,7 @@ import { useState } from 'react';
 const ValuationForm = ({ onCalculate }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v3', {
     header: {
-      userType: 'EXPORTADOR', // 'IMPORTADOR' | 'EXPORTADOR'
+      userType: '', // '' (default) | 'IMPORTADOR' | 'EXPORTADOR'
       exporterName: '',
       exporterTaxId: '',
       importerName: '',
@@ -251,7 +251,7 @@ const ValuationForm = ({ onCalculate }) => {
 
   const clearForm = () => {
     setFormData({
-      header: { userType: 'EXPORTADOR', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
+      header: { userType: '', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
       transaction: { currency: 'USD', incoterm: 'FOB', loadingPlace: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
@@ -401,7 +401,7 @@ const ValuationForm = ({ onCalculate }) => {
 
           <div className="official-grid">
             <div className={`official-cell span-8 ${isHighlighted('header', 'exporterName')}`}>
-              <label>1. {header.userType} (RAZÓN SOCIAL)</label>
+              <label>1. {header.userType || 'USUARIO'} (RAZÓN SOCIAL)</label>
               <input type="text" value={header.exporterName} onChange={(e) => updateSection('header', 'exporterName', e.target.value)} placeholder="Nombre Legal" />
             </div>
             <div className={`official-cell span-4 ${isHighlighted('header', 'exporterTaxId')}`}>
@@ -410,7 +410,7 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
             
             <div className={`official-cell span-8 ${isHighlighted('header', 'importerName')}`}>
-              <label>2. {header.userType === 'EXPORTADOR' ? 'CLIENTE EXTRANJERO' : 'PROVEEDOR EXTRANJERO'}</label>
+              <label>2. {header.userType === 'EXPORTADOR' ? 'CLIENTE EXTRANJERO' : header.userType === 'IMPORTADOR' ? 'PROVEEDOR EXTRANJERO' : 'CONTRAPARTE'}</label>
               <input type="text" value={header.importerName} onChange={(e) => updateSection('header', 'importerName', e.target.value)} placeholder="Razón Social" />
             </div>
             <div className={`official-cell span-4 ${isHighlighted('header', 'importerDetails')}`}>
