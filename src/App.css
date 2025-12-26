@@ -1576,8 +1576,7 @@ option {
 .span-5 { grid-column: span 5; }
 .span-4 { grid-column: span 4; }
 .span-3 { grid-column: span 3; }
- 
- 
+
 /* ========================================
    BLOQUE D: DECLARACIÓN DE VALOR (RG 2010/2006)
    ======================================== */
@@ -1607,6 +1606,12 @@ option {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
 }
 
+.subblock-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .subblock-title {
   font-size: 1rem;
   font-weight: 700;
@@ -1618,6 +1623,31 @@ option {
   font-size: 0.75rem;
   opacity: 0.9;
   font-weight: 500;
+}
+
+.subblock-subtotal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.subtotal-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subtotal-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  min-width: 120px;
+  text-align: right;
 }
 
 .valuation-questions-list {

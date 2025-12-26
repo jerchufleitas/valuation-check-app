@@ -834,8 +834,19 @@ const ValuationForm = ({ onCalculate }) => {
           {/* SUB-BLOQUE 2: ADICIONES AL PRECIO */}
           <div className="valuation-subblock">
             <div className="subblock-header additions">
-              <span className="subblock-title">II. ADICIONES AL PRECIO</span>
-              <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 8-13, 17)</span>
+              <div className="subblock-header-content">
+                <span className="subblock-title">II. ADICIONES AL PRECIO</span>
+                <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 8-14)</span>
+              </div>
+              <div className="subblock-subtotal">
+                <span className="subtotal-label">Subtotal:</span>
+                <span className="subtotal-value">
+                  {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                    .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
+                    .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
             <div className="valuation-questions-list">
               {getQuestionsByCategory('additions').map(q => {
@@ -885,8 +896,19 @@ const ValuationForm = ({ onCalculate }) => {
           {/* SUB-BLOQUE 3: DEDUCCIONES AL PRECIO */}
           <div className="valuation-subblock">
             <div className="subblock-header deductions">
-              <span className="subblock-title">III. DEDUCCIONES AL PRECIO</span>
-              <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 14-16)</span>
+              <div className="subblock-header-content">
+                <span className="subblock-title">III. DEDUCCIONES AL PRECIO</span>
+                <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 15-17)</span>
+              </div>
+              <div className="subblock-subtotal">
+                <span className="subtotal-label">Subtotal:</span>
+                <span className="subtotal-value">
+                  {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                    .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
+                    .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
             <div className="valuation-questions-list">
               {getQuestionsByCategory('deductions').map(q => {

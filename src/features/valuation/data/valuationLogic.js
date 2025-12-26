@@ -122,7 +122,7 @@ export const valuationQuestions = [
   {
     id: "q17_handling_costs",
     category: "additions",
-    number: 17,
+    number: 14,
     text: "¿Existen gastos de carga, descarga y manipulación hasta el punto de importación discriminados aparte?",
     requiresAmount: true,
     legal: "RG 2010/2006 - Pregunta 17",
@@ -135,7 +135,7 @@ export const valuationQuestions = [
   {
     id: "q14_financing_interest",
     category: "deductions",
-    number: 14,
+    number: 15,
     text: "¿Existen intereses por financiación pactados en la operación?",
     requiresAmount: true,
     legal: "RG 2010/2006 - Pregunta 14",
@@ -144,7 +144,7 @@ export const valuationQuestions = [
   {
     id: "q15_post_import_services",
     category: "deductions",
-    number: 15,
+    number: 16,
     text: "¿Existen gastos de construcción, montaje, mantenimiento o asistencia técnica realizados DESPUÉS de la importación?",
     requiresAmount: true,
     legal: "RG 2010/2006 - Pregunta 15",
@@ -153,7 +153,7 @@ export const valuationQuestions = [
   {
     id: "q16_import_duties",
     category: "deductions",
-    number: 16,
+    number: 17,
     text: "¿Existen derechos y demás tributos a pagar en Argentina como consecuencia de la importación?",
     requiresAmount: true,
     legal: "RG 2010/2006 - Pregunta 16",
