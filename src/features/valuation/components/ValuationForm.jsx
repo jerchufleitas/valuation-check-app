@@ -26,6 +26,7 @@ const ValuationForm = ({ onCalculate }) => {
       currency: 'DOL',
       incoterm: 'FOB',
       loadingPlace: '',
+      paymentMethod: '',
     },
     item: {
       ncmCode: '',
@@ -172,6 +173,18 @@ const ValuationForm = ({ onCalculate }) => {
     { code: '063', name: 'DOLAR NEOZELANDES', symbol: '$' }
   ];
 
+  const paymentMethodsData = [
+    { code: '01', name: 'PAGO ANTICIPADO' },
+    { code: '02', name: 'PAGO CONTRA ENTREGA' },
+    { code: '03', name: 'PAGO DIFERIDO' },
+    { code: '04', name: 'CARTA DE CREDITO' },
+    { code: '05', name: 'COBRANZA DOCUMENTARIA' },
+    { code: '06', name: 'CUENTA CORRIENTE' },
+    { code: '07', name: 'ORDEN DE PAGO' },
+    { code: '08', name: 'TRANSFERENCIA' },
+    { code: '09', name: 'OTROS' }
+  ];
+
   const unitsData = [
     { code: '01', name: 'KILOGRAMO' },
     { code: '02', name: 'METRO' },
@@ -312,6 +325,7 @@ const ValuationForm = ({ onCalculate }) => {
         currency: 'DOL',
         incoterm: 'FOB',
         loadingPlace: 'Mendoza, Argentina',
+        paymentMethod: '04',
       },
       item: {
         ncmCode: '2204.21.00.100G',
@@ -338,7 +352,7 @@ const ValuationForm = ({ onCalculate }) => {
   const clearForm = () => {
     setFormData({
       header: { userType: '', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
-      transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '' },
+      transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       adjustments: { additions: {}, deductions: {} },
       documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
@@ -696,6 +710,15 @@ const ValuationForm = ({ onCalculate }) => {
             <div className={`official-cell span-4 ${isHighlighted('transaction', 'loadingPlace')}`}>
               <label>8. LUGAR DE EMBARQUE</label>
               <input type="text" value={transaction.loadingPlace} onChange={(e) => updateSection('transaction', 'loadingPlace', e.target.value)} placeholder="Ej: Puerto Buenos Aires" />
+            </div>
+            <div className={`official-cell span-4 ${isHighlighted('transaction', 'paymentMethod')}`}>
+              <label>9. MÉTODO DE PAGO</label>
+              <select value={transaction.paymentMethod} onChange={(e) => updateSection('transaction', 'paymentMethod', e.target.value)}>
+                <option value="">Seleccionar...</option>
+                {paymentMethodsData.map(pm => (
+                  <option key={pm.code} value={pm.code}>{pm.code} - {pm.name}</option>
+                ))}
+              </select>
             </div>
           </div>
         </section>
