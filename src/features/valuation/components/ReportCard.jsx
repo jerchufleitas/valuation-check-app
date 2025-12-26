@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CheckCircle, AlertTriangle, FileText, Download } from 'lucide-react';
 import { valuationQuestions } from '../data/valuationLogic';
+import { getCurrencySymbol } from '../data/currencyData';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
 import ReportSelector from './ReportSelector';
 
@@ -21,6 +22,8 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
   const totalAdditions = activeAdds.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
   const totalDeductions = activeSubs.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
   const hasAdjustments = (activeAdds.length + activeSubs.length) > 0;
+  
+  const currencySymbol = getCurrencySymbol(transaction.currency);
 
   return (
     <div className="report-card fade-in">
@@ -47,7 +50,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
 
         <div className="summary-item">
           <span className="label">Valor Total del Ítem ({transaction.incoterm})</span>
-          <span className="value">{transaction.currency} {parseFloat(item.totalValue || 0).toLocaleString()}</span>
+          <span className="value">{currencySymbol} {parseFloat(item.totalValue || 0).toLocaleString()}</span>
         </div>
         
         {activeAdds.map((adj, index) => (
@@ -57,7 +60,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
               <span className="adj-legal">{adj.legal}</span>
             </div>
             <span className="value">
-              + {transaction.currency} {parseFloat(adj.amount).toLocaleString()}
+              + {currencySymbol} {parseFloat(adj.amount).toLocaleString()}
             </span>
           </div>
         ))}
@@ -69,7 +72,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
               <span className="adj-legal">{adj.legal}</span>
             </div>
             <span className="value">
-              - {transaction.currency} {parseFloat(adj.amount).toLocaleString()}
+              - {currencySymbol} {parseFloat(adj.amount).toLocaleString()}
             </span>
           </div>
         ))}
@@ -78,7 +81,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
 
         <div className="summary-total">
           <span className="label">Valor Imponible (FOB/FCA)</span>
-          <span className="value total">{transaction.currency} {finalValue.toLocaleString()}</span>
+          <span className="value total">{currencySymbol} {finalValue.toLocaleString()}</span>
         </div>
       </div>
 
