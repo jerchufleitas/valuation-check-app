@@ -137,6 +137,8 @@ const ValuationForm = ({ onCalculate }) => {
   };
 
   const currencyData = [
+    { code: 'DOL', name: 'DOLAR ESTADOUNIDENSE', symbol: 'US$' },
+    { code: 'PES', name: 'PESOS', symbol: '$' },
     { code: '009', name: 'FRANCOS SUIZOS', symbol: 'Fr.' },
     { code: '010', name: 'PESOS MEJICANOS', symbol: '$' },
     { code: '011', name: 'PESOS URUGUAYOS', symbol: '$' },
@@ -167,9 +169,7 @@ const ValuationForm = ({ onCalculate }) => {
     { code: '060', name: 'EURO', symbol: '€' },
     { code: '061', name: 'YUAN', symbol: '¥' },
     { code: '062', name: 'RUBLO RUSO', symbol: '₽' },
-    { code: '063', name: 'DOLAR NEOZELANDES', symbol: '$' },
-    { code: 'DOL', name: 'DOLAR ESTADOUNIDENSE', symbol: 'US$' },
-    { code: 'PES', name: 'PESOS', symbol: '$' }
+    { code: '063', name: 'DOLAR NEOZELANDES', symbol: '$' }
   ];
 
   const unitsData = [
