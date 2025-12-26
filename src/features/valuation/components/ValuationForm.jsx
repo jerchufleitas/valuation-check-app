@@ -757,14 +757,14 @@ const ValuationForm = ({ onCalculate }) => {
         <section className={`form-block official-paper ${collapsed.adjustments ? 'is-collapsed' : ''}`}>
           <div className="block-header clickable" onClick={() => toggleCollapse('adjustments')}>
             <span className="block-tag">BLOQUE D</span>
-            <h3>AJUSTES AL VALOR (ART. 8)</h3>
+            <h3>AJUSTES AL VALOR (ART. 8 DEL GATT)</h3>
             <div className="collapse-icon">
               {collapsed.adjustments ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
             </div>
           </div>
           <div className="adjustments-container">
             <div className="adjustment-column">
-              <span className="col-label addition">ADICIONES (A INCLUIR)</span>
+              <span className="col-label addition">a) ADICIONES (A INCLUIR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'addition').map(q => {
                   const status = adjustments.additions[q.id]?.status || null;
@@ -791,7 +791,7 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
 
             <div className="adjustment-column">
-              <span className="col-label deduction">DEDUCCIONES (A RESTAR)</span>
+              <span className="col-label deduction">b) DEDUCCIONES (A RESTAR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'deduction').map(q => {
                   const status = adjustments.deductions[q.id]?.status || null;
