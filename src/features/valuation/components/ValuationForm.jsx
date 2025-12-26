@@ -764,7 +764,7 @@ const ValuationForm = ({ onCalculate }) => {
           </div>
           <div className="adjustments-container">
             <div className="adjustment-column">
-              <span className="col-label addition">a) ADICIONES (A INCLUIR)</span>
+              <span className="col-label addition">A) ADICIONES (A INCLUIR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'addition').map(q => {
                   const status = adjustments.additions[q.id]?.status || null;
@@ -791,7 +791,7 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
 
             <div className="adjustment-column">
-              <span className="col-label deduction">b) DEDUCCIONES (A RESTAR)</span>
+              <span className="col-label deduction">B) DEDUCCIONES (A RESTAR)</span>
               <div className="adjustment-list">
                 {adjustmentQuestions.filter(q => q.type === 'deduction').map(q => {
                   const status = adjustments.deductions[q.id]?.status || null;

@@ -260,7 +260,22 @@ body {
   color: var(--text-main);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  cursor: default; /* Global default cursor */
 }
+
+/* START: Prevent blinking text cursor/caret on static elements */
+h1, h2, h3, h4, h5, h6, p, span, div, label, li, td, th, section, header, footer {
+  cursor: default;
+}
+
+input, textarea {
+  cursor: text;
+}
+
+button, a, select, summary, .clickable {
+  cursor: pointer;
+}
+/* END: Prevent blinking text cursor/caret */
 
 .app-container {
   max-width: 900px; /* Slightly wider for modern feel */
