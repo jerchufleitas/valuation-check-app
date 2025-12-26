@@ -726,7 +726,7 @@ const ValuationForm = ({ onCalculate }) => {
               <select value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)}>
                 <option value="">Seleccionar...</option>
                 {unitsData.map(u => (
-                  <option key={u.code} value={u.name}>{u.name} ({u.code})</option>
+                  <option key={u.code} value={u.name}>{u.code} - {u.name}</option>
                 ))}
               </select>
             </div>
