@@ -1,5 +1,6 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { valuationQuestions, getQuestionsByCategory } from '../data/valuationLogic';
+import { currencyData, getCurrencySymbol } from '../data/currencyData';
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
