@@ -681,7 +681,7 @@ const ValuationForm = ({ onCalculate }) => {
               <label>6. MONEDA DE FACTURACIÓN</label>
               <select value={transaction.currency} onChange={(e) => updateSection('transaction', 'currency', e.target.value)}>
                 {currencyData.map(c => (
-                  <option key={c.code} value={c.code}>{c.code} - {c.name}</option>
+                  <option key={c.code} value={c.code}>{c.name} ({c.code})</option>
                 ))}
               </select>
             </div>
