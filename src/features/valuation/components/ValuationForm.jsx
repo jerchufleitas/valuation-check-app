@@ -250,7 +250,7 @@ const ValuationForm = ({ onCalculate }) => {
     setCollapsed(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const { header, transaction, item, adjustments, documentation } = formData;
+  const { header, transaction, item, valuation, documentation } = formData;
 
   const updateSection = (section, field, value, isFromOcr = false) => {
     setFormData(prev => ({
@@ -453,6 +453,8 @@ const ValuationForm = ({ onCalculate }) => {
        Object.entries(extractedData.documentation).forEach(([field, value]) => updateSection('documentation', field, value, true));
     }
     
+    // TODO: Reimplementar lógica OCR para nueva estructura de valoración
+    /* 
     // specialized CIF/CIP logic
     if ((extractedData.transaction?.incoterm === 'CIF' || extractedData.transaction?.incoterm === 'CIP') && extractedData.adjustments?.additions) {
       Object.entries(extractedData.adjustments.additions).forEach(([id, data]) => {
@@ -474,6 +476,7 @@ const ValuationForm = ({ onCalculate }) => {
         }, 5000);
       });
     }
+    */
   };
 
   const isHighlighted = (section, field) => highlightedFields[`${section}.${field}`] ? 'highlighted-fill' : '';

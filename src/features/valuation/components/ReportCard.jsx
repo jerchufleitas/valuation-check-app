@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { CheckCircle, AlertTriangle, FileText, Download } from 'lucide-react';
-import { adjustmentQuestions } from '../data/valuationLogic';
+import { valuationQuestions } from '../data/valuationLogic';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
 import ReportSelector from './ReportSelector';
 
 const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
   const [reportFormat, setReportFormat] = useState('technical');
-  const { header, transaction, item, adjustments, documentation } = blocks;
+  const { header, transaction, item, valuation, documentation } = blocks;
 
-  const activeAdds = Object.entries(adjustments.additions)
-    .filter(([_, val]) => val.active && val.amount)
-    .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
+  // Obtener adiciones activas (preguntas de categoría 'additions' con status 'SI')
+  const activeAdds = valuationQuestions
+    .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI' && valuation[q.id]?.amount)
+    .map(q => ({ ...q, amount: valuation[q.id].amount }));
 
-  const activeSubs = Object.entries(adjustments.deductions)
-    .filter(([_, val]) => val.active && val.amount)
-    .map(([key, val]) => ({ ...adjustmentQuestions.find(q => q.id === key), amount: val.amount }));
+  // Obtener deducciones activas (preguntas de categoría 'deductions' con status 'SI')
+  const activeSubs = valuationQuestions
+    .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI' && valuation[q.id]?.amount)
+    .map(q => ({ ...q, amount: valuation[q.id].amount }));
 
   const totalAdditions = activeAdds.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
   const totalDeductions = activeSubs.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
