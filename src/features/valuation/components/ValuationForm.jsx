@@ -172,6 +172,56 @@ const ValuationForm = ({ onCalculate }) => {
     { code: 'PES', name: 'PESOS', symbol: '$' }
   ];
 
+  const unitsData = [
+    { code: '01', name: 'KILOGRAMO' },
+    { code: '02', name: 'METRO' },
+    { code: '03', name: 'METRO CUADRADO' },
+    { code: '04', name: 'METRO CUBICO' },
+    { code: '05', name: 'LITRO' },
+    { code: '06', name: 'MEGAWATT HORA' },
+    { code: '07', name: 'UNIDAD' },
+    { code: '08', name: 'PAR' },
+    { code: '09', name: 'DOCENA' },
+    { code: '10', name: 'QUILATE' },
+    { code: '11', name: 'MILLAR' },
+    { code: '14', name: 'GRAMO' },
+    { code: '15', name: 'MILIMETRO' },
+    { code: '16', name: 'MM CUBICO' },
+    { code: '17', name: 'KILOMETRO' },
+    { code: '18', name: 'HECTOLITRO' },
+    { code: '20', name: 'CENTIMETRO' },
+    { code: '25', name: 'JGO.PQT.MAZO NAIPES' },
+    { code: '27', name: 'CM CUBICO' },
+    { code: '29', name: 'TONELADA' },
+    { code: '30', name: 'DAM CUBICO' },
+    { code: '31', name: 'HM CUBICO' },
+    { code: '32', name: 'KM CUBICO' },
+    { code: '33', name: 'MICROGRAMO' },
+    { code: '34', name: 'NANOGRAMO' },
+    { code: '35', name: 'PICOGRAMO' },
+    { code: '41', name: 'MILIGRAMO' },
+    { code: '47', name: 'MILILITRO' },
+    { code: '48', name: 'CURIE' },
+    { code: '49', name: 'MILICURIE' },
+    { code: '50', name: 'MICROCURIE' },
+    { code: '51', name: 'U.I.ACT.HOR' },
+    { code: '52', name: 'MUIACTHOR' },
+    { code: '53', name: 'KGBASE' },
+    { code: '54', name: 'GRUESA' },
+    { code: '61', name: 'KG.BRUTO' },
+    { code: '62', name: 'U.I.ACT.ANT' },
+    { code: '63', name: 'MUIACTANT' },
+    { code: '64', name: 'U.I.ACT.IG' },
+    { code: '65', name: 'MUIACTIG' },
+    { code: '66', name: 'KG ACTIVO' },
+    { code: '67', name: 'GRACTIVO' },
+    { code: '68', name: 'GRAMO BASE' },
+    { code: '69', name: 'U.INTER.ACT.ATCOAG' },
+    { code: '70', name: 'MEGAU.INT.ACT.ATCO...' },
+    { code: '71', name: 'JOULE' },
+    { code: '72', name: 'MILLON DE JOULES' }
+  ];
+
   const [searchTerm, setSearchTerm] = useState('');
   
   // Collapse state for sections - Persisted in localStorage
@@ -673,7 +723,12 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
             <div className={`official-cell span-2 ${isHighlighted('item', 'unit')}`}>
               <label>UNIDAD</label>
-              <input type="text" value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)} placeholder="Ej: UN" />
+              <select value={item.unit} onChange={(e) => updateSection('item', 'unit', e.target.value)}>
+                <option value="">Seleccionar...</option>
+                {unitsData.map(u => (
+                  <option key={u.code} value={u.name}>{u.name} ({u.code})</option>
+                ))}
+              </select>
             </div>
             <div className={`official-cell span-2 ${isHighlighted('item', 'unitValue')}`}>
               <label>VALOR UNIT.</label>
