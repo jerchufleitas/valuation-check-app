@@ -6,7 +6,7 @@ import OcrDropzone from './OcrDropzone';
 import { useState } from 'react';
 
 const ValuationForm = ({ onCalculate }) => {
-  const [formData, setFormData] = useLocalStorage('valuation_data_v3', {
+  const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
     header: {
       userType: '', // '' (default) | 'IMPORTADOR' | 'EXPORTADOR'
       exporterName: '',
