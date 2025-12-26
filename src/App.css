@@ -1576,3 +1576,113 @@ option {
 .span-5 { grid-column: span 5; }
 .span-4 { grid-column: span 4; }
 .span-3 { grid-column: span 3; }
+ 
+ 
+/* ========================================
+   BLOQUE D: DECLARACIÓN DE VALOR (RG 2010/2006)
+   ======================================== */
+
+.valuation-subblock {
+  margin-bottom: 2rem;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.subblock-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subblock-header.additions {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.subblock-header.deductions {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.subblock-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.subblock-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.valuation-questions-list {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.valuation-question-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.valuation-question-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.valuation-question-item.active {
+  background: #f0fdf4;
+  border-color: #059669;
+}
+
+.question-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.question-number {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  min-width: 30px;
+  flex-shrink: 0;
+}
+
+.question-text {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.question-amount-row {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.question-amount-row label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+  min-width: 200px;
+}
+
+.question-amount-row .currency-input-wrapper {
+  flex: 1;
+  max-width: 300px;
+}

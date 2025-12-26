@@ -1,5 +1,5 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
-import { adjustmentQuestions } from '../data/valuationLogic';
+import { valuationQuestions, getQuestionsByCategory } from '../data/valuationLogic';
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
@@ -36,9 +36,9 @@ const ValuationForm = ({ onCalculate }) => {
       totalValue: '',
       description: '',
     },
-    adjustments: {
-      additions: {}, 
-      deductions: {},
+    valuation: {
+      // Estructura para las 17 preguntas de RG 2010/2006
+      // Cada pregunta tiene: { status: 'SI'|'NO'|null, amount: '' }
     },
     documentation: {
       originCertificateAttached: null,
@@ -272,35 +272,27 @@ const ValuationForm = ({ onCalculate }) => {
     }
   };
 
-  const handleAdjustmentSelection = (type, id, selection) => {
-    const list = type === 'addition' ? 'additions' : 'deductions';
+  const handleValuationSelection = (questionId, selection) => {
     setFormData(prev => ({
       ...prev,
-      adjustments: {
-        ...prev.adjustments,
-        [list]: { 
-          ...prev.adjustments[list], 
-          [id]: { 
-            status: prev.adjustments[list][id]?.status === selection ? null : selection, 
-            amount: selection === 'SI' && prev.adjustments[list][id]?.status !== 'SI' ? (prev.adjustments[list][id]?.amount || '') : '' 
-          }
+      valuation: {
+        ...prev.valuation,
+        [questionId]: {
+          status: prev.valuation[questionId]?.status === selection ? null : selection,
+          amount: selection === 'SI' && prev.valuation[questionId]?.status !== 'SI' ? (prev.valuation[questionId]?.amount || '') : ''
         }
       }
     }));
   };
 
-  const handleAdjustmentAmount = (type, id, amount) => {
-    const list = type === 'addition' ? 'additions' : 'deductions';
+  const handleValuationAmount = (questionId, amount) => {
     setFormData(prev => ({
       ...prev,
-      adjustments: {
-        ...prev.adjustments,
-        [list]: { 
-          ...prev.adjustments[list], 
-          [id]: { 
-            ...prev.adjustments[list][id], 
-            amount 
-          }
+      valuation: {
+        ...prev.valuation,
+        [questionId]: {
+          ...prev.valuation[questionId],
+          amount
         }
       }
     }));
@@ -335,10 +327,7 @@ const ValuationForm = ({ onCalculate }) => {
         totalValue: '10200',
         description: 'Vino Tinto Malbec Premium - Cosecha 2023. Estuches de madera.',
       },
-      adjustments: {
-        additions: { 'packaging_expo': { active: true, amount: '450' } },
-        deductions: {},
-      },
+      valuation: {},
       documentation: {
         originCertificateAttached: 'SI',
         originCertificate: 'COD-2025-9988',
@@ -354,7 +343,7 @@ const ValuationForm = ({ onCalculate }) => {
       header: { userType: '', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
-      adjustments: { additions: {}, deductions: {} },
+      valuation: {},
       documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
     });
   };
@@ -382,9 +371,19 @@ const ValuationForm = ({ onCalculate }) => {
 
   const getCalculatedValue = () => {
     const base = parseFloat(item.totalValue || 0);
-    const adds = Object.values(adjustments.additions).filter(a => a.status === 'SI').reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-    const subs = Object.values(adjustments.deductions).filter(a => a.status === 'SI').reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-    let total = base + adds - subs;
+    
+    // Sumar adiciones (preguntas de categoría 'additions' con status 'SI')
+    const additions = valuationQuestions
+      .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
+      .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+    
+    // Restar deducciones (preguntas de categoría 'deductions' con status 'SI')
+    const deductions = valuationQuestions
+      .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
+      .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+    
+    let total = base + additions - deductions;
+    
     if (documentation.originCertificateAttached === 'NO') {
       const fine = total * 0.01;
       total += fine;
@@ -395,9 +394,16 @@ const ValuationForm = ({ onCalculate }) => {
   const getFineAmount = () => {
     if (documentation.originCertificateAttached === 'NO') {
       const baseTotal = parseFloat(item.totalValue || 0);
-      const adds = Object.values(adjustments.additions).filter(a => a.status === 'SI').reduce((s, a) => s + parseFloat(a.amount || 0), 0);
-      const subs = Object.values(adjustments.deductions).filter(a => a.status === 'SI').reduce((s, a) => s + parseFloat(a.amount || 0), 0);
-      return (baseTotal + adds - subs) * 0.01;
+      
+      const additions = valuationQuestions
+        .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
+        .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+      
+      const deductions = valuationQuestions
+        .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
+        .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+      
+      return (baseTotal + additions - deductions) * 0.01;
     }
     return 0;
   };
@@ -411,12 +417,11 @@ const ValuationForm = ({ onCalculate }) => {
     if (header.presence === null) return alert("Obligatorio: Debe aclarar la PRESENCIA (SI/NO) en Bloque A.");
     if (documentation.originCertificateAttached === null) return alert("Obligatorio: Debe aclarar el CERTIFICADO DE ORIGEN (SI/NO) en Bloque DOCS.");
     
-    // Validate all Adjustments
-    const missingAdds = adjustmentQuestions.filter(q => q.type === 'addition').some(q => !adjustments.additions[q.id] || adjustments.additions[q.id].status === null);
-    const missingSubs = adjustmentQuestions.filter(q => q.type === 'deduction').some(q => !adjustments.deductions[q.id] || adjustments.deductions[q.id].status === null);
+    // Validate all 17 Valuation Questions
+    const missingQuestions = valuationQuestions.some(q => !valuation[q.id] || valuation[q.id].status === null);
     
-    if (missingAdds || missingSubs) {
-      return alert("Obligatorio: Todos los AJUSTES del Bloque D deben ser respondidos expresamente con SI o NO.");
+    if (missingQuestions) {
+      return alert("Obligatorio: Todas las 17 preguntas del Bloque D (Declaración de Valor) deben ser respondidas expresamente con SI o NO.");
     }
 
     onCalculate({ 
@@ -776,67 +781,152 @@ const ValuationForm = ({ onCalculate }) => {
 
         <div className="block-separator"></div>
 
-        {/* BLOQUE D: AJUSTES */}
+        {/* BLOQUE D: DECLARACIÓN DE VALOR (RG 2010/2006) */}
         <section className={`form-block official-paper ${collapsed.adjustments ? 'is-collapsed' : ''}`}>
           <div className="block-header clickable" onClick={() => toggleCollapse('adjustments')}>
             <span className="block-tag">BLOQUE D</span>
-            <h3>AJUSTES AL VALOR (ART. 8 DEL GATT)</h3>
+            <h3>DECLARACIÓN DE VALOR (RG 2010/2006)</h3>
             <div className="collapse-icon">
               {collapsed.adjustments ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
             </div>
           </div>
-          <div className="adjustments-container">
-            <div className="adjustment-column">
-              <span className="col-label addition">A) ADICIONES (A INCLUIR)</span>
-              <div className="adjustment-list">
-                {adjustmentQuestions.filter(q => q.type === 'addition').map(q => {
-                  const status = adjustments.additions[q.id]?.status || null;
-                  const isHighlightAdj = highlightedFields[`adjustments.additions.${q.id}`];
-                  return (
-                    <div key={q.id} className={`adj-item ${status === 'SI' ? 'active' : ''} ${isHighlightAdj ? 'highlighted-fill' : ''}`}>
-                      <div className="adj-row-unified">
-                        <span className="adj-text">{q.text}</span>
-                        <div className="si-no-selector small">
-                           <button type="button" className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} onClick={() => handleAdjustmentSelection('addition', q.id, 'SI')}>SI</button>
-                           <button type="button" className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} onClick={() => handleAdjustmentSelection('addition', q.id, 'NO')}>NO</button>
-                        </div>
-                      </div>
-                      {status === 'SI' && (
-                        <div className="adj-input-row slide-down">
-                          <span className="adj-currency">{transaction.currency}</span>
-                          <input type="number" value={adjustments.additions[q.id]?.amount || ''} onChange={(e) => handleAdjustmentAmount('addition', q.id, e.target.value)} placeholder="0.00" />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
 
-            <div className="adjustment-column">
-              <span className="col-label deduction">B) DEDUCCIONES (A RESTAR)</span>
-              <div className="adjustment-list">
-                {adjustmentQuestions.filter(q => q.type === 'deduction').map(q => {
-                  const status = adjustments.deductions[q.id]?.status || null;
-                  return (
-                    <div key={q.id} className={`adj-item ${status === 'SI' ? 'active' : ''}`}>
-                      <div className="adj-row-unified">
-                        <span className="adj-text">{q.text}</span>
-                        <div className="si-no-selector small">
-                           <button type="button" className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} onClick={() => handleAdjustmentSelection('deduction', q.id, 'SI')}>SI</button>
-                           <button type="button" className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} onClick={() => handleAdjustmentSelection('deduction', q.id, 'NO')}>NO</button>
+          {/* SUB-BLOQUE 1: CONDICIONES GENERALES Y VINCULACIÓN */}
+          <div className="valuation-subblock">
+            <div className="subblock-header">
+              <span className="subblock-title">I. CONDICIONES GENERALES Y VINCULACIÓN</span>
+              <span className="subblock-subtitle">Preguntas 1-7</span>
+            </div>
+            <div className="valuation-questions-list">
+              {getQuestionsByCategory('general').map(q => {
+                const status = valuation[q.id]?.status || null;
+                return (
+                  <div key={q.id} className={`valuation-question-item ${status === 'SI' ? 'active' : ''}`}>
+                    <div className="question-row">
+                      <span className="question-number">{q.number}.</span>
+                      <span className="question-text">{q.text}</span>
+                      <div className="si-no-selector small">
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'SI')}
+                        >
+                          SI
+                        </button>
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'NO')}
+                        >
+                          NO
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SUB-BLOQUE 2: ADICIONES AL PRECIO */}
+          <div className="valuation-subblock">
+            <div className="subblock-header additions">
+              <span className="subblock-title">II. ADICIONES AL PRECIO</span>
+              <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 8-13, 17)</span>
+            </div>
+            <div className="valuation-questions-list">
+              {getQuestionsByCategory('additions').map(q => {
+                const status = valuation[q.id]?.status || null;
+                return (
+                  <div key={q.id} className={`valuation-question-item ${status === 'SI' ? 'active' : ''}`}>
+                    <div className="question-row">
+                      <span className="question-number">{q.number}.</span>
+                      <span className="question-text">{q.text}</span>
+                      <div className="si-no-selector small">
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'SI')}
+                        >
+                          SI
+                        </button>
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'NO')}
+                        >
+                          NO
+                        </button>
+                      </div>
+                    </div>
+                    {status === 'SI' && q.requiresAmount && (
+                      <div className="question-amount-row slide-down">
+                        <label>{q.inputLabel}:</label>
+                        <div className="currency-input-wrapper">
+                          <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
+                          <input 
+                            type="number" 
+                            value={valuation[q.id]?.amount || ''} 
+                            onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
+                            placeholder="0.00" 
+                          />
                         </div>
                       </div>
-                      {status === 'SI' && (
-                        <div className="adj-input-row slide-down">
-                          <span className="adj-currency">{transaction.currency}</span>
-                          <input type="number" value={adjustments.deductions[q.id]?.amount || ''} onChange={(e) => handleAdjustmentAmount('deduction', q.id, e.target.value)} placeholder="0.00" />
-                        </div>
-                      )}
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SUB-BLOQUE 3: DEDUCCIONES AL PRECIO */}
+          <div className="valuation-subblock">
+            <div className="subblock-header deductions">
+              <span className="subblock-title">III. DEDUCCIONES AL PRECIO</span>
+              <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 14-16)</span>
+            </div>
+            <div className="valuation-questions-list">
+              {getQuestionsByCategory('deductions').map(q => {
+                const status = valuation[q.id]?.status || null;
+                return (
+                  <div key={q.id} className={`valuation-question-item ${status === 'SI' ? 'active' : ''}`}>
+                    <div className="question-row">
+                      <span className="question-number">{q.number}.</span>
+                      <span className="question-text">{q.text}</span>
+                      <div className="si-no-selector small">
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'SI' ? 'si-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'SI')}
+                        >
+                          SI
+                        </button>
+                        <button 
+                          type="button" 
+                          className={`btn-si-no ${status === 'NO' ? 'no-active' : ''}`} 
+                          onClick={() => handleValuationSelection(q.id, 'NO')}
+                        >
+                          NO
+                        </button>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
+                    {status === 'SI' && q.requiresAmount && (
+                      <div className="question-amount-row slide-down">
+                        <label>{q.inputLabel}:</label>
+                        <div className="currency-input-wrapper">
+                          <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
+                          <input 
+                            type="number" 
+                            value={valuation[q.id]?.amount || ''} 
+                            onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
+                            placeholder="0.00" 
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
