@@ -273,16 +273,37 @@ const ValuationForm = ({ onCalculate }) => {
   };
 
   const handleValuationSelection = (questionId, selection) => {
-    setFormData(prev => ({
-      ...prev,
-      valuation: {
-        ...prev.valuation,
-        [questionId]: {
-          status: prev.valuation[questionId]?.status === selection ? null : selection,
-          amount: selection === 'SI' && prev.valuation[questionId]?.status !== 'SI' ? (prev.valuation[questionId]?.amount || '') : ''
-        }
+    setFormData(prev => {
+      const currentStatus = prev.valuation[questionId]?.status;
+      const currentAmount = prev.valuation[questionId]?.amount || '';
+      
+      // Si ya está seleccionado, deseleccionar (toggle)
+      if (currentStatus === selection) {
+        return {
+          ...prev,
+          valuation: {
+            ...prev.valuation,
+            [questionId]: {
+              status: null,
+              amount: ''
+            }
+          }
+        };
       }
-    }));
+      
+      // Si está cambiando a SI, preservar el amount existente
+      // Si está cambiando a NO, limpiar el amount
+      return {
+        ...prev,
+        valuation: {
+          ...prev.valuation,
+          [questionId]: {
+            status: selection,
+            amount: selection === 'SI' ? currentAmount : ''
+          }
+        }
+      };
+    });
   };
 
   const handleValuationAmount = (questionId, amount) => {
