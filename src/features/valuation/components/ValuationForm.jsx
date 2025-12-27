@@ -47,6 +47,7 @@ const ValuationForm = ({ onCalculate }) => {
       invoiceNumber: '',
       insuranceContract: '',
       freightContract: '',
+      purchaseContract: null,
     }
   });
 
@@ -331,7 +332,7 @@ const ValuationForm = ({ onCalculate }) => {
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       valuation: {},
-      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '' }
+      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '', purchaseContract: null }
     });
   };
 
@@ -781,7 +782,7 @@ const ValuationForm = ({ onCalculate }) => {
           <div className="valuation-subblock">
             <div className="subblock-header">
               <span className="subblock-title">I. CONDICIONES GENERALES Y VINCULACIÓN</span>
-              <span className="subblock-subtitle">Preguntas 1-8</span>
+              <span className="subblock-subtitle">Preguntas 1-7</span>
             </div>
             <div className="valuation-questions-list">
               {getQuestionsByCategory('general').map(q => {
@@ -819,7 +820,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className="subblock-header additions">
               <div className="subblock-header-content">
                 <span className="subblock-title">II. ADICIONES AL PRECIO</span>
-                <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 9-15)</span>
+                <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 8-14)</span>
               </div>
               <div className="subblock-subtotal">
                 <span className="subtotal-label">Subtotal:</span>
@@ -882,7 +883,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className="subblock-header deductions">
               <div className="subblock-header-content">
                 <span className="subblock-title">III. DEDUCCIONES AL PRECIO</span>
-                <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 16-18)</span>
+                <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 15-17)</span>
               </div>
               <div className="subblock-subtotal">
                 <span className="subtotal-label">Subtotal:</span>
@@ -986,6 +987,13 @@ const ValuationForm = ({ onCalculate }) => {
             <div className={`official-cell span-4 ${isHighlighted('documentation', 'freightContract')}`}>
               <label>CONTRATO DE FLETE</label>
               <input type="text" value={documentation.freightContract} onChange={(e) => updateSection('documentation', 'freightContract', e.target.value)} />
+            </div>
+            <div className={`official-cell span-4 ${isHighlighted('documentation', 'purchaseContract')}`}>
+              <label>CONTRATO DE COMPRAVENTA INTERNACIONAL</label>
+              <div className="si-no-selector">
+                <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'SI' ? null : 'SI')}>SI</button>
+                <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'NO' ? null : 'NO')}>NO</button>
+              </div>
             </div>
           </div>
         </section>
