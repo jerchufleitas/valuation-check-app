@@ -44,8 +44,11 @@ const ValuationForm = ({ onCalculate }) => {
     documentation: {
       originCertificateAttached: null,
       originCertificate: '',
-      invoiceNumber: '',
-      insuranceContract: '',
+      invoiceAttached: null,
+      invoiceType: null,
+      invoiceFile: null,
+      insuranceContractAttached: null,
+      insuranceContractFile: null,
       freightContractAttached: null,
       freightContractFile: null,
       purchaseContract: null,
@@ -334,7 +337,7 @@ const ValuationForm = ({ onCalculate }) => {
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       valuation: {},
-      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContractAttached: null, freightContractFile: null, purchaseContract: null, purchaseContractFile: null }
+      documentation: { originCertificateAttached: null, originCertificate: '', invoiceAttached: null, invoiceType: null, invoiceFile: null, insuranceContractAttached: null, insuranceContractFile: null, freightContractAttached: null, freightContractFile: null, purchaseContract: null, purchaseContractFile: null }
     });
   };
 
@@ -978,13 +981,90 @@ const ValuationForm = ({ onCalculate }) => {
                 </div>
               )}
             </div>
-            <div className={`official-cell span-4 ${isHighlighted('documentation', 'invoiceNumber')}`}>
-              <label>NRO. FACTURA (PROFORMA/LEGAL)</label>
-              <input type="text" value={documentation.invoiceNumber} onChange={(e) => updateSection('documentation', 'invoiceNumber', e.target.value)} />
+            <div className={`official-cell span-8 ${isHighlighted('documentation', 'invoiceAttached')}`}>
+              <label>¿Posee factura?</label>
+              <div className="documentation-file-row">
+                <div className="si-no-selector">
+                  <button type="button" className={`btn-si-no ${documentation.invoiceAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'invoiceAttached', documentation.invoiceAttached === 'SI' ? null : 'SI')}>SI</button>
+                  <button type="button" className={`btn-si-no ${documentation.invoiceAttached === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'invoiceAttached', documentation.invoiceAttached === 'NO' ? null : 'NO')}>NO</button>
+                </div>
+                
+                {documentation.invoiceAttached === 'SI' && (
+                  <>
+                    <div className="si-no-selector">
+                      <button 
+                        type="button" 
+                        className={`btn-si-no ${documentation.invoiceType === 'PROFORMA' ? 'si-active' : ''}`} 
+                        onClick={() => updateSection('documentation', 'invoiceType', documentation.invoiceType === 'PROFORMA' ? null : 'PROFORMA')}
+                        style={{ minWidth: '100px' }}
+                      >
+                        PROFORMA
+                      </button>
+                      <button 
+                        type="button" 
+                        className={`btn-si-no ${documentation.invoiceType === 'LEGAL' ? 'si-active' : ''}`} 
+                        onClick={() => updateSection('documentation', 'invoiceType', documentation.invoiceType === 'LEGAL' ? null : 'LEGAL')}
+                        style={{ minWidth: '100px' }}
+                      >
+                        LEGAL
+                      </button>
+                    </div>
+
+                    {documentation.invoiceType && (
+                      <div className="file-upload-section">
+                        <label className="file-upload-label">
+                          <input 
+                            type="file" 
+                            accept=".pdf,.doc,.docx"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) updateSection('documentation', 'invoiceFile', file.name);
+                            }}
+                            style={{ display: 'none' }}
+                          />
+                          <span className="upload-btn">
+                            📎 {documentation.invoiceFile || `Adjuntar ${documentation.invoiceType.toLowerCase()} (PDF/DOCX)`}
+                          </span>
+                        </label>
+                        {documentation.invoiceFile && (
+                          <button type="button" className="clear-file-btn" onClick={() => updateSection('documentation', 'invoiceFile', null)}>✕</button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-            <div className={`official-cell span-4 ${isHighlighted('documentation', 'insuranceContract')}`}>
-              <label>CONTRATO DE SEGURO</label>
-              <input type="text" value={documentation.insuranceContract} onChange={(e) => updateSection('documentation', 'insuranceContract', e.target.value)} />
+
+            <div className={`official-cell span-8 ${isHighlighted('documentation', 'insuranceContractAttached')}`}>
+              <label>¿Posee contrato de seguro?</label>
+              <div className="documentation-file-row">
+                <div className="si-no-selector">
+                  <button type="button" className={`btn-si-no ${documentation.insuranceContractAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'insuranceContractAttached', documentation.insuranceContractAttached === 'SI' ? null : 'SI')}>SI</button>
+                  <button type="button" className={`btn-si-no ${documentation.insuranceContractAttached === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'insuranceContractAttached', documentation.insuranceContractAttached === 'NO' ? null : 'NO')}>NO</button>
+                </div>
+                {documentation.insuranceContractAttached === 'SI' && (
+                  <div className="file-upload-section">
+                    <label className="file-upload-label">
+                      <input 
+                        type="file" 
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) updateSection('documentation', 'insuranceContractFile', file.name);
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                      <span className="upload-btn">
+                        📎 {documentation.insuranceContractFile || 'Adjuntar contrato (PDF/DOCX)'}
+                      </span>
+                    </label>
+                    {documentation.insuranceContractFile && (
+                      <button type="button" className="clear-file-btn" onClick={() => updateSection('documentation', 'insuranceContractFile', null)}>✕</button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div className={`official-cell span-8 ${isHighlighted('documentation', 'freightContractAttached')}`}>
               <label>¿Posee contrato de flete?</label>
