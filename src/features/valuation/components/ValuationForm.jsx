@@ -781,7 +781,7 @@ const ValuationForm = ({ onCalculate }) => {
           <div className="valuation-subblock">
             <div className="subblock-header">
               <span className="subblock-title">I. CONDICIONES GENERALES Y VINCULACIÓN</span>
-              <span className="subblock-subtitle">Preguntas 1-7</span>
+              <span className="subblock-subtitle">Preguntas 1-8</span>
             </div>
             <div className="valuation-questions-list">
               {getQuestionsByCategory('general').map(q => {
@@ -819,7 +819,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className="subblock-header additions">
               <div className="subblock-header-content">
                 <span className="subblock-title">II. ADICIONES AL PRECIO</span>
-                <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 8-14)</span>
+                <span className="subblock-subtitle">Elementos a incluir si no están en el precio (Preguntas 9-15)</span>
               </div>
               <div className="subblock-subtotal">
                 <span className="subtotal-label">Subtotal:</span>
@@ -882,7 +882,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className="subblock-header deductions">
               <div className="subblock-header-content">
                 <span className="subblock-title">III. DEDUCCIONES AL PRECIO</span>
-                <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 15-17)</span>
+                <span className="subblock-subtitle">Elementos a excluir si están incluidos (Preguntas 16-18)</span>
               </div>
               <div className="subblock-subtotal">
                 <span className="subtotal-label">Subtotal:</span>

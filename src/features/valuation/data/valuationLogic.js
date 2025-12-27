@@ -61,68 +61,76 @@ export const valuationQuestions = [
     requiresAmount: false,
     legal: "RG 2010/2006 - Pregunta 7"
   },
+  {
+    id: "q08_purchase_contract",
+    category: "general",
+    number: 8,
+    text: "¿Existe contrato de compraventa internacional?",
+    requiresAmount: false,
+    legal: "RG 2010/2006 - Pregunta 8"
+  },
 
   // ============================================
   // SUB-BLOQUE 2: ADICIONES AL PRECIO
   // ============================================
   {
-    id: "q08_royalties",
+    id: "q09_royalties",
     category: "additions",
-    number: 8,
+    number: 9,
     text: "¿Existen cánones y derechos de licencia (royalties) relativos a las mercaderías?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 8",
+    legal: "RG 2010/2006 - Pregunta 9",
     inputLabel: "Monto de royalties"
   },
   {
-    id: "q09_resale_reversion",
+    id: "q10_resale_reversion",
     category: "additions",
-    number: 9,
+    number: 10,
     text: "¿La venta está condicionada a que parte del producto de reventa revierta al vendedor?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 9",
+    legal: "RG 2010/2006 - Pregunta 10",
     inputLabel: "Monto de reversión"
   },
   {
-    id: "q10_indirect_payments",
+    id: "q11_indirect_payments",
     category: "additions",
-    number: 10,
+    number: 11,
     text: "¿Existen pagos indirectos realizados al vendedor o a un tercero?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 10",
+    legal: "RG 2010/2006 - Pregunta 11",
     inputLabel: "Monto de pagos indirectos"
   },
   {
-    id: "q11_commissions",
+    id: "q12_commissions",
     category: "additions",
-    number: 11,
+    number: 12,
     text: "¿Existen comisiones (excepto compra), corretajes, o gastos de envases y embalajes?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 11",
+    legal: "RG 2010/2006 - Pregunta 12",
     inputLabel: "Monto de comisiones/embalajes"
   },
   {
-    id: "q12_buyer_assistance",
+    id: "q13_buyer_assistance",
     category: "additions",
-    number: 12,
+    number: 13,
     text: "¿Existen bienes y servicios suministrados por el comprador gratuitamente o a precio reducido (asistencias)?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 12",
+    legal: "RG 2010/2006 - Pregunta 13",
     inputLabel: "Valor de asistencias"
   },
   {
-    id: "q13_resale_product",
+    id: "q14_resale_product",
     category: "additions",
-    number: 13,
+    number: 14,
     text: "¿Existe un producto de cualquier reventa posterior que revierta al vendedor?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 13",
+    legal: "RG 2010/2006 - Pregunta 14",
     inputLabel: "Monto de reversión de reventa"
   },
   {
     id: "q17_handling_costs",
     category: "additions",
-    number: 14,
+    number: 15,
     text: "¿Existen gastos de carga, descarga y manipulación hasta el punto de importación discriminados aparte?",
     requiresAmount: true,
     legal: "RG 2010/2006 - Pregunta 17",
@@ -133,30 +141,30 @@ export const valuationQuestions = [
   // SUB-BLOQUE 3: DEDUCCIONES AL PRECIO
   // ============================================
   {
-    id: "q14_financing_interest",
+    id: "q15_financing_interest",
     category: "deductions",
-    number: 15,
+    number: 16,
     text: "¿Existen intereses por financiación pactados en la operación?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 14",
+    legal: "RG 2010/2006 - Pregunta 15",
     inputLabel: "Monto de intereses"
   },
   {
-    id: "q15_post_import_services",
+    id: "q16_post_import_services",
     category: "deductions",
-    number: 16,
+    number: 17,
     text: "¿Existen gastos de construcción, montaje, mantenimiento o asistencia técnica realizados DESPUÉS de la importación?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 15",
+    legal: "RG 2010/2006 - Pregunta 16",
     inputLabel: "Gastos post-importación"
   },
   {
-    id: "q16_import_duties",
+    id: "q18_import_duties",
     category: "deductions",
-    number: 17,
+    number: 18,
     text: "¿Existen derechos y demás tributos a pagar en Argentina como consecuencia de la importación?",
     requiresAmount: true,
-    legal: "RG 2010/2006 - Pregunta 16",
+    legal: "RG 2010/2006 - Pregunta 18",
     inputLabel: "Tributos de importación"
   }
 ];
