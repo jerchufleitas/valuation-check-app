@@ -1634,9 +1634,8 @@ option {
 
 .subtotal-label {
   font-size: 0.7rem;
-  opacity: 0.8;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .subtotal-value {
@@ -1715,4 +1714,72 @@ option {
 .question-amount-row .currency-input-wrapper {
   flex: 1;
   max-width: 300px;
+}
+
+/* ========================================
+   VALUATION FOOTER STYLES
+   ======================================== */
+
+.valuation-footer {
+  margin-top: 2rem;
+  background: var(--dark-bg);
+  padding: 2rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  color: #fff;
+}
+
+.total-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.total-display span:first-child {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+.grand-total {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.currency-subtitle {
+  font-size: 0.85rem;
+  color: var(--gold-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  margin-top: -0.25rem;
+}
+
+.btn-official-large {
+  background: var(--gold-accent);
+  color: white;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-official-large:hover {
+  background: #a17f38;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }

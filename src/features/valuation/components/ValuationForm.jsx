@@ -1,6 +1,6 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import { valuationQuestions, getQuestionsByCategory } from '../data/valuationLogic';
-import { currencyData, getCurrencySymbol } from '../data/currencyData';
+import { currencyData, getCurrencySymbol, getCurrencyName } from '../data/currencyData';
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
@@ -991,6 +991,7 @@ const ValuationForm = ({ onCalculate }) => {
           <div className="total-display">
             <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
             <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString()}</span>
+            <span className="currency-subtitle">({getCurrencyName(transaction.currency)})</span>
           </div>
           <button type="submit" className="btn-official-large">
             GENERAR DECLARACIÓN DE VALOR

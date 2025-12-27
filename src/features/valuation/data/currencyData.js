@@ -38,3 +38,8 @@ export const getCurrencySymbol = (code) => {
     const curr = currencyData.find(c => c.code === code);
     return curr ? curr.symbol : '$';
 };
+
+export const getCurrencyName = (code) => {
+    const curr = currencyData.find(c => c.code === code);
+    return curr ? curr.name : '';
+};
