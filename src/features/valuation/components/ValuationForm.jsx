@@ -981,7 +981,7 @@ const ValuationForm = ({ onCalculate }) => {
                 </div>
               )}
             </div>
-            <div className={`official-cell span-8 ${isHighlighted('documentation', 'invoiceAttached')}`}>
+            <div className={`official-cell span-12 ${isHighlighted('documentation', 'invoiceAttached')}`}>
               <label>¿Posee factura?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
@@ -1036,7 +1036,7 @@ const ValuationForm = ({ onCalculate }) => {
               </div>
             </div>
 
-            <div className={`official-cell span-8 ${isHighlighted('documentation', 'insuranceContractAttached')}`}>
+            <div className={`official-cell span-12 ${isHighlighted('documentation', 'insuranceContractAttached')}`}>
               <label>¿Posee contrato de seguro?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
@@ -1066,7 +1066,7 @@ const ValuationForm = ({ onCalculate }) => {
                 )}
               </div>
             </div>
-            <div className={`official-cell span-8 ${isHighlighted('documentation', 'freightContractAttached')}`}>
+            <div className={`official-cell span-12 ${isHighlighted('documentation', 'freightContractAttached')}`}>
               <label>¿Posee contrato de flete?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
@@ -1104,7 +1104,7 @@ const ValuationForm = ({ onCalculate }) => {
                 )}
               </div>
             </div>
-            <div className={`official-cell span-8 ${isHighlighted('documentation', 'purchaseContract')}`}>
+            <div className={`official-cell span-12 ${isHighlighted('documentation', 'purchaseContract')}`}>
               <label>¿Existe contrato de compraventa internacional?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
