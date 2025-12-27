@@ -989,7 +989,7 @@ const ValuationForm = ({ onCalculate }) => {
               <input type="text" value={documentation.freightContract} onChange={(e) => updateSection('documentation', 'freightContract', e.target.value)} />
             </div>
             <div className={`official-cell span-4 ${isHighlighted('documentation', 'purchaseContract')}`}>
-              <label>CONTRATO DE COMPRAVENTA INTERNACIONAL</label>
+              <label>¿Existe contrato de compraventa internacional?</label>
               <div className="si-no-selector">
                 <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'SI' ? null : 'SI')}>SI</button>
                 <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'NO' ? null : 'NO')}>NO</button>
