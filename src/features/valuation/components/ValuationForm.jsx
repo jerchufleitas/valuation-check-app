@@ -964,7 +964,7 @@ const ValuationForm = ({ onCalculate }) => {
               ) : documentation.originCertificateAttached === 'NO' ? (
                 <div className="fine-warning">
                   <span className="fine-label">A GARANTIZAR</span>
-                  <span className="fine-value">Multa Estimada (1%): {transaction.currency} {getFineAmount().toLocaleString()}</span>
+                  <span className="fine-value">Multa Estimada (1%): {getCurrencySymbol(transaction.currency)} {getFineAmount().toLocaleString()}</span>
                 </div>
               ) : (
                 <div className="pending-selection">
@@ -990,7 +990,7 @@ const ValuationForm = ({ onCalculate }) => {
         <div className="valuation-footer">
           <div className="total-display">
             <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
-            <span className="grand-total">{transaction.currency} {getCalculatedValue().toLocaleString()}</span>
+            <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString()}</span>
           </div>
           <button type="submit" className="btn-official-large">
             GENERAR DECLARACIÓN DE VALOR
