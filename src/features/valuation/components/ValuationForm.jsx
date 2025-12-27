@@ -48,6 +48,7 @@ const ValuationForm = ({ onCalculate }) => {
       insuranceContract: '',
       freightContract: '',
       purchaseContract: null,
+      purchaseContractFile: null,
     }
   });
 
@@ -332,7 +333,7 @@ const ValuationForm = ({ onCalculate }) => {
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       valuation: {},
-      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '', purchaseContract: null }
+      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '', purchaseContract: null, purchaseContractFile: null }
     });
   };
 
@@ -994,6 +995,35 @@ const ValuationForm = ({ onCalculate }) => {
                 <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'SI' ? null : 'SI')}>SI</button>
                 <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'NO' ? null : 'NO')}>NO</button>
               </div>
+              {documentation.purchaseContract === 'SI' && (
+                <div className="file-upload-section slide-down">
+                  <label className="file-upload-label">
+                    <input 
+                      type="file" 
+                      accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          updateSection('documentation', 'purchaseContractFile', file.name);
+                        }
+                      }}
+                      style={{ display: 'none' }}
+                    />
+                    <span className="upload-btn">
+                      📎 {documentation.purchaseContractFile || 'Adjuntar contrato (PDF/DOCX)'}
+                    </span>
+                  </label>
+                  {documentation.purchaseContractFile && (
+                    <button 
+                      type="button" 
+                      className="clear-file-btn"
+                      onClick={() => updateSection('documentation', 'purchaseContractFile', null)}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>

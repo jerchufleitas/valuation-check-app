@@ -1784,3 +1784,64 @@ option {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
+
+/* ========================================
+   FILE UPLOAD STYLES
+   ======================================== */
+
+.file-upload-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.file-upload-label {
+  cursor: pointer;
+  flex: 1;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--panel-bg);
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upload-btn:hover {
+  border-color: var(--gold-accent);
+  background: rgba(196, 161, 89, 0.05);
+  color: var(--text-main);
+}
+
+.file-upload-section:has(.clear-file-btn) .upload-btn {
+  border-style: solid;
+  border-color: var(--success-color);
+  background: rgba(5, 150, 105, 0.05);
+  color: var(--success-color);
+}
+
+.clear-file-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.clear-file-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
