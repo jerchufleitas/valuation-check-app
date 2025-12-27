@@ -271,14 +271,15 @@ const ValuationForm = ({ onCalculate }) => {
     });
   };
 
-  const handleValuationAmount = (questionId, amount) => {
+  const handleValuationAmount = (questionId, value) => {
+    // Store as string to avoid any parsing/formatting issues
     setFormData(prev => ({
       ...prev,
       valuation: {
         ...prev.valuation,
         [questionId]: {
           ...prev.valuation[questionId],
-          amount
+          amount: value
         }
       }
     }));
@@ -862,6 +863,7 @@ const ValuationForm = ({ onCalculate }) => {
                           <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
                           <input 
                             type="number" 
+                            step="any"
                             value={valuation[q.id]?.amount || ''} 
                             onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
                             placeholder="0.00" 
@@ -924,6 +926,7 @@ const ValuationForm = ({ onCalculate }) => {
                           <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
                           <input 
                             type="number" 
+                            step="any"
                             value={valuation[q.id]?.amount || ''} 
                             onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
                             placeholder="0.00" 
