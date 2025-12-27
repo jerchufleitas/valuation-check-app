@@ -46,7 +46,8 @@ const ValuationForm = ({ onCalculate }) => {
       originCertificate: '',
       invoiceNumber: '',
       insuranceContract: '',
-      freightContract: '',
+      freightContractAttached: null,
+      freightContractFile: null,
       purchaseContract: null,
       purchaseContractFile: null,
     }
@@ -333,7 +334,7 @@ const ValuationForm = ({ onCalculate }) => {
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       valuation: {},
-      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContract: '', purchaseContract: null, purchaseContractFile: null }
+      documentation: { originCertificateAttached: null, originCertificate: '', invoiceNumber: '', insuranceContract: '', freightContractAttached: null, freightContractFile: null, purchaseContract: null, purchaseContractFile: null }
     });
   };
 
@@ -985,13 +986,47 @@ const ValuationForm = ({ onCalculate }) => {
               <label>CONTRATO DE SEGURO</label>
               <input type="text" value={documentation.insuranceContract} onChange={(e) => updateSection('documentation', 'insuranceContract', e.target.value)} />
             </div>
-            <div className={`official-cell span-4 ${isHighlighted('documentation', 'freightContract')}`}>
-              <label>CONTRATO DE FLETE</label>
-              <input type="text" value={documentation.freightContract} onChange={(e) => updateSection('documentation', 'freightContract', e.target.value)} />
+            <div className={`official-cell span-8 ${isHighlighted('documentation', 'freightContractAttached')}`}>
+              <label>¿Posee contrato de flete?</label>
+              <div className="documentation-file-row">
+                <div className="si-no-selector">
+                  <button type="button" className={`btn-si-no ${documentation.freightContractAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'freightContractAttached', documentation.freightContractAttached === 'SI' ? null : 'SI')}>SI</button>
+                  <button type="button" className={`btn-si-no ${documentation.freightContractAttached === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'freightContractAttached', documentation.freightContractAttached === 'NO' ? null : 'NO')}>NO</button>
+                </div>
+                {documentation.freightContractAttached === 'SI' && (
+                  <div className="file-upload-section">
+                    <label className="file-upload-label">
+                      <input 
+                        type="file" 
+                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            updateSection('documentation', 'freightContractFile', file.name);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                      <span className="upload-btn">
+                        📎 {documentation.freightContractFile || 'Adjuntar contrato (PDF/DOCX)'}
+                      </span>
+                    </label>
+                    {documentation.freightContractFile && (
+                      <button 
+                        type="button" 
+                        className="clear-file-btn"
+                        onClick={() => updateSection('documentation', 'freightContractFile', null)}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <div className={`official-cell span-8 ${isHighlighted('documentation', 'purchaseContract')}`}>
               <label>¿Existe contrato de compraventa internacional?</label>
-              <div className="purchase-contract-row">
+              <div className="documentation-file-row">
                 <div className="si-no-selector">
                   <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'SI' ? null : 'SI')}>SI</button>
                   <button type="button" className={`btn-si-no ${documentation.purchaseContract === 'NO' ? 'no-active' : ''}`} onClick={() => updateSection('documentation', 'purchaseContract', documentation.purchaseContract === 'NO' ? null : 'NO')}>NO</button>

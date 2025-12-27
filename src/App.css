@@ -1795,14 +1795,14 @@ option {
   gap: 0.5rem;
 }
 
-.purchase-contract-row {
+.documentation-file-row {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.purchase-contract-row .si-no-selector {
+.documentation-file-row .si-no-selector {
   flex-shrink: 0;
 }
 
