@@ -1037,7 +1037,7 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
 
             <div className={`official-cell span-12 ${isHighlighted('documentation', 'insuranceContractAttached')}`}>
-              <label>¿Posee contrato de seguro?</label>
+              <label>¿Posee contrato de seguro internacional?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
                   <button type="button" className={`btn-si-no ${documentation.insuranceContractAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'insuranceContractAttached', documentation.insuranceContractAttached === 'SI' ? null : 'SI')}>SI</button>
@@ -1067,7 +1067,7 @@ const ValuationForm = ({ onCalculate }) => {
               </div>
             </div>
             <div className={`official-cell span-12 ${isHighlighted('documentation', 'freightContractAttached')}`}>
-              <label>¿Posee contrato de flete?</label>
+              <label>¿Posee contrato de flete internacional?</label>
               <div className="documentation-file-row">
                 <div className="si-no-selector">
                   <button type="button" className={`btn-si-no ${documentation.freightContractAttached === 'SI' ? 'si-active' : ''}`} onClick={() => updateSection('documentation', 'freightContractAttached', documentation.freightContractAttached === 'SI' ? null : 'SI')}>SI</button>
