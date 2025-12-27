@@ -1793,7 +1793,17 @@ option {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
+}
+
+.purchase-contract-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.purchase-contract-row .si-no-selector {
+  flex-shrink: 0;
 }
 
 .file-upload-label {
