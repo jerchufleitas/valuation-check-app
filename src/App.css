@@ -3,6 +3,7 @@
 :root {
   /* Brand Colors - Premium Maritime Theme */
   --primary-color: #0d1b2a;     /* Deepest Navy */
+  --dark-bg: #0d1b2a;           /* Dark background consistent with primary */
   --primary-light: #1b263b;     /* Lighter Navy */
   --accent-color: #e0e1dd;      /* Platinum/Silver */
   --gold-accent: #c4a159;       /* Muted Gold for highlights */
