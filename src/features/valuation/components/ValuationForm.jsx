@@ -1148,15 +1148,15 @@ const ValuationForm = ({ onCalculate }) => {
         <div className="valuation-footer">
           <div className="valuation-summary">
             <div className="summary-row">
-              <span className="summary-label">7. Condiciones o Contraprestaciones:</span>
-              <span className={`summary-value ${valuation['q07_conditions']?.status === 'SI' ? 'status-si' : 'status-no'}`}>
-                {valuation['q07_conditions']?.status || 'NO'}
+              <span className="summary-label">7. Incoterm:</span>
+              <span className="summary-value">
+                {transaction.incoterm || '—'}
               </span>
             </div>
             <div className="summary-row">
-              <span className="summary-label">8. Cánones y Derechos de Licencia:</span>
-              <span className={`summary-value ${valuation['q08_royalties']?.status === 'SI' ? 'status-si' : 'status-no'}`}>
-                {valuation['q08_royalties']?.status || 'NO'}
+              <span className="summary-label">8. Lugar de Embarque:</span>
+              <span className="summary-value">
+                {transaction.loadingPlace || '—'}
               </span>
             </div>
             <div className="summary-divider"></div>
