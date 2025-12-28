@@ -1905,3 +1905,24 @@ option {
   background: rgba(255, 255, 255, 0.1);
   margin: 0.25rem 0;
 }
+
+.summary-row.summary-main {
+  font-size: 0.9rem;
+}
+
+.summary-row.summary-main .summary-label {
+  color: #cbd5e1;
+}
+
+.summary-value.summary-highlight {
+  color: var(--gold-accent);
+  font-size: 1rem;
+}
+
+.summary-value.additions-value {
+  color: #34d399; /* Green for additions */
+}
+
+.summary-value.deductions-value {
+  color: #f87171; /* Red for deductions */
+}

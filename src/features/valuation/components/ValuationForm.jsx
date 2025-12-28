@@ -4,7 +4,7 @@ import { currencyData, getCurrencySymbol, getCurrencyName } from '../data/curren
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ValuationForm = ({ onCalculate }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
@@ -222,6 +222,21 @@ const ValuationForm = ({ onCalculate }) => {
   };
 
   const { header, transaction, item, valuation, documentation } = formData;
+
+  // Auto-calculate Total Item when quantity or unitValue changes
+  useEffect(() => {
+    const qty = parseFloat(item.quantity) || 0;
+    const unitVal = parseFloat(item.unitValue) || 0;
+    const calculatedTotal = qty * unitVal;
+    
+    // Only update if the calculated value differs from current totalValue
+    if (calculatedTotal !== parseFloat(item.totalValue || 0)) {
+      setFormData(prev => ({
+        ...prev,
+        item: { ...prev.item, totalValue: calculatedTotal > 0 ? calculatedTotal.toString() : '' }
+      }));
+    }
+  }, [item.quantity, item.unitValue]);
 
   const updateSection = (section, field, value, isFromOcr = false) => {
     setFormData(prev => ({
@@ -1147,32 +1162,26 @@ const ValuationForm = ({ onCalculate }) => {
 
         <div className="valuation-footer">
           <div className="valuation-summary">
-            <div className="summary-row">
-              <span className="summary-label">7. Incoterm:</span>
-              <span className="summary-value">
-                {transaction.incoterm || '—'}
-              </span>
-            </div>
-            <div className="summary-row">
-              <span className="summary-label">8. Lugar de Embarque:</span>
-              <span className="summary-value">
-                {transaction.loadingPlace || '—'}
+            <div className="summary-row summary-main">
+              <span className="summary-label">INCOTERM: {transaction.incoterm || '—'} — {transaction.loadingPlace || 'SIN LUGAR'}</span>
+              <span className="summary-value summary-highlight">
+                = {getCurrencySymbol(transaction.currency)} {parseFloat(item.totalValue || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="summary-divider"></div>
             <div className="summary-row">
-              <span className="summary-label">Subtotal Adiciones (II):</span>
-              <span className="summary-value">
-                {getCurrencySymbol(transaction.currency)} {valuationQuestions
+              <span className="summary-label">TOTAL DE AJUSTES A INCLUIR:</span>
+              <span className="summary-value additions-value">
+                + {getCurrencySymbol(transaction.currency)} {valuationQuestions
                   .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
                   .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
                   .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="summary-row">
-              <span className="summary-label">Subtotal Deducciones (III):</span>
-              <span className="summary-value">
-                {getCurrencySymbol(transaction.currency)} {valuationQuestions
+              <span className="summary-label">TOTAL DE AJUSTES A DEDUCIR:</span>
+              <span className="summary-value deductions-value">
+                − {getCurrencySymbol(transaction.currency)} {valuationQuestions
                   .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
                   .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
                   .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
