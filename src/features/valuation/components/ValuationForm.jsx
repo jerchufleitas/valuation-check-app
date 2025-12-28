@@ -1146,6 +1146,40 @@ const ValuationForm = ({ onCalculate }) => {
         </section>
 
         <div className="valuation-footer">
+          <div className="valuation-summary">
+            <div className="summary-row">
+              <span className="summary-label">7. Condiciones o Contraprestaciones:</span>
+              <span className={`summary-value ${valuation['q07_conditions']?.status === 'SI' ? 'status-si' : 'status-no'}`}>
+                {valuation['q07_conditions']?.status || 'NO'}
+              </span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-label">8. Cánones y Derechos de Licencia:</span>
+              <span className={`summary-value ${valuation['q08_royalties']?.status === 'SI' ? 'status-si' : 'status-no'}`}>
+                {valuation['q08_royalties']?.status || 'NO'}
+              </span>
+            </div>
+            <div className="summary-divider"></div>
+            <div className="summary-row">
+              <span className="summary-label">Subtotal Adiciones (II):</span>
+              <span className="summary-value">
+                {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                  .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
+                  .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                  .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="summary-row">
+              <span className="summary-label">Subtotal Deducciones (III):</span>
+              <span className="summary-value">
+                {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                  .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
+                  .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                  .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+
           <div className="total-display">
             <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
             <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString()}</span>
