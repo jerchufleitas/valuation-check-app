@@ -7,6 +7,7 @@ import './App.css';
 import LegalFooter from './components/ui/LegalFooter';
 import ChatBot from './components/ui/ChatBot';
 import SplashScreen from './components/ui/SplashScreen';
+import HistoryList from './features/valuation/components/HistoryList';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
+  const [view, setView] = useState('form'); // 'form' | 'history'
 
   useEffect(() => {
     // Escuchar cambios de autenticación
@@ -100,6 +102,21 @@ function App() {
         </div>
         
         <div className="header-actions">
+          <nav className="header-tabs">
+            <button 
+              className={`tab-btn ${view === 'form' ? 'active' : ''}`} 
+              onClick={() => { setView('form'); handleReset(); }}
+            >
+              NUEVA VALORACIÓN
+            </button>
+            <button 
+              className={`tab-btn ${view === 'history' ? 'active' : ''}`} 
+              onClick={() => { setView('history'); handleReset(); }}
+            >
+              HISTORIAL
+            </button>
+          </nav>
+
           <div className="user-badge">
             <img src={user.photoURL} alt={user.displayName} className="user-avatar" />
             <span className="user-name">{user.displayName.split(' ')[0]}</span>
@@ -111,12 +128,17 @@ function App() {
       </header>
 
       <main className="main-content">
-        {!result ? (
-            <ValuationForm onCalculate={handleCalculate} user={user} />
-        ) : (
+        {result ? (
           <ReportCard 
             {...result}
             onReset={handleReset}
+          />
+        ) : view === 'form' ? (
+          <ValuationForm onCalculate={handleCalculate} user={user} />
+        ) : (
+          <HistoryList 
+            user={user} 
+            onSelect={(v) => handleCalculate(v)} 
           />
         )}
       </main>

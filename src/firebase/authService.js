@@ -15,7 +15,7 @@ export const loginWithGoogle = async () => {
     const result = await signInWithPopup(auth, provider);
     return result.user;
   } catch (error) {
-    console.error("Error al iniciar sesión con Google:", error);
+    console.error("Error detallado de Firebase Auth:", error.code, error.message);
     throw error;
   }
 };
