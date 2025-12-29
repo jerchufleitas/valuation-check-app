@@ -8,6 +8,7 @@ import LegalFooter from './components/ui/LegalFooter';
 import ChatBot from './components/ui/ChatBot';
 import SplashScreen from './components/ui/SplashScreen';
 import HistoryList from './features/valuation/components/HistoryList';
+import LandingPage from './features/landing/LandingPage';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
 function App() {
@@ -86,23 +87,9 @@ function App() {
     );
   }
 
-  // Pantallas de Login si no hay usuario
+  // Pantalla de Landing si no hay usuario
   if (!user) {
-    return (
-      <div className="login-container">
-        <div className="login-card">
-          <ShieldCheck size={64} className="login-logo" />
-          <h1>Valuation Check</h1>
-          <p>Herramienta Oficial de Compliance GATT Art. 1 & 8</p>
-          <div className="login-divider"></div>
-          <button onClick={handleLogin} className="btn-google-login">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
-            Ingresar con Google
-          </button>
-          <p className="login-footer-text">Acceso restringido para despachantes y exportadores.</p>
-        </div>
-      </div>
-    );
+    return <LandingPage onLogin={handleLogin} />;
   }
 
   return (

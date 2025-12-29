@@ -21,7 +21,10 @@
       property="og:description"
       content="Calculadora de valor en aduana, checklists legales y generación de dictámenes profesionales."
     />
-    <meta property="og:image" content="https://valuation-check.vercel.app/og-image.jpg" />
+    <meta
+      property="og:image"
+      content="https://valuation-check.vercel.app/og-image.jpg"
+    />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -34,7 +37,35 @@
       property="twitter:description"
       content="Validación técnica de importaciones bajo normas GATT."
     />
-    <meta property="twitter:image" content="https://valuation-check.vercel.app/og-image.jpg" />
+    <meta
+      property="twitter:image"
+      content="https://valuation-check.vercel.app/og-image.jpg"
+    />
+
+    <!-- Premium Fonts & Styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0f172a",
+              accent: "#c5a059",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>
