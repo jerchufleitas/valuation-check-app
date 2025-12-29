@@ -6,6 +6,7 @@ import {
   getDoc, 
   getDocs, 
   query, 
+  where,
   orderBy,
   serverTimestamp 
 } from 'firebase/firestore';
@@ -16,18 +17,19 @@ const COLLECTION_NAME = 'valuations';
  * Guarda o actualiza una valoración en Firestore.
  * Utiliza el ID generado por la app para mantener consistencia.
  */
-export const saveValuation = async (valuationData) => {
+export const saveValuation = async (valuationData, userId) => {
   try {
     const { session } = valuationData;
     const docId = session.id;
     
     if (!docId) throw new Error("La sesión no tiene un ID válido");
+    if (!userId) throw new Error("No hay un usuario autenticado para guardar datos");
 
     const docRef = doc(db, COLLECTION_NAME, docId);
     
-    // Agregamos timestamp de servidor para mayor precisión en la nube
     const dataToSave = {
       ...session,
+      userId, // Vinculamos el registro al usuario de Google
       serverUpdatedAt: serverTimestamp()
     };
 
@@ -42,9 +44,16 @@ export const saveValuation = async (valuationData) => {
 /**
  * Obtiene todas las valoraciones ordenadas por fecha de actualización.
  */
-export const getValuations = async () => {
+export const getValuations = async (userId) => {
   try {
-    const q = query(collection(db, COLLECTION_NAME), orderBy('updatedAt', 'desc'));
+    if (!userId) return [];
+    
+    // Filtramos para que el usuario A solo vea lo del usuario A
+    const q = query(
+      collection(db, COLLECTION_NAME), 
+      where('userId', '==', userId), 
+      orderBy('updatedAt', 'desc')
+    );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   } catch (error) {

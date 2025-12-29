@@ -18,7 +18,7 @@ const parseArgentineNumber = (value) => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
-const ValuationForm = ({ onCalculate }) => {
+const ValuationForm = ({ onCalculate, user }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
@@ -545,7 +545,7 @@ const ValuationForm = ({ onCalculate }) => {
     // Guardar en Firebase y luego mostrar reporte
     (async () => {
       try {
-        await saveValuation(finalSession);
+        await saveValuation(finalSession, user?.uid);
         // Pequeño delay para que el usuario vea el feedback de "Guardando"
         setTimeout(() => {
           onCalculate(finalSession);
