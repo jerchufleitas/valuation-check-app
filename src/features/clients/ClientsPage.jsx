@@ -15,8 +15,8 @@ import {
   Briefcase,
   Settings
 } from 'lucide-react';
-import { getClients, saveClient, deleteClient } from '../../../firebase/clientService';
-import { getValuations } from '../../../firebase/valuationService';
+import { getClients, saveClient, deleteClient } from '../../firebase/clientService';
+import { getValuations } from '../../firebase/valuationService';
 
 export default function ClientsPage({ user, onSelectValuation, onNewValuationForClient }) {
   const [clients, setClients] = useState([]);
