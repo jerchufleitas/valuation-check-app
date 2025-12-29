@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { saveUserSettings, getUserSettings } from '../../firebase/settingsService';
 
-const SettingsPage = ({ user, onLogout }) => {
+const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -63,6 +63,7 @@ const SettingsPage = ({ user, onLogout }) => {
     try {
       await saveUserSettings(user.uid, formData);
       setSuccess(true);
+      if (onSettingsUpdate) onSettingsUpdate();
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       alert("Error al guardar la configuración");

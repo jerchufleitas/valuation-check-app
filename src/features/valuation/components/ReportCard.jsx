@@ -12,9 +12,12 @@ const parseArgentineNumber = (value) => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
-const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
+const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
   const [reportFormat, setReportFormat] = useState('technical');
   const { header, transaction, item, valuation, documentation } = blocks;
+
+  const studioLogo = settings?.professionalProfile?.logo;
+  const studioName = settings?.professionalProfile?.companyName;
 
   // Obtener adiciones activas (preguntas de categoría 'additions' con status 'SI')
   const activeAdds = valuationQuestions
@@ -34,9 +37,18 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
 
   return (
     <div className="report-card fade-in">
-      <div className="report-header">
-        <FileText size={24} className="text-accent" />
-        <h2>Dictamen de Valoración</h2>
+      <div className="report-header" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <FileText size={24} className="text-accent" />
+          <h2>Dictamen de Valoración</h2>
+        </div>
+        
+        {studioLogo && (
+          <div style={{ textAlign: 'right' }}>
+            <img src={studioLogo} alt="Studio Logo" style={{ height: '40px', objectFit: 'contain' }} />
+            {studioName && <p style={{ fontSize: '0.7rem', color: '#666', fontWeight: 'bold', margin: 0 }}>{studioName}</p>}
+          </div>
+        )}
       </div>
 
       <div className="report-summary">
@@ -131,7 +143,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
           exporter: { name: header.exporterName, id: header.exporterTaxId }, 
           transport: { mode: header.transportMode, loading: transaction.loadingPlace, crossing: header.borderCrossing }, 
           documents: { crt: header.transportDocument, origin: documentation.originCertificate } 
-        }, reportFormat)}>
+        }, reportFormat, settings)}>
           <Download size={18} /> Descargar {reportFormat === 'legal' ? 'Dictamen' : 'Reporte'} PDF
         </button>
       </div>

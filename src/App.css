@@ -27,6 +27,47 @@
   --radius: 12px;
 }
 
+/* Dark Mode Overrides */
+.dark {
+  --bg-color: #0d1b2a;
+  --card-bg: #1b263b;
+  --panel-bg: #1b263b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+.dark .main-workspace {
+  background-color: #0a141f;
+}
+
+.dark body {
+  background-color: #0d1b2a;
+  color: #f8fafc;
+}
+
+.dark .bg-white {
+  background-color: #1b263b !important;
+}
+
+.dark .text-slate-900 {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .border-slate-100, 
+.dark .border-slate-200 {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
 /* --- Layout Structure --- */
 .app-layout {
   display: flex;

@@ -45,20 +45,34 @@ const getFinancials = (data) => {
   return { totalAdditions, totalDeductions, finalValue };
 };
 
-const drawHeader = (doc, title, subtitle, verificationId, pageWidth) => {
+const drawHeader = (doc, title, subtitle, verificationId, pageWidth, settings) => {
     const primaryColor = [15, 23, 42]; // #0f172a
     doc.setFillColor(...primaryColor);
     doc.rect(0, 0, pageWidth, 40, 'F');
     
+    // Si hay logo, lo dibujamos
+    const studioLogo = settings?.professionalProfile?.logo;
+    const studioName = settings?.professionalProfile?.companyName;
+    
+    let xOffset = 20;
+    if (studioLogo) {
+      try {
+        doc.addImage(studioLogo, 'PNG', 20, 10, 20, 20, undefined, 'FAST');
+        xOffset = 45;
+      } catch (e) {
+        console.error("PDF Logo error", e);
+      }
+    }
+
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
+    doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(t(title), 20, 20);
+    doc.text(t(title), xOffset, 20);
     
     if (subtitle) {
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      doc.text(t(subtitle), 20, 28);
+      doc.text(t(subtitle), xOffset, 28);
     }
     
     doc.setFontSize(10);
@@ -78,8 +92,8 @@ const drawFooter = (doc, verificationId, pageHeight, isLegal = false) => {
 };
 
 // --- RENDERER A: TECHNICAL (Auditoría) ---
-const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
-  drawHeader(doc, "PLANILLA TÉCNICA DE EXPORTACIÓN", "Análisis de Valor Imponible MERCOSUR", verificationId, pageWidth);
+const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight, settings) => {
+  drawHeader(doc, "PLANILLA TÉCNICA DE EXPORTACIÓN", "Análisis de Valor Imponible MERCOSUR", verificationId, pageWidth, settings);
   
   const { totalAdditions, totalDeductions, finalValue } = getFinancials(data);
   let yPos = 50;
@@ -165,17 +179,34 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
 };
 
 // --- RENDERER B: COMMERCIAL (Cliente) ---
-const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
+const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight, settings) => {
   // Brand Header
   doc.setFillColor(255, 255, 255); // White bg
   doc.rect(0, 0, pageWidth, 40, 'F');
   
+  const studioLogo = settings?.professionalProfile?.logo;
+  const studioName = settings?.professionalProfile?.companyName;
+
+  let xOffset = 20;
+  if (studioLogo) {
+    try {
+      doc.addImage(studioLogo, 'PNG', 20, 8, 24, 24, undefined, 'FAST');
+      xOffset = 50;
+    } catch (e) { console.error(e); }
+  }
+
   // Clean Title
   doc.setTextColor(15, 23, 42);
   doc.setFontSize(24);
   doc.setFont('helvetica', 'bold');
-  doc.text(t("Resumen de Valoración"), 20, 25);
+  doc.text(t(studioName || "Resumen de Valoración"), xOffset, 25);
   
+  if (studioName) {
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(t("Informe de Valoración de Mercadería"), xOffset, 32);
+  }
+
   // Gold Line
   doc.setDrawColor(196, 161, 89);
   doc.setLineWidth(1);
@@ -239,8 +270,8 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
 };
 
 // --- RENDERER C: LEGAL (Arca/Aduana) ---
-const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
-  drawHeader(doc, "DICTAMEN TÉCNICO DE EXPORTACIÓN", "Determinación de Valor Imponible MERCOSUR", verificationId, pageWidth);
+const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight, settings) => {
+  drawHeader(doc, "DICTAMEN TÉCNICO DE EXPORTACIÓN", "Determinación de Valor Imponible MERCOSUR", verificationId, pageWidth, settings);
   
   const { totalAdditions, totalDeductions, finalValue } = getFinancials(data);
   let yPos = 60; // Start lower to give breathing room
@@ -317,16 +348,25 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   doc.text(splitDisclaimer, 25, pageHeight - 60);
 
    // Signature line
+    const signatureName = settings?.professionalProfile?.signatureName || "Firma y Sello del Despachante";
+    const registrationNumber = settings?.professionalProfile?.registrationNumber || "";
+    
     doc.setDrawColor(0);
     doc.line(120, pageHeight - 30, 190, pageHeight - 30);
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.setTextColor(0);
-    doc.text(t("Firma y Sello del Despachante"), 120, pageHeight - 25);
+    doc.setFont('helvetica', 'bold');
+    doc.text(t(signatureName), 120, pageHeight - 25);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    if (registrationNumber) {
+      doc.text(t(`Matrícula/Registro: ${registrationNumber}`), 120, pageHeight - 20);
+    }
 };
 
 
 // --- MAIN EXPORT FUNCTION ---
-export const generateValuationPDF = (data, format = 'technical') => {
+export const generateValuationPDF = (data, format = 'technical', settings = null) => {
   try {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;
@@ -337,13 +377,13 @@ export const generateValuationPDF = (data, format = 'technical') => {
 
     // Select Renderer
     if (format === 'technical') {
-        renderTechnicalPDF(doc, data, verificationId, pageWidth, pageHeight);
+        renderTechnicalPDF(doc, data, verificationId, pageWidth, pageHeight, settings);
     } else if (format === 'commercial') {
-        renderCommercialPDF(doc, data, verificationId, pageWidth, pageHeight);
+        renderCommercialPDF(doc, data, verificationId, pageWidth, pageHeight, settings);
     } else if (format === 'legal') {
-        renderLegalPDF(doc, data, verificationId, pageWidth, pageHeight);
+        renderLegalPDF(doc, data, verificationId, pageWidth, pageHeight, settings);
     } else {
-        renderTechnicalPDF(doc, data, verificationId, pageWidth, pageHeight); // Fallback
+        renderTechnicalPDF(doc, data, verificationId, pageWidth, pageHeight, settings); // Fallback
     }
 
     doc.save(`Reporte_ValCheck_${format}_${verificationId}.pdf`);

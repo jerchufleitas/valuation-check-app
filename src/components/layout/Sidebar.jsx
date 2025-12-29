@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from "motion/react";
 import { Home, FilePlus, History, Users, Settings, LogOut, ShieldCheck } from "lucide-react";
 
-const Sidebar = ({ activePage, setActivePage, user, onLogout }) => {
+const Sidebar = ({ activePage, setActivePage, user, onLogout, settings }) => {
   const navItems = [
     { id: "dashboard", label: "Home", icon: Home },
     { id: "form", label: "Nueva Valoración", icon: FilePlus },
@@ -10,6 +10,8 @@ const Sidebar = ({ activePage, setActivePage, user, onLogout }) => {
     { id: "clients", label: "Clientes", icon: Users },
     { id: "settings", label: "Ajustes", icon: Settings },
   ];
+
+  const studioLogo = settings?.professionalProfile?.logo;
 
   return (
     <motion.aside
@@ -20,15 +22,19 @@ const Sidebar = ({ activePage, setActivePage, user, onLogout }) => {
       {/* Logo Section */}
       <div className="p-8">
         <div className="flex items-center gap-3 mb-1">
-          <div className="text-[#c4a159]">
-            <ShieldCheck size={32} strokeWidth={2.5} />
+          <div className="text-[#c4a159] flex-shrink-0">
+            {studioLogo ? (
+              <img src={studioLogo} alt="Studio Logo" className="w-10 h-10 object-contain rounded-lg" />
+            ) : (
+              <ShieldCheck size={32} strokeWidth={2.5} />
+            )}
           </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white leading-none">
-              Valuation<span className="text-[#c4a159]">Check</span>
+          <div className="overflow-hidden">
+            <h1 className="text-2xl font-bold tracking-tight text-white leading-none truncate">
+              {settings?.professionalProfile?.companyName || "Valuation"}<span className="text-[#c4a159]">{!settings?.professionalProfile?.companyName && "Check"}</span>
             </h1>
-            <p className="text-[10px] text-white/40 mt-1 uppercase tracking-widest font-medium">
-              Customs Valuation Tool
+            <p className="text-[10px] text-white/40 mt-1 uppercase tracking-widest font-medium truncate">
+              {settings?.professionalProfile?.registrationNumber || "Customs Valuation Tool"}
             </p>
           </div>
         </div>

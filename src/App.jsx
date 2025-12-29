@@ -13,6 +13,7 @@ import ClientsPage from './features/clients/ClientsPage';
 import Sidebar from './components/layout/Sidebar';
 import SettingsPage from './features/settings/SettingsPage';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
+import { getUserSettings } from './firebase/settingsService';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -21,11 +22,24 @@ function App() {
   const [showSplash, setShowSplash] = useState(false);
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form' | 'history'
   const [editingDraft, setEditingDraft] = useState(null);
+  const [userSettings, setUserSettings] = useState(null);
+
+  const fetchSettings = async (userId) => {
+    try {
+      const settings = await getUserSettings(userId);
+      if (settings) setUserSettings(settings);
+    } catch (error) {
+      console.error("Error fetching user settings:", error);
+    }
+  };
 
   useEffect(() => {
     // Escuchar cambios de autenticación
     const unsubscribe = subscribeToAuthChanges((currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        fetchSettings(currentUser.uid);
+      }
       setLoading(false);
     });
     
@@ -182,6 +196,7 @@ function App() {
           setActivePage={handleSetView} 
           user={user} 
           onLogout={handleLogout} 
+          settings={userSettings}
         />
         
         <div className="main-workspace">
@@ -190,6 +205,7 @@ function App() {
               <ReportCard 
                 {...result}
                 onReset={handleReset}
+                settings={userSettings}
               />
             ) : view === 'dashboard' ? (
               <DashboardPage 
@@ -243,6 +259,7 @@ function App() {
               <SettingsPage 
                 user={user} 
                 onLogout={handleLogout} 
+                onSettingsUpdate={() => fetchSettings(user.uid)}
               />
             ) : (
               <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
