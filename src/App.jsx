@@ -8,6 +8,7 @@ import LegalFooter from './components/ui/LegalFooter';
 import ChatBot from './components/ui/ChatBot';
 import SplashScreen from './components/ui/SplashScreen';
 import HistoryList from './features/valuation/components/HistoryList';
+import DashboardPage from './features/dashboard/DashboardPage';
 import LandingPage from './features/landing/LandingPage';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
@@ -16,7 +17,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
-  const [view, setView] = useState('form'); // 'form' | 'history'
+  const [view, setView] = useState('dashboard'); // 'dashboard' | 'form' | 'history'
 
   useEffect(() => {
     // Escuchar cambios de autenticación
@@ -108,6 +109,12 @@ function App() {
         <div className="header-actions">
           <nav className="header-tabs">
             <button 
+              className={`tab-btn ${view === 'dashboard' ? 'active' : ''}`} 
+              onClick={() => { setView('dashboard'); handleReset(); }}
+            >
+              HOME
+            </button>
+            <button 
               className={`tab-btn ${view === 'form' ? 'active' : ''}`} 
               onClick={() => { setView('form'); handleReset(); }}
             >
@@ -136,6 +143,12 @@ function App() {
           <ReportCard 
             {...result}
             onReset={handleReset}
+          />
+        ) : view === 'dashboard' ? (
+          <DashboardPage 
+            user={user} 
+            onNewValuation={() => setView('form')} 
+            setView={setView}
           />
         ) : view === 'form' ? (
           <ValuationForm onCalculate={handleCalculate} user={user} />
