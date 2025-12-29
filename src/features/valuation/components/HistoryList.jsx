@@ -23,8 +23,16 @@ const HistoryList = ({ user, onSelect }) => {
   }, [user.uid]);
 
   const filteredValuations = valuations.filter(v => {
-    const searchStr = `${v.metadata?.cliente || ''} ${v.metadata?.referencia || ''} ${v.id || ''}`.toLowerCase();
-    return searchStr.includes(searchTerm.toLowerCase());
+    const searchTerms = [
+      v.metadata?.cliente,
+      v.metadata?.referencia,
+      v.header?.exporterName,
+      v.header?.importerName,
+      v.item?.ncmCode,
+      v.id
+    ].filter(Boolean).join(' ').toLowerCase();
+    
+    return searchTerms.includes(searchTerm.toLowerCase().trim());
   });
 
   if (loading) {

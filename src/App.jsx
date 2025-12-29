@@ -38,7 +38,24 @@ function App() {
   };
 
   const handleCalculate = (data) => {
-    setResult(data);
+    // Normalizar la data para que el ReportCard siempre reciba lo que espera
+    // Caso 1: Viene del ValuationForm (ya tiene finalValue, blocks, summary)
+    if (data.blocks && data.finalValue !== undefined) {
+      setResult(data);
+    } 
+    // Caso 2: Viene del Historial (es el objeto plano guardado en Firestore)
+    else {
+      setResult({
+        finalValue: data.valoracion?.totales?.fob || 0,
+        blocks: data,
+        summary: {
+          exporter: data.header?.exporterName || '',
+          importer: data.header?.importerName || '',
+          ncm: data.item?.ncmCode || '',
+          incoterm: data.transaction?.incoterm || 'FOB'
+        }
+      });
+    }
   };
 
   const handleReset = () => {
