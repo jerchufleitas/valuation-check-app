@@ -10,6 +10,7 @@ import SplashScreen from './components/ui/SplashScreen';
 import HistoryList from './features/valuation/components/HistoryList';
 import DashboardPage from './features/dashboard/DashboardPage';
 import LandingPage from './features/landing/LandingPage';
+import Sidebar from './components/layout/Sidebar';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
 function App() {
@@ -96,74 +97,42 @@ function App() {
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      <div className="app-container">
-      <header className="app-header">
-        <div className="logo">
-          <ShieldCheck size={32} />
-          <div>
-            <h1>Valuation Check</h1>
-            <span className="subtitle">GATT Art. 1 & 8 Compliance Tool</span>
-          </div>
-        </div>
+      <div className="app-layout">
+        <Sidebar 
+          activePage={view} 
+          setActivePage={(v) => { setView(v); handleReset(); }} 
+          user={user} 
+          onLogout={handleLogout} 
+        />
         
-        <div className="header-actions">
-          <nav className="header-tabs">
-            <button 
-              className={`tab-btn ${view === 'dashboard' ? 'active' : ''}`} 
-              onClick={() => { setView('dashboard'); handleReset(); }}
-            >
-              HOME
-            </button>
-            <button 
-              className={`tab-btn ${view === 'form' ? 'active' : ''}`} 
-              onClick={() => { setView('form'); handleReset(); }}
-            >
-              NUEVA VALORACIÓN
-            </button>
-            <button 
-              className={`tab-btn ${view === 'history' ? 'active' : ''}`} 
-              onClick={() => { setView('history'); handleReset(); }}
-            >
-              HISTORIAL
-            </button>
-          </nav>
-
-          <div className="user-badge">
-            <img src={user.photoURL} alt={user.displayName} className="user-avatar" />
-            <span className="user-name">{user.displayName.split(' ')[0]}</span>
-          </div>
-          <button onClick={handleLogout} className="btn-logout-icon" title="Cerrar Sesión">
-            <LogOut size={18} />
-          </button>
+        <div className="main-workspace">
+          <main className="main-content">
+            {result ? (
+              <ReportCard 
+                {...result}
+                onReset={handleReset}
+              />
+            ) : view === 'dashboard' ? (
+              <DashboardPage 
+                user={user} 
+                onNewValuation={() => setView('form')} 
+                setView={setView}
+              />
+            ) : view === 'form' ? (
+              <ValuationForm onCalculate={handleCalculate} user={user} />
+            ) : (
+              <HistoryList 
+                user={user} 
+                onSelect={(v) => handleCalculate(v)} 
+              />
+            )}
+          </main>
+          
+          <LegalFooter />
         </div>
-      </header>
-
-      <main className="main-content">
-        {result ? (
-          <ReportCard 
-            {...result}
-            onReset={handleReset}
-          />
-        ) : view === 'dashboard' ? (
-          <DashboardPage 
-            user={user} 
-            onNewValuation={() => setView('form')} 
-            setView={setView}
-          />
-        ) : view === 'form' ? (
-          <ValuationForm onCalculate={handleCalculate} user={user} />
-        ) : (
-          <HistoryList 
-            user={user} 
-            onSelect={(v) => handleCalculate(v)} 
-          />
-        )}
-      </main>
-      
-      <LegalFooter />
+      </div>
       
       <ChatBot />
-    </div>
     </>
   );
 }

@@ -27,6 +27,33 @@
   --radius: 12px;
 }
 
+/* --- Layout Structure --- */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  overflow: hidden;
+}
+
+.main-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+
 /* --- Splash Screen --- */
 .splash-container {
   position: fixed;
@@ -530,12 +557,7 @@ summary,
   border: 1px solid var(--border-color);
 }
 
-/* --- Main Content --- */
-.main-content {
-  flex: 1;
-  padding: 2.5rem 2rem;
-  position: relative;
-}
+/* --- Form Styles --- */
 
 .intro-card {
   margin-bottom: 2.5rem;
@@ -2252,6 +2274,48 @@ option {
   background: var(--gold-accent);
   color: var(--primary-color);
   box-shadow: 0 4px 10px rgba(196, 161, 89, 0.2);
+}
+
+.ncm-header {
+  padding: 1.5rem;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ncm-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.ncm-header p {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* --- Layout Structure --- */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+.main-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Re-defining main-content to be more flexible */
+.main-content {
+  flex: 1;
+  padding: 0; /* Dashboard will handle its own padding */
+  position: relative;
+  width: 100%;
 }
 
 .history-container {
