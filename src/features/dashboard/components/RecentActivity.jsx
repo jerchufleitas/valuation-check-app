@@ -76,7 +76,7 @@ export function RecentActivity({ setView, user, onSelect }) {
               initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.5 + index * 0.1 }}
-              className="flex items-center justify-between p-5 rounded-xl border border-slate-50 hover:border-[#c4a159]/20 hover:bg-slate-50/50 transition-all group shadow-sm"
+              className="recent-activity-card"
             >
               <div className="flex items-center gap-5">
                 <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#c4a159] transition-colors">

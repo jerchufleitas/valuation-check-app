@@ -16,10 +16,6 @@ export function WelcomeSection({ user, onNewValuation }) {
 
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-            <Sparkles className="w-5 h-5 text-[#c4a159]" />
-            <p className="text-sm text-slate-500 font-bold uppercase tracking-wider">Servicio de Valoración Seguro</p>
-          </div>
           <h2 className="text-4xl mb-1 text-[#0d1b2a] font-bold">Hola, {firstName}</h2>
           <p className="text-slate-500 text-lg">¿Listo para procesar sus valoraciones aduaneras de hoy?</p>
         </div>
@@ -28,7 +24,7 @@ export function WelcomeSection({ user, onNewValuation }) {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onNewValuation}
-          className="px-8 py-4 bg-gradient-to-r from-[#c4a159] to-[#b89350] text-[#0d1b2a] rounded-2xl flex items-center gap-3 shadow-lg shadow-[#c4a159]/20 hover:shadow-[#c4a159]/40 transition-all duration-300 font-bold text-lg"
+          className="px-8 py-4 bg-gradient-to-r from-[#c4a159] to-[#b89350] text-white rounded-2xl flex items-center gap-3 shadow-lg shadow-[#c4a159]/20 hover:shadow-[#c4a159]/40 transition-all duration-300 font-extrabold text-lg"
         >
           <Plus className="w-6 h-6" />
           <span>Nueva Valoración</span>
