@@ -156,11 +156,11 @@ export default function ClientsPage({ user, onSelectValuation, onNewValuationFor
                   <div className="w-12 h-12 rounded-xl bg-[#c4a159]/10 flex items-center justify-center text-[#c4a159]">
                     <Briefcase size={24} />
                   </div>
-                  <div className="status-badge borrador" style={{ fontSize: '10px' }}>
+                  <div className="status-badge borrador id-gold-accent" style={{ fontSize: '11px' }}>
                     #{client.cuit}
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 truncate mb-1">{client.razonSocial}</h3>
+                <h3 className="text-2xl font-bold text-slate-900 truncate mb-1">{client.razonSocial}</h3>
                 <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-tight">
                   <MapPin size={12} />
                   <span className="truncate">{client.direccion || 'Sin dirección'}</span>
@@ -182,8 +182,8 @@ export default function ClientsPage({ user, onSelectValuation, onNewValuationFor
                       onClick={() => onSelectValuation(val)}
                     >
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-slate-400 font-mono">#{val.id.substring(0,6)}</span>
-                        <span className="text-xs font-bold text-slate-700 truncate max-w-[120px]">{val.metadata?.referencia || 'Sin Ref'}</span>
+                        <span className="text-[11px] font-bold id-gold-accent font-mono">#{val.id.substring(0,6)}</span>
+                        <span className="text-sm font-bold text-slate-700 truncate max-w-[120px] crt-ref-text">{val.metadata?.referencia || 'Sin Ref'}</span>
                       </div>
                       <ChevronRight size={14} className="text-slate-300 group-hover/item:text-[#c4a159] transform transition-transform group-hover/item:translate-x-1" />
                     </div>

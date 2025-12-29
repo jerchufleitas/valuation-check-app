@@ -84,7 +84,7 @@ export function RecentActivity({ setView, user, onSelect }) {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-400">#{item.id.substring(0, 6)}</span>
+                    <span className="text-sm font-bold id-gold-accent">#{item.id.substring(0, 6)}</span>
                     <span className={`status-badge ${(item.status || 'BORRADOR').toLowerCase()}`}>
                        {item.status || 'BORRADOR'}
                     </span>

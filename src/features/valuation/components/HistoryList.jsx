@@ -113,7 +113,7 @@ const HistoryList = ({ user, onSelect }) => {
               <div key={valuation.id} className="history-card">
                 <div className="history-card-header">
                   <div className="header-id-group">
-                    <span className="valuation-id">ID: {valuation.id.substring(0, 8)}...</span>
+                    <span className="valuation-id id-gold-accent">ID: {valuation.id.substring(0, 8)}...</span>
                     <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
                       {valuation.status || 'BORRADOR'}
                     </span>
@@ -137,7 +137,7 @@ const HistoryList = ({ user, onSelect }) => {
                     <FileText size={16} className="text-muted" />
                     <div className="info-text">
                       <label>REFERENCIA</label>
-                      <strong>{valuation.metadata?.referencia || 'Sin referencia'}</strong>
+                      <strong className="crt-ref-text">{valuation.metadata?.referencia || 'Sin referencia'}</strong>
                     </div>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ const HistoryList = ({ user, onSelect }) => {
               <div key={valuation.id} className="history-list-item">
                 <div className="col-id">
                   <div className="list-id-group">
-                    <span className="list-id">#{valuation.id.substring(0, 6)}</span>
+                    <span className="list-id id-gold-accent">#{valuation.id.substring(0, 6)}</span>
                     <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
                       {valuation.status || 'BORRADOR'}
                     </span>

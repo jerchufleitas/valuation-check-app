@@ -27,46 +27,102 @@
   --radius: 12px;
 }
 
-/* Dark Mode Overrides */
+/* Dark Mode Overrides - Final Premium Refinement */
 .dark {
-  --bg-color: #0d1b2a;
-  --card-bg: #1b263b;
-  --panel-bg: #1b263b;
-  --text-main: #f8fafc;
+  --bg-color: #020617;
+  --card-bg: #0f172a;
+  --panel-bg: #1e293b;
+  --text-main: #ffffff !important;
   --text-muted: #94a3b8;
   --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
 
-.dark .main-workspace {
-  background-color: #0a141f;
+.dark .main-workspace { background-color: #020617; }
+.dark body { background-color: #020617; color: #ffffff; }
+
+/* Global White Text Overrides */
+.dark .text-slate-900, .dark .text-slate-800, .dark .text-slate-700,
+.dark .text-gray-900, .dark .text-gray-800,
+.dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark label, .dark strong, .dark b {
+  color: #ffffff !important;
 }
 
-.dark body {
-  background-color: #0d1b2a;
-  color: #f8fafc;
+/* Background Adaptation */
+.dark .bg-white { background-color: #0f172a !important; }
+.dark .bg-slate-50, .dark .bg-slate-50\/50, .dark .bg-gray-50 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
-
-.dark .bg-white {
-  background-color: #1b263b !important;
-}
-
-.dark .text-slate-900 {
-  color: #f8fafc !important;
-}
-
-.dark .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
-.dark .border-slate-100, 
-.dark .border-slate-200 {
+.dark .border-slate-100, .dark .border-slate-200 {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.dark .bg-slate-50 {
-  background-color: rgba(255, 255, 255, 0.03) !important;
+/* 1. Recent Activity & History: Gold Buttons */
+.btn-list-action, .btn-view-history {
+  background-color: var(--gold-accent) !important;
+  color: #000000 !important; /* Texto negro en tema claro */
+  border: none !important;
+  font-weight: 800 !important;
 }
+
+.dark .btn-list-action, .dark .btn-view-history {
+  color: #ffffff !important; /* Texto blanco en tema oscuro */
+}
+
+/* 2. IDs with # (Gold) */
+.id-gold-accent {
+  color: var(--gold-accent) !important;
+  opacity: 1 !important;
+}
+
+/* 3. Valuation Form & Settings Inputs */
+.dark .main-content input, 
+.dark .main-content select, 
+.dark .main-content textarea {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+/* User Specific: Settings White Inputs -> Black Text */
+.dark .lg-col-span-2 input, 
+.dark .lg-col-span-2 select {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+.dark .lg-col-span-2 input::placeholder {
+  color: #999 !important;
+}
+
+/* 4. History Fixes: Blue/Muted Text and Sort Label */
+.dark .text-muted, .dark .text-slate-400, .dark .text-slate-500 {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.dark .sort-toggle-btn span { color: #ffffff !important; }
+.dark .view-btn { color: #ffffff !important; }
+
+/* 5. Clients Directory Fixes */
+.dark .max-w-7xl .grid h3 { font-size: 1.5rem !important; color: #ffffff !important; }
+.dark .max-w-7xl .grid .text-slate-500 { color: rgba(255, 255, 255, 0.8) !important; }
+
+/* CRT/Ref Codes to White */
+.dark .crt-ref-text {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* 6. Fix for unreadable backgrounds in Dark Mode cards */
+.dark .bg-slate-50\/50 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Analytics Dashboard Fix */
+.dark .analytics-card p { color: #ffffff !important; }
+.dark .analytics-card .text-slate-500 { color: #94a3b8 !important; }
+
+/* Scrollbar adaptation */
+.dark .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
+
 
 /* --- Layout Structure --- */
 .app-layout {
