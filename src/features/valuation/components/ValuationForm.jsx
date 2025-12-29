@@ -970,7 +970,7 @@ const ValuationForm = ({ onCalculate, user }) => {
                 <span className="subtotal-value">
                   {getCurrencySymbol(transaction.currency)} {valuationQuestions
                     .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
-                    .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                    .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
                     .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
@@ -1006,11 +1006,10 @@ const ValuationForm = ({ onCalculate, user }) => {
                         <div className="currency-input-wrapper">
                           <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
                           <input 
-                            type="number" 
-                            step="any"
+                            type="text" 
                             value={valuation[q.id]?.amount || ''} 
                             onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
-                            placeholder="0.00" 
+                            placeholder="0,00" 
                           />
                         </div>
                       </div>
@@ -1033,7 +1032,7 @@ const ValuationForm = ({ onCalculate, user }) => {
                 <span className="subtotal-value">
                   {getCurrencySymbol(transaction.currency)} {valuationQuestions
                     .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
-                    .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                    .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
                     .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
@@ -1069,11 +1068,10 @@ const ValuationForm = ({ onCalculate, user }) => {
                         <div className="currency-input-wrapper">
                           <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
                           <input 
-                            type="number" 
-                            step="any"
+                            type="text" 
                             value={valuation[q.id]?.amount || ''} 
                             onChange={(e) => handleValuationAmount(q.id, e.target.value)} 
-                            placeholder="0.00" 
+                            placeholder="0,00" 
                           />
                         </div>
                       </div>

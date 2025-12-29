@@ -26,8 +26,8 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
     .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI' && valuation[q.id]?.amount)
     .map(q => ({ ...q, amount: valuation[q.id].amount }));
 
-  const totalAdditions = activeAdds.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
-  const totalDeductions = activeSubs.reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+  const totalAdditions = activeAdds.reduce((sum, a) => sum + parseArgentineNumber(a.amount || '0'), 0);
+  const totalDeductions = activeSubs.reduce((sum, a) => sum + parseArgentineNumber(a.amount || '0'), 0);
   const hasAdjustments = (activeAdds.length + activeSubs.length) > 0;
   
   const currencySymbol = getCurrencySymbol(transaction.currency);
