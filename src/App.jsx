@@ -119,7 +119,7 @@ function App() {
                 onNewValuation={() => { setEditingDraft(null); setView('form'); }} 
                 setView={setView}
                 onSelect={(v) => {
-                  if (v.status === 'BORRADOR') {
+                  if ((v.status || 'BORRADOR') === 'BORRADOR') {
                     setEditingDraft(v);
                     setResult(null); // Ensure result is cleared
                     setView('form');
@@ -138,7 +138,7 @@ function App() {
               <HistoryList 
                 user={user} 
                 onSelect={(v) => {
-                  if (v.status === 'BORRADOR') {
+                  if ((v.status || 'BORRADOR') === 'BORRADOR') {
                     setEditingDraft(v);
                     setView('form');
                   } else {

@@ -108,7 +108,7 @@ export function RecentActivity({ setView, user, onSelect }) {
                   className="btn-list-action"
                   style={{ padding: '0.3rem 0.6rem', fontSize: '0.65rem' }}
                 >
-                  {item.status === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
+                  {(item.status || 'BORRADOR') === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
                 </button>
               </div>
             </motion.div>

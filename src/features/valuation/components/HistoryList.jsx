@@ -150,7 +150,7 @@ const HistoryList = ({ user, onSelect }) => {
                     className="btn-view-history" 
                     onClick={() => onSelect(valuation)}
                   >
-                    {valuation.status === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
+                    {(valuation.status || 'BORRADOR') === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -187,7 +187,7 @@ const HistoryList = ({ user, onSelect }) => {
                     className="btn-list-action"
                     onClick={() => onSelect(valuation)}
                   >
-                    {valuation.status === 'BORRADOR' ? 'CONTINUAR' : 'VER REPORTE'}
+                    {(valuation.status || 'BORRADOR') === 'BORRADOR' ? 'CONTINUAR' : 'VER REPORTE'}
                   </button>
                 </div>
               </div>
