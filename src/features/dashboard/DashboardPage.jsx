@@ -5,8 +5,8 @@ import LegalFooter from '../../components/ui/LegalFooter';
 
 export default function Dashboard({ user, onNewValuation, setView }) {
   return (
-    <div className="absolute inset-0 bg-[#0d1b2a] overflow-y-auto flex flex-col">
-      <div className="max-w-7xl mx-auto p-8 space-y-8 flex-1">
+    <div className="flex flex-col min-h-full">
+      <div className="max-w-7xl mx-auto w-full p-8 space-y-8 flex-1">
         {/* Welcome Section */}
         <WelcomeSection user={user} onNewValuation={onNewValuation} />
 
@@ -21,7 +21,7 @@ export default function Dashboard({ user, onNewValuation, setView }) {
         </div>
       </div>
       
-      <LegalFooter isDark={true} />
+      <LegalFooter isDark={false} />
     </div>
   );
 }
