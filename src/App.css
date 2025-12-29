@@ -27,7 +27,7 @@
   --radius: 12px;
 }
 
-/* Dark Mode Overrides - Final Premium Refinement */
+/* Dark Mode Overrides - Premium Refinement (Matching Image 1) */
 .dark {
   --bg-color: #020617;
   --card-bg: #0f172a;
@@ -37,26 +37,49 @@
   --border-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark .main-workspace { background-color: #020617; }
-.dark body { background-color: #020617; color: #ffffff; }
+.dark .main-workspace { background-color: #020617 !important; }
+.dark body { background-color: #020617 !important; color: #ffffff !important; }
+
+/* Force all white backgrounds to brand navy */
+.dark .bg-white, 
+.dark .bg-slate-50, 
+.dark .bg-gray-50, 
+.dark .bg-slate-100,
+.dark .official-paper,
+.dark .form-section {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
 
 /* Global White Text Overrides */
-.dark .text-slate-900, .dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600, .dark .text-slate-500,
-.dark .text-gray-900, .dark .text-gray-800,
+.dark .text-slate-900, .dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600, .dark .text-slate-500, .dark .text-slate-400,
+.dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700,
 .dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark label, .dark strong, .dark b, .dark span:not(.status-badge) {
   color: #ffffff !important;
 }
 
-/* Background Adaptation */
-.dark .bg-white { background-color: #0f172a !important; }
-.dark .bg-slate-50, .dark .bg-slate-50\/50, .dark .bg-gray-50, .dark .bg-slate-100 {
+/* 1. Global Form Inputs: Premium Navy Style (Matching Image 1) */
+.dark input, 
+.dark select, 
+.dark textarea {
   background-color: rgba(255, 255, 255, 0.05) !important;
-}
-.dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-50 {
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Recent Activity Card Redesign */
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+  border-color: var(--gold-accent) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark input::placeholder {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 2. Recent Activity Card Redesign */
 .recent-activity-card {
   display: flex;
   align-items: center;
@@ -81,7 +104,7 @@
   background-color: rgba(255, 255, 255, 0.02) !important;
 }
 
-/* 1. History & Toggles: Fix White Blobs */
+/* 3. History & Toggles: Fix visibility */
 .dark .view-toggles, .dark .history-actions {
   background-color: rgba(255, 255, 255, 0.05) !important;
   border-radius: 12px;
@@ -100,29 +123,7 @@
   border-color: var(--gold-accent) !important;
 }
 
-.dark .sort-toggle-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* 2. Valuation Form: White Box + Black Text (Settings Style) */
-.dark .valuation-form input, 
-.dark .valuation-form select, 
-.dark .valuation-form textarea {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-.dark .valuation-form input::placeholder {
-  color: #94a3b8 !important;
-}
-
-/* Fix Labels and Sections in Valuation Form */
-.dark .valuation-form .block-header h3 {
-  color: #ffffff !important;
-}
-
-/* 3. List Mode Logic Fixes */
+/* 4. List Mode Logic Fixes */
 .dark .history-list-header {
   background-color: rgba(255, 255, 255, 0.03) !important;
   border-bottom-color: rgba(255, 255, 255, 0.1) !important;
@@ -141,20 +142,26 @@
   color: #ffffff !important;
 }
 
-/* Status Badges should keep their core colors for contrast */
+/* Status Badges */
 .status-badge.finalizado { background-color: rgba(5, 150, 105, 0.15); color: #059669; }
 .status-badge.borrador { background-color: rgba(196, 161, 89, 0.15); color: #c4a159; }
 
-/* 4. IDs and Gold highlights */
+/* IDs and Gold highlights */
 .id-gold-accent { color: var(--gold-accent) !important; }
 
-/* Global fix for unreadable blue-ish texts in History */
-.dark .text-muted, .dark .text-slate-400, .dark .text-slate-500 {
-  color: rgba(255, 255, 255, 0.7) !important;
+/* Final specificity fixes for block headers */
+.dark .valuation-form .block-header h3 {
+  color: #ffffff !important;
 }
 
-/* Signature/Header visibility */
-.dark h2 { color: #ffffff !important; }
+/* Fix for unreadable backgrounds in Dark Mode cards */
+.dark .bg-slate-50\/50, .dark .bg-slate-50 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Scrollbar adaptation */
+.dark .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
 
 
 
