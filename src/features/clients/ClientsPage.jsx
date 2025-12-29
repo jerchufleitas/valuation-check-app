@@ -248,16 +248,16 @@ export default function ClientsPage({ user, onSelectValuation, onNewValuationFor
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-8 border-b border-slate-100">
+              <div className="p-8 border-b border-slate-100 flex-shrink-0">
                 <h3 className="text-2xl font-black text-slate-900">
                   {selectedClient ? 'Editar Perfil' : 'Nuevo Cliente'}
                 </h3>
                 <p className="text-slate-500 text-sm font-medium">Completa los datos fiscales para agilizar futuras declaraciones.</p>
               </div>
 
-              <form onSubmit={handleSaveClient} className="p-8 space-y-6">
+              <form onSubmit={handleSaveClient} className="p-8 space-y-6 overflow-y-auto custom-scrollbar">
                 <div className="grid grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-black uppercase tracking-wider text-slate-400">Razón Social</label>
@@ -330,7 +330,7 @@ export default function ClientsPage({ user, onSelectValuation, onNewValuationFor
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-4 pt-4 sticky bottom-0 bg-white pb-2">
                   <button 
                     type="button"
                     onClick={() => setShowModal(false)}
