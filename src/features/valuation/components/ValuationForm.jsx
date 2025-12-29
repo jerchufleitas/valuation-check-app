@@ -7,7 +7,9 @@ import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
 import { useState, useEffect } from 'react';
-import { HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { HelpCircle, Search, User, Building2, CreditCard, ChevronRight } from 'lucide-react';
+import { getClients } from '../../../firebase/clientService';
 
 // The Parser: Regla de Oro - Comercio Exterior Argentina
 const parseArgentineNumber = (value) => {
@@ -103,6 +105,37 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       });
     }
   }, [initialData]);
+
+  const [clients, setClients] = useState([]);
+  const [showClientSuggestions, setShowClientSuggestions] = useState(false);
+
+  useEffect(() => {
+    if (user?.uid) {
+      getClients(user.uid).then(setClients);
+    }
+  }, [user?.uid]);
+
+  const handleSelectClient = (client) => {
+    setFormData(prev => ({
+      ...prev,
+      metadata: {
+        ...prev.metadata,
+        cliente: client.razonSocial,
+        clientId: client.id
+      },
+      header: {
+        ...prev.header,
+        exporterName: client.razonSocial,
+        exporterTaxId: client.cuit
+      },
+      transaction: {
+        ...prev.transaction,
+        currency: client.configDefault?.currency || prev.transaction.currency,
+        incoterm: client.configDefault?.incoterm || prev.transaction.incoterm
+      }
+    }));
+    setShowClientSuggestions(false);
+  };
 
   const [simError, setSimError] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -676,6 +709,76 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       {/* <OcrDropzone onDataExtracted={handleOcrData} /> */}
 
       <form onSubmit={handleSubmit}>
+        
+        {/* METADATA & CLIENT SELECTION */}
+        <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 mb-8 flex flex-col md:flex-row gap-6">
+          <div className="flex-1 relative">
+            <label className="text-[10px] font-black uppercase tracking-widest text-[#c4a159] mb-2 block">Vincular Cliente</label>
+            <div className="relative">
+              <Building2 className="absolute left-4 top-1/2 -transform -translate-y-1/2 text-slate-400" size={18} />
+              <input 
+                type="text"
+                placeholder="Buscar o escribir nombre del cliente..."
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[#c4a159] outline-none transition-all font-bold text-slate-800"
+                value={formData.metadata?.cliente || ''}
+                onChange={(e) => {
+                  updateSection('metadata', 'cliente', e.target.value);
+                  setShowClientSuggestions(true);
+                }}
+                onFocus={() => setShowClientSuggestions(true)}
+              />
+              
+              <AnimatePresence>
+                {showClientSuggestions && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute z-[100] left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden max-h-60 overflow-y-auto"
+                  >
+                    <div className="p-2 border-b border-slate-50 bg-slate-50 flex items-center justify-between">
+                       <span className="text-[10px] font-bold text-slate-400 uppercase px-2">Sugerencias del Directorio</span>
+                       <button type="button" onClick={() => setShowClientSuggestions(false)} className="text-[10px] font-bold text-[#c4a159] hover:underline px-2">Cerrar</button>
+                    </div>
+                    {clients
+                      .filter(c => c.razonSocial.toLowerCase().includes((formData.metadata?.cliente || '').toLowerCase()))
+                      .map(client => (
+                        <button
+                          key={client.id}
+                          type="button"
+                          className="w-full text-left p-4 hover:bg-slate-50 transition-all flex items-center justify-between group"
+                          onClick={() => handleSelectClient(client)}
+                        >
+                          <div>
+                            <p className="font-bold text-slate-900 group-hover:text-[#c4a159]">{client.razonSocial}</p>
+                            <p className="text-[10px] text-slate-400 font-mono">CUIT: {client.cuit}</p>
+                          </div>
+                          <ChevronRight size={16} className="text-slate-200 group-hover:text-[#c4a159]" />
+                        </button>
+                    ))}
+                    {clients.filter(c => c.razonSocial.toLowerCase().includes((formData.metadata?.cliente || '').toLowerCase())).length === 0 && (
+                      <div className="p-4 text-center text-xs font-bold text-slate-400 italic">No se encontraron clientes registrados</div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="flex-1">
+             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 block">Referencia Interna / Expediente</label>
+             <div className="relative">
+                <Search className="absolute left-4 top-1/2 -transform -translate-y-1/2 text-slate-400" size={18} />
+                <input 
+                  type="text"
+                  placeholder="Ej: EXP-2025-001"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[#c4a159] outline-none transition-all font-bold text-slate-800"
+                  value={formData.metadata?.referencia || ''}
+                  onChange={(e) => updateSection('metadata', 'referencia', e.target.value)}
+                />
+             </div>
+          </div>
+        </div>
         
         {/* BLOQUE A: CABECERA */}
         <section className={`form-block official-paper ${collapsed.header ? 'is-collapsed' : ''}`}>

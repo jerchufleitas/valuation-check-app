@@ -9,6 +9,7 @@ import SplashScreen from './components/ui/SplashScreen';
 import HistoryList from './features/valuation/components/HistoryList';
 import DashboardPage from './features/dashboard/DashboardPage';
 import LandingPage from './features/landing/LandingPage';
+import ClientsPage from './features/clients/ClientsPage';
 import Sidebar from './components/layout/Sidebar';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
@@ -134,18 +135,54 @@ function App() {
                 user={user} 
                 initialData={editingDraft} 
               />
-            ) : (
+            ) : view === 'history' ? (
               <HistoryList 
                 user={user} 
                 onSelect={(v) => {
                   if ((v.status || 'BORRADOR') === 'BORRADOR') {
                     setEditingDraft(v);
+                    setResult(null);
                     setView('form');
                   } else {
                     handleCalculate(v);
                   }
                 }} 
               />
+            ) : view === 'clients' ? (
+              <ClientsPage 
+                user={user} 
+                onSelectValuation={(v) => {
+                  if ((v.status || 'BORRADOR') === 'BORRADOR') {
+                    setEditingDraft(v);
+                    setResult(null);
+                    setView('form');
+                  } else {
+                    handleCalculate(v);
+                  }
+                }}
+                onNewValuationForClient={(client) => {
+                  setEditingDraft({
+                    metadata: {
+                      cliente: client.razonSocial,
+                      clientId: client.id
+                    },
+                    header: {
+                      exporterName: client.razonSocial,
+                      exporterTaxId: client.cuit
+                    },
+                    transaction: {
+                      currency: client.configDefault?.currency || 'DOL',
+                      incoterm: client.configDefault?.incoterm || 'FOB'
+                    }
+                  });
+                  setResult(null);
+                  setView('form');
+                }}
+              />
+            ) : (
+              <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
+                <p className="font-bold uppercase tracking-widest text-sm">Sección en desarrollo...</p>
+              </div>
             )}
           </main>
         </div>
