@@ -51,11 +51,13 @@ export const getValuations = async (userId) => {
     // Filtramos para que el usuario A solo vea lo del usuario A
     const q = query(
       collection(db, COLLECTION_NAME), 
-      where('userId', '==', userId), 
-      orderBy('updatedAt', 'desc')
+      where('userId', '==', userId)
     );
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // Ordenar localmente por fecha (descendente)
+    return results.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
   } catch (error) {
     console.error("Error al obtener valoraciones:", error);
     return [];
