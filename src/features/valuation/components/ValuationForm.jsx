@@ -18,7 +18,7 @@ const parseArgentineNumber = (value) => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
-const ValuationForm = ({ onCalculate, user }) => {
+const ValuationForm = ({ onCalculate, user, initialData }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
     id: crypto.randomUUID(),
     status: 'BORRADOR', // 'BORRADOR' | 'FINALIZADO'
@@ -82,6 +82,27 @@ const ValuationForm = ({ onCalculate, user }) => {
       purchaseContractFile: null,
     }
   });
+
+  // Effect to load initialData (drafts from history)
+  useEffect(() => {
+    if (initialData) {
+      // Restore valuation object from adjustments array
+      const restoredValuation = {};
+      if (initialData.valoracion?.ajustes && Array.isArray(initialData.valoracion.ajustes)) {
+        initialData.valoracion.ajustes.forEach(item => {
+          restoredValuation[item.id] = {
+            status: item.value,
+            amount: item.amount ? item.amount.toString() : ''
+          };
+        });
+      }
+
+      setFormData({
+        ...initialData,
+        valuation: restoredValuation
+      });
+    }
+  }, [initialData]);
 
   const [simError, setSimError] = useState('');
   const [isSaving, setIsSaving] = useState(false);

@@ -18,6 +18,7 @@ function App() {
   const [result, setResult] = useState(null);
   const [showSplash, setShowSplash] = useState(false);
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form' | 'history'
+  const [editingDraft, setEditingDraft] = useState(null);
 
   useEffect(() => {
     // Escuchar cambios de autenticación
@@ -62,6 +63,7 @@ function App() {
 
   const handleReset = () => {
     setResult(null);
+    setEditingDraft(null);
   };
 
   const handleLogin = async () => {
@@ -114,15 +116,26 @@ function App() {
             ) : view === 'dashboard' ? (
               <DashboardPage 
                 user={user} 
-                onNewValuation={() => setView('form')} 
+                onNewValuation={() => { setEditingDraft(null); setView('form'); }} 
                 setView={setView}
               />
             ) : view === 'form' ? (
-              <ValuationForm onCalculate={handleCalculate} user={user} />
+              <ValuationForm 
+                onCalculate={handleCalculate} 
+                user={user} 
+                initialData={editingDraft} 
+              />
             ) : (
               <HistoryList 
                 user={user} 
-                onSelect={(v) => handleCalculate(v)} 
+                onSelect={(v) => {
+                  if (v.status === 'BORRADOR') {
+                    setEditingDraft(v);
+                    setView('form');
+                  } else {
+                    handleCalculate(v);
+                  }
+                }} 
               />
             )}
           </main>
