@@ -13,7 +13,7 @@ import {
   Camera,
   CheckCircle2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { saveUserSettings, getUserSettings } from '../../firebase/settingsService';
 
 const SettingsPage = ({ user, onLogout }) => {
