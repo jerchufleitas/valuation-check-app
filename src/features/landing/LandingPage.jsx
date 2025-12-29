@@ -1,8 +1,23 @@
-import React from 'react';
-import { motion } from "motion/react";
-import { ShieldCheck, Cloud, FileText, ArrowRight, Zap, FileSearch, Upload } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from "motion/react";
+import { ShieldCheck, Cloud, FileText, ArrowRight, Zap, FileSearch, Upload, ChevronLeft, ChevronRight } from "lucide-react";
 
 const LandingPage = ({ onLogin }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const steps = [
+    { src: "/assets/step1.png", title: "Carga de Datos", desc: "Interfaz intuitiva para identificar exportadores, importadores y logística." },
+    { src: "/assets/step2.png", title: "Ajustes de Valoración", desc: "Control total sobre adiciones y deducciones según normas GATT." },
+    { src: "/assets/step3.png", title: "Cálculos en Tiempo Real", desc: "Resultados automáticos del Valor Imponible con precisión profesional." },
+    { src: "/assets/step4.png", title: "Historial Seguro", desc: "Acceso instantáneo a todas sus valoraciones guardadas en la nube." },
+    { src: "/assets/step5.png", title: "Dictamen Final", desc: "Seleccione el formato de reporte profesional: Planilla, Comercial o Legal." }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentStep((prev) => (prev + 1) % steps.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
@@ -185,17 +200,58 @@ const LandingPage = ({ onLogin }) => {
           <motion.div
             {...fadeInUp}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative group"
+            className="relative group max-w-5xl mx-auto"
           >
+            {/* Glow effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-[#c5a059]/30 to-[#d4af6a]/30 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
             
-            <div className="relative rounded-3xl overflow-hidden border border-[#cbd5e1]/10 bg-gradient-to-br from-[#1e293b]/50 to-[#0f172a]/50 backdrop-blur-sm">
-              <img 
-                src="/assets/preview.png" 
-                alt="Ejemplo de Valoración Aduanera"
-                className="w-full h-auto cursor-pointer"
-                onClick={onLogin}
-              />
+            <div className="relative rounded-3xl overflow-hidden border border-[#cbd5e1]/10 bg-[#0f172a] shadow-2xl">
+              <div className="relative aspect-[16/10] md:aspect-[16/8]">
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={currentStep}
+                    src={steps[currentStep].src}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-full object-contain p-4 md:p-8"
+                  />
+                </AnimatePresence>
+
+                {/* Navigation Arrows */}
+                <button 
+                  onClick={() => setCurrentStep((prev) => (prev - 1 + steps.length) % steps.length)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-[#c5a059] transition-colors z-20"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={() => setCurrentStep((prev) => (prev + 1) % steps.length)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 text-white hover:bg-[#c5a059] transition-colors z-20"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+
+              {/* Step info overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <h3 className="text-[#c5a059] font-bold text-xl mb-1">{steps[currentStep].title}</h3>
+                    <p className="text-white/80 text-sm max-w-md">{steps[currentStep].desc}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    {steps.map((_, i) => (
+                      <button 
+                        key={i}
+                        onClick={() => setCurrentStep(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${i === currentStep ? 'bg-[#c5a059] w-6' : 'bg-white/30'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
