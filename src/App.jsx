@@ -118,6 +118,15 @@ function App() {
                 user={user} 
                 onNewValuation={() => { setEditingDraft(null); setView('form'); }} 
                 setView={setView}
+                onSelect={(v) => {
+                  if (v.status === 'BORRADOR') {
+                    setEditingDraft(v);
+                    setResult(null); // Ensure result is cleared
+                    setView('form');
+                  } else {
+                    handleCalculate(v);
+                  }
+                }} 
               />
             ) : view === 'form' ? (
               <ValuationForm 

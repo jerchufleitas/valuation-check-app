@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { getValuations } from "../../../firebase/valuationService";
 import { motion } from "motion/react";
 
-export function RecentActivity({ setView, user }) {
+export function RecentActivity({ setView, user, onSelect }) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +76,7 @@ export function RecentActivity({ setView, user }) {
               initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.5 + index * 0.1 }}
-              className="flex items-center justify-between p-5 rounded-xl border border-slate-50 hover:border-[#c4a159]/20 hover:bg-slate-50/50 transition-all cursor-pointer group shadow-sm"
+              className="flex items-center justify-between p-5 rounded-xl border border-slate-50 hover:border-[#c4a159]/20 hover:bg-slate-50/50 transition-all group shadow-sm"
             >
               <div className="flex items-center gap-5">
                 <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#c4a159] transition-colors">
@@ -93,14 +93,23 @@ export function RecentActivity({ setView, user }) {
                 </div>
               </div>
 
-              <div className="text-right">
-                <p className="text-lg font-bold text-slate-900">
-                  {item.transaction?.currency || 'USD'} {item.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                </p>
-                <div className="flex items-center justify-end gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                  <Clock className="w-3.5 h-3.5" />
-                  {getTimeAgo(item.updatedAt || item.createdAt)}
+              <div className="flex flex-col items-end gap-2">
+                <div className="text-right">
+                  <p className="text-lg font-bold text-slate-900">
+                    {item.transaction?.currency || 'USD'} {item.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                  </p>
+                  <div className="flex items-center justify-end gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                    <Clock className="w-3.5 h-3.5" />
+                    {getTimeAgo(item.updatedAt || item.createdAt)}
+                  </div>
                 </div>
+                <button 
+                  onClick={() => onSelect(item)}
+                  className="btn-list-action"
+                  style={{ padding: '0.3rem 0.6rem', fontSize: '0.65rem' }}
+                >
+                  {item.status === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
+                </button>
               </div>
             </motion.div>
           ))

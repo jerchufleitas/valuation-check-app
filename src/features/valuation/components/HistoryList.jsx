@@ -110,7 +110,7 @@ const HistoryList = ({ user, onSelect }) => {
         ) : viewMode === 'grid' ? (
           <div className="history-grid">
             {filteredValuations.map((valuation) => (
-              <div key={valuation.id} className="history-card" onClick={() => onSelect(valuation)}>
+              <div key={valuation.id} className="history-card">
                 <div className="history-card-header">
                   <div className="header-id-group">
                     <span className="valuation-id">ID: {valuation.id.substring(0, 8)}...</span>
@@ -146,8 +146,11 @@ const HistoryList = ({ user, onSelect }) => {
                   <span className="price-tag">
                     {valuation.transaction?.currency || 'USD'} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                   </span>
-                  <button className="btn-view-history">
-                    REPORTE
+                  <button 
+                    className="btn-view-history" 
+                    onClick={() => onSelect(valuation)}
+                  >
+                    {valuation.status === 'BORRADOR' ? 'CONTINUAR' : 'REPORTE'}
                     <ChevronRight size={16} />
                   </button>
                 </div>
@@ -164,7 +167,7 @@ const HistoryList = ({ user, onSelect }) => {
               <div className="col-action">ACCION</div>
             </div>
             {filteredValuations.map((valuation) => (
-              <div key={valuation.id} className="history-list-item" onClick={() => onSelect(valuation)}>
+              <div key={valuation.id} className="history-list-item">
                 <div className="col-id">
                   <div className="list-id-group">
                     <span className="list-id">#{valuation.id.substring(0, 6)}</span>
@@ -180,7 +183,12 @@ const HistoryList = ({ user, onSelect }) => {
                   {valuation.transaction?.currency || 'USD'} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </div>
                 <div className="col-action">
-                  <button className="btn-list-action">VER REPORTE</button>
+                  <button 
+                    className="btn-list-action"
+                    onClick={() => onSelect(valuation)}
+                  >
+                    {valuation.status === 'BORRADOR' ? 'CONTINUAR' : 'VER REPORTE'}
+                  </button>
                 </div>
               </div>
             ))}

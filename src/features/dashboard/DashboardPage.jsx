@@ -3,7 +3,7 @@ import { AnalyticsWidgets } from './components/AnalyticsWidgets';
 import { RecentActivity } from './components/RecentActivity';
 import LegalFooter from '../../components/ui/LegalFooter';
 
-export default function Dashboard({ user, onNewValuation, setView }) {
+export default function Dashboard({ user, onNewValuation, setView, onSelect }) {
   return (
     <div className="flex flex-col min-h-full">
       <div className="max-w-7xl mx-auto w-full p-8 space-y-8 flex-1">
@@ -16,7 +16,7 @@ export default function Dashboard({ user, onNewValuation, setView }) {
         <div className="grid grid-cols-1 gap-8">
           {/* Recent Activity - Takes full width */}
           <div className="w-full">
-            <RecentActivity setView={setView} user={user} />
+            <RecentActivity setView={setView} user={user} onSelect={onSelect} />
           </div>
         </div>
       </div>
