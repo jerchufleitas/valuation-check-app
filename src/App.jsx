@@ -11,6 +11,7 @@ import DashboardPage from './features/dashboard/DashboardPage';
 import LandingPage from './features/landing/LandingPage';
 import ClientsPage from './features/clients/ClientsPage';
 import Sidebar from './components/layout/Sidebar';
+import SettingsPage from './features/settings/SettingsPage';
 import { loginWithGoogle, logout, subscribeToAuthChanges } from './firebase/authService';
 
 function App() {
@@ -31,6 +32,12 @@ function App() {
     const hasSeenSplash = sessionStorage.getItem('valuation-check-splash-seen');
     if (!hasSeenSplash) {
       setShowSplash(true);
+    }
+
+    // Inicializar tema oscuro si está guardado
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
     }
 
     return () => unsubscribe();
@@ -231,6 +238,11 @@ function App() {
                   }
                 }}
                 onNewValuationForClient={handleNewValuationForClient}
+              />
+            ) : view === 'settings' ? (
+              <SettingsPage 
+                user={user} 
+                onLogout={handleLogout} 
               />
             ) : (
               <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
