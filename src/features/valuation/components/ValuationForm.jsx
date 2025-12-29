@@ -85,10 +85,10 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
     }
   });
 
-  // Effect to load initialData (drafts from history)
+  // Effect to load initialData (drafts from history or client pre-fill)
   useEffect(() => {
     if (initialData) {
-      // Restore valuation object from adjustments array
+      // Restore valuation object from adjustments array if it exists (for drafts/history)
       const restoredValuation = {};
       if (initialData.valoracion?.ajustes && Array.isArray(initialData.valoracion.ajustes)) {
         initialData.valoracion.ajustes.forEach(item => {
@@ -99,10 +99,16 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
         });
       }
 
-      setFormData({
+      setFormData(prev => ({
+        ...prev, // Default structure
         ...initialData,
-        valuation: restoredValuation
-      });
+        // Deep merge critical sections to avoid losing fields
+        metadata: { ...prev.metadata, ...initialData.metadata },
+        header: { ...prev.header, ...initialData.header },
+        transaction: { ...prev.transaction, ...initialData.transaction },
+        valuation: Object.keys(restoredValuation).length > 0 ? restoredValuation : (initialData.valuation || prev.valuation || {}),
+        id: initialData.id || prev.id || crypto.randomUUID() 
+      }));
     }
   }, [initialData]);
 

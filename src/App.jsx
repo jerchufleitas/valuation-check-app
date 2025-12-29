@@ -67,6 +67,76 @@ function App() {
     setEditingDraft(null);
   };
 
+  const handleSetView = (newView) => {
+    // Crucial: Clear result when switching views to avoid "Report sticky" bug
+    setResult(null);
+    setEditingDraft(null);
+    setView(newView);
+  };
+
+  const handleNewValuationForClient = (client) => {
+    // Generar estructura completa para evitar crashes por campos faltantes
+    const fullDraft = {
+      id: crypto.randomUUID(),
+      status: 'BORRADOR',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      metadata: {
+        cliente: client.razonSocial,
+        clientId: client.id,
+        referencia: '',
+        fecha: new Date().toLocaleDateString()
+      },
+      valoracion: {
+        incoterm: client.configDefault?.incoterm || 'FOB',
+        precioBase: 0,
+        ajustes: {},
+        totales: { fob: 0, cif: 0 }
+      },
+      ncm: { codigo: '', descripcion: '' },
+      header: {
+        userType: '',
+        exporterName: client.razonSocial,
+        exporterTaxId: client.cuit,
+        importerName: '',
+        importerDetails: '',
+        transportDocument: '',
+        transportMode: 'Terrestre',
+        presence: null,
+        airportCategory: '',
+        airport: '',
+        airportOther: '',
+        customsCategory: '',
+        borderCrossing: '',
+      },
+      transaction: {
+        currency: client.configDefault?.currency || 'DOL',
+        incoterm: client.configDefault?.incoterm || 'FOB',
+        loadingPlace: '',
+        paymentMethod: '',
+      },
+      item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
+      valuation: {},
+      documentation: { 
+        originCertificateAttached: null, 
+        originCertificate: '', 
+        invoiceAttached: null, 
+        invoiceType: null, 
+        invoiceFile: null, 
+        insuranceContractAttached: null, 
+        insuranceContractFile: null, 
+        freightContractAttached: null, 
+        freightContractFile: null, 
+        purchaseContract: null, 
+        purchaseContractFile: null 
+      }
+    };
+
+    setEditingDraft(fullDraft);
+    setResult(null);
+    setView('form');
+  };
+
   const handleLogin = async () => {
     try {
       await loginWithGoogle();
@@ -102,7 +172,7 @@ function App() {
       <div className="app-layout">
         <Sidebar 
           activePage={view} 
-          setActivePage={(v) => { setView(v); handleReset(); }} 
+          setActivePage={handleSetView} 
           user={user} 
           onLogout={handleLogout} 
         />
@@ -160,24 +230,7 @@ function App() {
                     handleCalculate(v);
                   }
                 }}
-                onNewValuationForClient={(client) => {
-                  setEditingDraft({
-                    metadata: {
-                      cliente: client.razonSocial,
-                      clientId: client.id
-                    },
-                    header: {
-                      exporterName: client.razonSocial,
-                      exporterTaxId: client.cuit
-                    },
-                    transaction: {
-                      currency: client.configDefault?.currency || 'DOL',
-                      incoterm: client.configDefault?.incoterm || 'FOB'
-                    }
-                  });
-                  setResult(null);
-                  setView('form');
-                }}
+                onNewValuationForClient={handleNewValuationForClient}
               />
             ) : (
               <div className="flex items-center justify-center min-h-[60vh] text-slate-400">
