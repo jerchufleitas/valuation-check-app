@@ -256,13 +256,15 @@ const ValuationForm = ({ onCalculate }) => {
     const unitVal = parseArgentineNumber(item.unitValue) || 0;
     const calculatedTotal = qty * unitVal;
     
-    // Solo actualizamos si el valor calculado difiere del totalValue actual
-    // Guardamos el total calculado con formato argentino de punto decimal para consistencia interna
+    // Solo actualizamos si el total calculado difiere significativamente del actual
     const currentTotal = parseArgentineNumber(item.totalValue || '0');
-    if (Math.abs(calculatedTotal - currentTotal) > 0.001) {
+    if (calculatedTotal > 0 && Math.abs(calculatedTotal - currentTotal) > 0.01) {
       setFormData(prev => ({
         ...prev,
-        item: { ...prev.item, totalValue: calculatedTotal > 0 ? calculatedTotal.toFixed(2).replace('.', ',') : '' },
+        item: { 
+          ...prev.item, 
+          totalValue: calculatedTotal.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        },
         valoracion: { ...prev.valoracion, precioBase: calculatedTotal }
       }));
     }
@@ -875,7 +877,7 @@ const ValuationForm = ({ onCalculate }) => {
             </div>
             <div className={`official-cell span-2 ${isHighlighted('item', 'quantity')}`}>
               <label>CANTIDAD</label>
-              <input type="number" value={item.quantity} onChange={(e) => updateSection('item', 'quantity', e.target.value)} />
+              <input type="text" value={item.quantity} onChange={(e) => updateSection('item', 'quantity', e.target.value)} placeholder="0" />
             </div>
             <div className={`official-cell span-2 ${isHighlighted('item', 'unit')}`}>
               <label>UNIDAD</label>
@@ -890,14 +892,14 @@ const ValuationForm = ({ onCalculate }) => {
               <label>VALOR UNIT.</label>
               <div className="currency-input-wrapper">
                 <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
-                <input type="number" value={item.unitValue} onChange={(e) => updateSection('item', 'unitValue', e.target.value)} />
+                <input type="text" value={item.unitValue} onChange={(e) => updateSection('item', 'unitValue', e.target.value)} placeholder="0,00" />
               </div>
             </div>
             <div className={`official-cell span-2 highlight ${isHighlighted('item', 'totalValue')}`}>
               <label>TOTAL ÍTEM</label>
               <div className="currency-input-wrapper">
                 <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
-                <input type="number" value={item.totalValue} onChange={(e) => updateSection('item', 'totalValue', e.target.value)} className="bold-input" />
+                <input type="text" value={item.totalValue} onChange={(e) => updateSection('item', 'totalValue', e.target.value)} className="bold-input" placeholder="0,00" />
               </div>
             </div>
             <div className={`official-cell span-12 ${isHighlighted('item', 'description')}`}>
