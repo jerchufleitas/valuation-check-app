@@ -5,6 +5,13 @@ import { getCurrencySymbol } from '../data/currencyData';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
 import ReportSelector from './ReportSelector';
 
+const parseArgentineNumber = (value) => {
+  if (typeof value !== 'string') return value;
+  const cleanValue = value.replace(/\./g, '').replace(',', '.');
+  const parsed = parseFloat(cleanValue);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
   const [reportFormat, setReportFormat] = useState('technical');
   const { header, transaction, item, valuation, documentation } = blocks;
@@ -50,7 +57,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
 
         <div className="summary-item">
           <span className="label">Valor Total del Ítem ({transaction.incoterm})</span>
-          <span className="value">{currencySymbol} {parseFloat(item.totalValue || 0).toLocaleString()}</span>
+          <span className="value">{currencySymbol} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
         
         {activeAdds.map((adj, index) => (
@@ -60,7 +67,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
               <span className="adj-legal">{adj.legal}</span>
             </div>
             <span className="value">
-              + {currencySymbol} {parseFloat(adj.amount).toLocaleString()}
+              + {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         ))}
@@ -72,7 +79,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
               <span className="adj-legal">{adj.legal}</span>
             </div>
             <span className="value">
-              - {currencySymbol} {parseFloat(adj.amount).toLocaleString()}
+              - {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
         ))}
@@ -81,7 +88,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset }) => {
 
         <div className="summary-total">
           <span className="label">Valor Imponible (FOB/FCA)</span>
-          <span className="value total">{currencySymbol} {finalValue.toLocaleString()}</span>
+          <span className="value total">{currencySymbol} {finalValue.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>
       </div>
 

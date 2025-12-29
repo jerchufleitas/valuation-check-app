@@ -1,13 +1,40 @@
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
+import { toPlainObject } from '../../../utils/serialization';
+import { saveValuation } from '../../../firebase/valuationService';
 import { valuationQuestions, getQuestionsByCategory } from '../data/valuationLogic';
 import { currencyData, getCurrencySymbol, getCurrencyName } from '../data/currencyData';
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import OcrDropzone from './OcrDropzone';
 import { useState, useEffect } from 'react';
+import { HelpCircle } from 'lucide-react';
+
+// The Parser: Regla de Oro - Comercio Exterior Argentina
+const parseArgentineNumber = (value) => {
+  if (typeof value !== 'string') return value;
+  // Eliminar puntos de miles y cambiar coma por punto decimal de JS
+  const cleanValue = value.replace(/\./g, '').replace(',', '.');
+  const parsed = parseFloat(cleanValue);
+  return isNaN(parsed) ? 0 : parsed;
+};
 
 const ValuationForm = ({ onCalculate }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    metadata: {
+      cliente: '',
+      referencia: '',
+      fecha: new Date().toLocaleDateString()
+    },
+    valoracion: {
+      incoterm: 'FOB',
+      precioBase: 0,
+      ajustes: {},
+      totales: { fob: 0, cif: 0 }
+    },
+    ncm: { codigo: '', descripcion: '' },
     header: {
       userType: '', // '' (default) | 'IMPORTADOR' | 'EXPORTADOR'
       exporterName: '',
@@ -39,7 +66,6 @@ const ValuationForm = ({ onCalculate }) => {
     },
     valuation: {
       // Estructura para las 17 preguntas de RG 2010/2006
-      // Cada pregunta tiene: { status: 'SI'|'NO'|null, amount: '' }
     },
     documentation: {
       originCertificateAttached: null,
@@ -57,6 +83,7 @@ const ValuationForm = ({ onCalculate }) => {
   });
 
   const [simError, setSimError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const [highlightedFields, setHighlightedFields] = useState({}); // { 'header.exporterName': true, ... }
   
   // Terminal Data Constants
@@ -225,24 +252,49 @@ const ValuationForm = ({ onCalculate }) => {
 
   // Auto-calculate Total Item when quantity or unitValue changes
   useEffect(() => {
-    const qty = parseFloat(item.quantity) || 0;
-    const unitVal = parseFloat(item.unitValue) || 0;
+    const qty = parseArgentineNumber(item.quantity) || 0;
+    const unitVal = parseArgentineNumber(item.unitValue) || 0;
     const calculatedTotal = qty * unitVal;
     
-    // Only update if the calculated value differs from current totalValue
-    if (calculatedTotal !== parseFloat(item.totalValue || 0)) {
+    // Solo actualizamos si el valor calculado difiere del totalValue actual
+    // Guardamos el total calculado con formato argentino de punto decimal para consistencia interna
+    const currentTotal = parseArgentineNumber(item.totalValue || '0');
+    if (Math.abs(calculatedTotal - currentTotal) > 0.001) {
       setFormData(prev => ({
         ...prev,
-        item: { ...prev.item, totalValue: calculatedTotal > 0 ? calculatedTotal.toString() : '' }
+        item: { ...prev.item, totalValue: calculatedTotal > 0 ? calculatedTotal.toFixed(2).replace('.', ',') : '' },
+        valoracion: { ...prev.valoracion, precioBase: calculatedTotal }
       }));
     }
   }, [item.quantity, item.unitValue]);
 
   const updateSection = (section, field, value, isFromOcr = false) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: { ...prev[section], [field]: value }
-    }));
+    setFormData(prev => {
+      const next = {
+        ...prev,
+        [section]: { ...prev[section], [field]: value }
+      };
+
+      // Sync master structure
+      if (section === 'header') {
+        if (field === 'importerName') next.metadata.cliente = value;
+        if (field === 'transportDocument') next.metadata.referencia = value;
+      }
+      if (section === 'transaction' && field === 'incoterm') next.valoracion.incoterm = value;
+      if (section === 'item') {
+        if (field === 'ncmCode') next.ncm.codigo = value;
+        if (field === 'description') next.ncm.descripcion = value;
+        if (field === 'totalValue' || field === 'quantity' || field === 'unitValue') {
+          const baseValue = parseArgentineNumber(next.item.totalValue);
+          next.valoracion.precioBase = baseValue;
+        }
+      }
+
+      // Generar índice de búsqueda optimizado para Firebase
+      next.metadata.searchIndex = `${next.metadata.cliente || ''} ${next.metadata.referencia || ''}`.toLowerCase().trim();
+      
+      return next;
+    });
     
     if (isFromOcr) {
       const fieldKey = `${section}.${field}`;
@@ -307,34 +359,53 @@ const ValuationForm = ({ onCalculate }) => {
   };
 
   const loadExample = () => {
-    setFormData({
-      header: {
-        userType: 'EXPORTADOR',
-        exporterName: 'Vinos del Sur S.A.',
-        exporterTaxId: '30-12345678-9',
-        importerName: 'Global Imports LLC',
-        importerDetails: 'Estados Unidos / NY',
-        transportDocument: 'CRT-AR-2025-001',
-        transportMode: 'Terrestre',
-        presence: 'SI',
-        airport: '',
-        airportOther: '',
-        borderCrossing: 'Paso de los Libres',
+    const exampleHeader = {
+      userType: 'EXPORTADOR',
+      exporterName: 'Vinos del Sur S.A.',
+      exporterTaxId: '30-12345678-9',
+      importerName: 'Global Imports LLC',
+      importerDetails: 'Estados Unidos / NY',
+      transportDocument: 'CRT-AR-2025-001',
+      transportMode: 'Terrestre',
+      presence: 'SI',
+      airport: '',
+      airportOther: '',
+      borderCrossing: 'Paso de los Libres',
+    };
+    const exampleTransaction = {
+      currency: 'DOL',
+      incoterm: 'FOB',
+      loadingPlace: 'Mendoza, Argentina',
+      paymentMethod: '04',
+    };
+    const exampleItem = {
+      ncmCode: '2204.21.00.100G',
+      quantity: '1200',
+      unit: 'Botellas',
+      unitValue: '8.50',
+      totalValue: '10200',
+      description: 'Vino Tinto Malbec Premium - Cosecha 2023. Estuches de madera.',
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      metadata: {
+        cliente: exampleHeader.importerName,
+        referencia: exampleHeader.transportDocument,
+        fecha: new Date().toLocaleDateString()
       },
-      transaction: {
-        currency: 'DOL',
-        incoterm: 'FOB',
-        loadingPlace: 'Mendoza, Argentina',
-        paymentMethod: '04',
+      valoracion: {
+        ...prev.valoracion,
+        incoterm: exampleTransaction.incoterm,
+        precioBase: 10200
       },
-      item: {
-        ncmCode: '2204.21.00.100G',
-        quantity: '1200',
-        unit: 'Botellas',
-        unitValue: '8.50',
-        totalValue: '10200',
-        description: 'Vino Tinto Malbec Premium - Cosecha 2023. Estuches de madera.',
+      ncm: {
+        codigo: exampleItem.ncmCode,
+        descripcion: exampleItem.description
       },
+      header: exampleHeader,
+      transaction: exampleTransaction,
+      item: exampleItem,
       valuation: {},
       documentation: {
         originCertificateAttached: 'SI',
@@ -343,11 +414,18 @@ const ValuationForm = ({ onCalculate }) => {
         insuranceContract: 'POL-99122',
         freightContract: 'CTR-TX-55',
       }
-    });
+    }));
   };
 
   const clearForm = () => {
+    const newId = crypto.randomUUID();
     setFormData({
+      id: newId,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      metadata: { cliente: '', referencia: '', fecha: new Date().toLocaleDateString(), searchIndex: '' },
+      valoracion: { incoterm: 'FOB', precioBase: 0, ajustes: {}, totales: { fob: 0, cif: 0 } },
+      ncm: { codigo: '', descripcion: '' },
       header: { userType: '', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
       transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
@@ -374,17 +452,17 @@ const ValuationForm = ({ onCalculate }) => {
   };
 
   const getCalculatedValue = () => {
-    const base = parseFloat(item.totalValue || 0);
+    const base = parseArgentineNumber(item.totalValue || '0');
     
     // Sumar adiciones (preguntas de categoría 'additions' con status 'SI')
     const additions = valuationQuestions
       .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
-      .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+      .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0);
     
     // Restar deducciones (preguntas de categoría 'deductions' con status 'SI')
     const deductions = valuationQuestions
       .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
-      .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+      .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0);
     
     let total = base + additions - deductions;
     
@@ -397,15 +475,15 @@ const ValuationForm = ({ onCalculate }) => {
 
   const getFineAmount = () => {
     if (documentation.originCertificateAttached === 'NO') {
-      const baseTotal = parseFloat(item.totalValue || 0);
+      const baseTotal = parseArgentineNumber(item.totalValue || '0');
       
       const additions = valuationQuestions
         .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
-        .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+        .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0);
       
       const deductions = valuationQuestions
         .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
-        .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0);
+        .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0);
       
       return (baseTotal + additions - deductions) * 0.01;
     }
@@ -428,7 +506,29 @@ const ValuationForm = ({ onCalculate }) => {
       return alert("Obligatorio: Todas las 17 preguntas del Bloque D (Declaración de Valor) deben ser respondidas expresamente con SI o NO.");
     }
 
-    onCalculate({ 
+    setIsSaving(true);
+
+    // Transform valuation (Block D) into an array of plain objects for the master session
+    const valuationArray = valuationQuestions.map(q => ({
+      id: q.id,
+      number: q.number,
+      label: q.text,
+      value: valuation[q.id]?.status || 'NO',
+      amount: parseArgentineNumber(valuation[q.id]?.amount || '0')
+    }));
+
+    const finalSession = toPlainObject({ 
+      session: {
+        ...formData,
+        valoracion: {
+          ...formData.valoracion,
+          ajustes: valuationArray,
+          totales: {
+            fob: getCalculatedValue(),
+            cif: 0 // Pendiente si se implementa flete/seguro
+          }
+        }
+      },
       finalValue: getCalculatedValue(),
       blocks: formData,
       summary: {
@@ -439,6 +539,23 @@ const ValuationForm = ({ onCalculate }) => {
         currency: transaction.currency
       }
     });
+
+    // Guardar en Firebase y luego mostrar reporte
+    (async () => {
+      try {
+        await saveValuation(finalSession);
+        // Pequeño delay para que el usuario vea el feedback de "Guardando"
+        setTimeout(() => {
+          onCalculate(finalSession);
+          setIsSaving(false);
+        }, 800);
+      } catch (error) {
+        setIsSaving(false);
+        alert("Error al guardar en la nube (Firebase). La valoración se guardó localmente, pero revisá tu conexión.");
+        // De todas formas mostramos el reporte porque está en LocalStorage
+        onCalculate(finalSession);
+      }
+    })();
   };
 
   // AI OCR DATA MAPPING
@@ -744,6 +861,10 @@ const ValuationForm = ({ onCalculate }) => {
             <h3>DETALLE DE LA MERCADERÍA (SIM)</h3>
             <div className="collapse-icon">
               {collapsed.item ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+            </div>
+            <div className="header-info-badge" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>
+              <HelpCircle size={14} />
+              <span>Usar coma (,) para centavos. El punto de miles es opcional.</span>
             </div>
           </div>
           <div className="official-grid">
@@ -1165,7 +1286,7 @@ const ValuationForm = ({ onCalculate }) => {
             <div className="summary-row summary-main">
               <span className="summary-label">INCOTERM: {transaction.incoterm || '—'} — {transaction.loadingPlace || 'SIN LUGAR'}</span>
               <span className="summary-value summary-highlight">
-                = {getCurrencySymbol(transaction.currency)} {parseFloat(item.totalValue || 0).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                = {getCurrencySymbol(transaction.currency)} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <div className="summary-divider"></div>
@@ -1174,7 +1295,7 @@ const ValuationForm = ({ onCalculate }) => {
               <span className="summary-value additions-value">
                 + {getCurrencySymbol(transaction.currency)} {valuationQuestions
                   .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
-                  .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                  .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
                   .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -1183,7 +1304,7 @@ const ValuationForm = ({ onCalculate }) => {
               <span className="summary-value deductions-value">
                 − {getCurrencySymbol(transaction.currency)} {valuationQuestions
                   .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
-                  .reduce((sum, q) => sum + parseFloat(valuation[q.id]?.amount || 0), 0)
+                  .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
                   .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
@@ -1191,11 +1312,18 @@ const ValuationForm = ({ onCalculate }) => {
 
           <div className="total-display">
             <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
-            <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString()}</span>
+            <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span className="currency-subtitle">({getCurrencyName(transaction.currency)})</span>
           </div>
-          <button type="submit" className="btn-official-large">
-            GENERAR DECLARACIÓN DE VALOR
+          <button type="submit" className={`btn-official-large ${isSaving ? 'is-loading' : ''}`} disabled={isSaving}>
+            {isSaving ? (
+              <span className="btn-content">
+                <span className="loading-spinner"></span>
+                GUARDANDO EN BASE DE DATOS...
+              </span>
+            ) : (
+              'GENERAR DECLARACIÓN DE VALOR'
+            )}
           </button>
         </div>
       </form>

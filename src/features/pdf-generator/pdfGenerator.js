@@ -16,16 +16,31 @@ const t = (str) => {
     .replace(/º/g, '\xBA');
 };
 
+const parseArgentineNumber = (value) => {
+  if (typeof value !== 'string') return typeof value === 'number' ? value : 0;
+  const cleanValue = value.replace(/\./g, '').replace(',', '.');
+  const parsed = parseFloat(cleanValue);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+const f = (val) => {
+  const num = typeof val === 'string' ? parseArgentineNumber(val) : val;
+  return (num || 0).toLocaleString('es-AR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
 const getFinancials = (data) => {
   const totalAdditions = data.adjustments
     .filter(a => a.type === 'addition')
-    .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+    .reduce((sum, a) => sum + parseArgentineNumber(a.amount || '0'), 0);
   
   const totalDeductions = data.adjustments
     .filter(a => a.type === 'deduction')
-    .reduce((sum, a) => sum + parseFloat(a.amount || 0), 0);
+    .reduce((sum, a) => sum + parseArgentineNumber(a.amount || '0'), 0);
     
-  const finalValue = parseFloat(data.baseValue) + totalAdditions - totalDeductions;
+  const finalValue = parseArgentineNumber(data.baseValue) + totalAdditions - totalDeductions;
   
   return { totalAdditions, totalDeductions, finalValue };
 };
@@ -83,10 +98,10 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
     [t("Vía/Embarque"), t(`${data.transport?.mode || 'N/A'} / ${data.transport?.loading || '-'}`)],
     [t("CRT/Certificado"), t(`${data.documents?.crt || 'N/A'} / ${data.documents?.origin || '-'}`)],
     ["Incoterm", breakdown.incoterm || data.incoterm],
-    [t("Precio Factura"), `${data.currency} ${parseFloat(breakdown.basePrice || data.baseValue).toLocaleString()}`],
-    [t("Flete Int."), `${data.currency} ${parseFloat(breakdown.freight || 0).toLocaleString()}`],
-    [t("Seguro Int."), `${data.currency} ${parseFloat(breakdown.insurance || 0).toLocaleString()}`],
-    [t("V. Imponible Base"), `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
+    [t("Precio Factura"), `${data.currency} ${f(breakdown.basePrice || data.baseValue)}`],
+    [t("Flete Int."), `${data.currency} ${f(breakdown.freight || 0)}`],
+    [t("Seguro Int."), `${data.currency} ${f(breakdown.insurance || 0)}`],
+    [t("V. Imponible Base"), `${data.currency} ${f(data.baseValue)}`],
   ];
 
   autoTable(doc, {
@@ -114,7 +129,7 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
           a.id, 
           t(a.text), 
           a.type === 'addition' ? '(+) SUMA' : '(-) RESTA',
-          `${data.currency} ${parseFloat(a.amount).toLocaleString()}`
+          `${data.currency} ${f(a.amount)}`
       ]);
       
       autoTable(doc, {
@@ -140,11 +155,11 @@ const renderTechnicalPDF = (doc, data, verificationId, pageWidth, pageHeight) =>
   doc.setFontSize(10);
   doc.setTextColor(0);
   doc.text(t("CÁLCULO FINAL:"), 25, yPos + 10);
-  doc.text(t(`Base Factura: ${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`), 25, yPos + 20);
-  doc.text(t(`Total Ajustes: ${data.currency} ${(totalAdditions - totalDeductions).toLocaleString()}`), 25, yPos + 30);
+  doc.text(t(`Base Factura: ${data.currency} ${f(data.baseValue)}`), 25, yPos + 20);
+  doc.text(t(`Total Ajustes: ${data.currency} ${f(totalAdditions - totalDeductions)}`), 25, yPos + 30);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text(t(`VALOR IMPONIBLE EXPO: ${data.currency} ${finalValue.toLocaleString()}`), 25, yPos + 40);
+  doc.text(t(`VALOR IMPONIBLE EXPO: ${data.currency} ${f(finalValue)}`), 25, yPos + 40);
 
   drawFooter(doc, verificationId, pageHeight, false);
 };
@@ -191,7 +206,7 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
   doc.text(t("VALOR IMPONIBLE DEFINITIVO (FOB/FCA + AJUSTES)"), 35, yPos + 15);
   doc.setFontSize(26);
   doc.setFont('helvetica', 'bold');
-  doc.text(`${data.currency} ${finalValue.toLocaleString()}`, 35, yPos + 35);
+  doc.text(`${data.currency} ${f(finalValue)}`, 35, yPos + 35);
   
   yPos += 70;
 
@@ -207,9 +222,9 @@ const renderCommercialPDF = (doc, data, verificationId, pageWidth, pageHeight) =
   const totalAdj = parseFloat(data.baseValue) + getFinancials(data).totalAdditions - getFinancials(data).totalDeductions - parseFloat(breakdown.basePrice || 0) - freight - insurance;
 
   const simpleData = [
-    [t("Costo Producto (FOB/FCA)"), `${data.currency} ${parseFloat(breakdown.basePrice || 0).toLocaleString()}`],
-    [t("Logística Internacional (Flete+Seguro)"), `${data.currency} ${(freight + insurance).toLocaleString()}`],
-    [t("Ajustes de Valoración"), `${data.currency} ${totalAdj.toLocaleString()}`], 
+    [t("Costo Producto (FOB/FCA)"), `${data.currency} ${f(breakdown.basePrice || 0)}`],
+    [t("Logística Internacional (Flete+Seguro)"), `${data.currency} ${f(freight + insurance)}`],
+    [t("Ajustes de Valoración"), `${data.currency} ${f(totalAdj)}`], 
   ];
 
   autoTable(doc, {
@@ -270,9 +285,9 @@ const renderLegalPDF = (doc, data, verificationId, pageWidth, pageHeight) => {
   yPos += 8;
 
   const legalBody = [
-      [t("PRECIO FACTURA BASE"), `${data.currency} ${parseFloat(data.baseValue).toLocaleString()}`],
-      ...data.adjustments.map(a => [t(`AJUSTE (${a.text})`), `${a.type==='addition'?'+':'-'} ${parseFloat(a.amount).toLocaleString()}`]),
-      [t("VALOR IMPONIBLE DETERMINADO"), `${data.currency} ${finalValue.toLocaleString()}`]
+      [t("PRECIO FACTURA BASE"), `${data.currency} ${f(data.baseValue)}`],
+      ...data.adjustments.map(a => [t(`AJUSTE (${a.text})`), `${a.type==='addition'?'+':'-'} ${f(a.amount)}`]),
+      [t("VALOR IMPONIBLE DETERMINADO"), `${data.currency} ${f(finalValue)}`]
   ];
 
   autoTable(doc, {
