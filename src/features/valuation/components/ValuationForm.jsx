@@ -21,6 +21,7 @@ const parseArgentineNumber = (value) => {
 const ValuationForm = ({ onCalculate, user }) => {
   const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
     id: crypto.randomUUID(),
+    status: 'BORRADOR', // 'BORRADOR' | 'FINALIZADO'
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     metadata: {
@@ -423,6 +424,7 @@ const ValuationForm = ({ onCalculate, user }) => {
     const newId = crypto.randomUUID();
     setFormData({
       id: newId,
+      status: 'BORRADOR',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       metadata: { cliente: '', referencia: '', fecha: new Date().toLocaleDateString(), searchIndex: '' },
@@ -492,10 +494,53 @@ const ValuationForm = ({ onCalculate, user }) => {
     return 0;
   };
 
+  const saveAsDraft = async () => {
+    setIsSaving(true);
+    const draftFormData = { ...formData, status: 'BORRADOR', updatedAt: new Date().toISOString() };
+    
+    // Minimal normalization for draft saving
+    const valuationArray = valuationQuestions.map(q => ({
+      id: q.id,
+      number: q.number,
+      label: q.text,
+      value: valuation[q.id]?.status || null,
+      amount: parseArgentineNumber(valuation[q.id]?.amount || '0')
+    }));
+
+    const sessionToSave = toPlainObject({
+      session: {
+        ...draftFormData,
+        valoracion: {
+          ...draftFormData.valoracion,
+          ajustes: valuationArray,
+          totales: { fob: getCalculatedValue(), cif: 0 }
+        }
+      },
+      finalValue: getCalculatedValue(),
+      blocks: draftFormData,
+      summary: {
+        exporter: header.exporterName,
+        importer: header.importerName,
+        ncm: item.ncmCode,
+        incoterm: transaction.incoterm,
+        currency: transaction.currency
+      }
+    });
+
+    try {
+      await saveValuation(sessionToSave, user?.uid);
+      alert("Borrador guardado exitosamente.");
+    } catch (error) {
+      alert("Error al guardar borrador.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Mandatory Validations
+    // Mandatory Validations for Finalization
     if (!item.totalValue) return alert("Error: Debe ingresar el valor total del ítem.");
     if (simError) return alert("Error: Formato de Posición SIM incorrecto.");
     if (header.presence === null) return alert("Obligatorio: Debe aclarar la PRESENCIA (SI/NO) en Bloque A.");
@@ -505,10 +550,11 @@ const ValuationForm = ({ onCalculate, user }) => {
     const missingQuestions = valuationQuestions.some(q => !valuation[q.id] || valuation[q.id].status === null);
     
     if (missingQuestions) {
-      return alert("Obligatorio: Todas las 17 preguntas del Bloque D (Declaración de Valor) deben ser respondidas expresamente con SI o NO.");
+      return alert("Obligatorio: Todas las 17 preguntas del Bloque D (Declaración de Valor) deben ser respondidas expresamente con SI o NO para finalizar.");
     }
 
     setIsSaving(true);
+    const finalizedFormData = { ...formData, status: 'FINALIZADO', updatedAt: new Date().toISOString() };
 
     // Transform valuation (Block D) into an array of plain objects for the master session
     const valuationArray = valuationQuestions.map(q => ({
@@ -521,18 +567,18 @@ const ValuationForm = ({ onCalculate, user }) => {
 
     const finalSession = toPlainObject({ 
       session: {
-        ...formData,
+        ...finalizedFormData,
         valoracion: {
-          ...formData.valoracion,
+          ...finalizedFormData.valoracion,
           ajustes: valuationArray,
           totales: {
             fob: getCalculatedValue(),
-            cif: 0 // Pendiente si se implementa flete/seguro
+            cif: 0 
           }
         }
       },
       finalValue: getCalculatedValue(),
-      blocks: formData,
+      blocks: finalizedFormData,
       summary: {
         exporter: header.exporterName,
         importer: header.importerName,
@@ -546,7 +592,6 @@ const ValuationForm = ({ onCalculate, user }) => {
     (async () => {
       try {
         await saveValuation(finalSession, user?.uid);
-        // Pequeño delay para que el usuario vea el feedback de "Guardando"
         setTimeout(() => {
           onCalculate(finalSession);
           setIsSaving(false);
@@ -554,7 +599,6 @@ const ValuationForm = ({ onCalculate, user }) => {
       } catch (error) {
         setIsSaving(false);
         alert("Error al guardar en la nube (Firebase). La valoración se guardó localmente, pero revisá tu conexión.");
-        // De todas formas mostramos el reporte porque está en LocalStorage
         onCalculate(finalSession);
       }
     })();
@@ -1315,16 +1359,26 @@ const ValuationForm = ({ onCalculate, user }) => {
             <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             <span className="currency-subtitle">({getCurrencyName(transaction.currency)})</span>
           </div>
-          <button type="submit" className={`btn-official-large ${isSaving ? 'is-loading' : ''}`} disabled={isSaving}>
-            {isSaving ? (
-              <span className="btn-content">
-                <span className="loading-spinner"></span>
-                GUARDANDO EN BASE DE DATOS...
-              </span>
-            ) : (
-              'GENERAR DECLARACIÓN DE VALOR'
-            )}
-          </button>
+          <div className="form-actions-footer">
+            <button 
+              type="button" 
+              className="btn-draft-large" 
+              onClick={saveAsDraft}
+              disabled={isSaving}
+            >
+              GUARDAR COMO BORRADOR
+            </button>
+            <button type="submit" className={`btn-official-large ${isSaving ? 'is-loading' : ''}`} disabled={isSaving}>
+              {isSaving ? (
+                <span className="btn-content">
+                  <span className="loading-spinner"></span>
+                  FINALIZANDO...
+                </span>
+              ) : (
+                'GENERAR DICTAMEN FINAL'
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>

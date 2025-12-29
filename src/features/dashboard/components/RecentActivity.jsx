@@ -1,34 +1,44 @@
-import { FileText, ChevronRight, Clock } from "lucide-react";
+import { FileText, ChevronRight, Clock, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getValuations } from "../../../firebase/valuationService";
 import { motion } from "motion/react";
 
-const activities = [
-  {
-    id: "VAL-2025-001",
-    client: "Vinos del Sur S.A.",
-    value: "USD 10.200",
-    date: "Hace 2 horas",
-    status: "FINALIZADO",
-    statusColor: "#059669",
-  },
-  {
-    id: "VAL-2025-002",
-    client: "Global Imports LLC",
-    value: "USD 45.300",
-    date: "Hace 5 horas",
-    status: "EN REVISIÓN",
-    statusColor: "#c4a159",
-  },
-  {
-    id: "VAL-2025-003",
-    client: "Logística Alpha",
-    value: "USD 8.900",
-    date: "Ayer",
-    status: "FINALIZADO",
-    statusColor: "#059669",
-  },
-];
+export function RecentActivity({ setView, user }) {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export function RecentActivity({ setView }) {
+  useEffect(() => {
+    const fetchRecent = async () => {
+      if (!user?.uid) return;
+      try {
+        const data = await getValuations(user.uid);
+        // Solo tomamos los últimos 3 para el dashboard
+        setActivities(data.slice(0, 3));
+      } catch (error) {
+        console.error("Error fetching recent activity:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecent();
+  }, [user?.uid]);
+
+  const getTimeAgo = (date) => {
+    if (!date) return 'Desconocido';
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return `Hace ${Math.floor(interval)} años`;
+    interval = seconds / 2592000;
+    if (interval > 1) return `Hace ${Math.floor(interval)} meses`;
+    interval = seconds / 86400;
+    if (interval > 1) return `Hace ${Math.floor(interval)} días`;
+    interval = seconds / 3600;
+    if (interval > 1) return `Hace ${Math.floor(interval)} horas`;
+    interval = seconds / 60;
+    if (interval > 1) return `Hace ${Math.floor(interval)} min`;
+    return 'Hace instantes';
+  };
+
   return (
     <motion.div
       initial={{ y: 20, opacity: 0 }}
@@ -50,41 +60,51 @@ export function RecentActivity({ setView }) {
       </div>
 
       <div className="space-y-4">
-        {activities.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ x: -10, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.5 + index * 0.1 }}
-            className="flex items-center justify-between p-5 rounded-xl border border-slate-50 hover:border-[#c4a159]/20 hover:bg-slate-50/50 transition-all cursor-pointer group shadow-sm"
-          >
-            <div className="flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#c4a159] transition-colors">
-                <FileText className="w-6 h-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-400">{item.id}</span>
-                  <span 
-                    className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: `${item.statusColor}10`, color: item.statusColor }}
-                  >
-                    {item.status}
-                  </span>
+        {loading ? (
+          <div className="flex flex-col items-center py-8 text-slate-400 gap-2">
+            <Loader2 className="animate-spin" size={32} />
+            <p className="text-sm font-bold">Cargando actividad...</p>
+          </div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-8 text-slate-400">
+            <p className="text-sm font-bold">No hay actividad reciente.</p>
+          </div>
+        ) : (
+          activities.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.5 + index * 0.1 }}
+              className="flex items-center justify-between p-5 rounded-xl border border-slate-50 hover:border-[#c4a159]/20 hover:bg-slate-50/50 transition-all cursor-pointer group shadow-sm"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-[#c4a159] transition-colors">
+                  <FileText className="w-6 h-6" />
                 </div>
-                <p className="text-slate-900 font-bold">{item.client}</p>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-slate-400">#{item.id.substring(0, 6)}</span>
+                    <span className={`status-badge ${(item.status || 'BORRADOR').toLowerCase()}`}>
+                       {item.status || 'BORRADOR'}
+                    </span>
+                  </div>
+                  <p className="text-slate-900 font-bold">{item.metadata?.cliente || 'Sin Cliente'}</p>
+                </div>
               </div>
-            </div>
 
-            <div className="text-right">
-              <p className="text-lg font-bold text-slate-900">{item.value}</p>
-              <div className="flex items-center justify-end gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                <Clock className="w-3.5 h-3.5" />
-                {item.date}
+              <div className="text-right">
+                <p className="text-lg font-bold text-slate-900">
+                  {item.transaction?.currency || 'USD'} {item.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                </p>
+                <div className="flex items-center justify-end gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                  <Clock className="w-3.5 h-3.5" />
+                  {getTimeAgo(item.updatedAt || item.createdAt)}
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))
+        )}
       </div>
     </motion.div>
   );

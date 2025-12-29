@@ -16,7 +16,7 @@ export default function Dashboard({ user, onNewValuation, setView }) {
         <div className="grid grid-cols-1 gap-8">
           {/* Recent Activity - Takes full width */}
           <div className="w-full">
-            <RecentActivity setView={setView} />
+            <RecentActivity setView={setView} user={user} />
           </div>
         </div>
       </div>

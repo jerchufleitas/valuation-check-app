@@ -112,7 +112,12 @@ const HistoryList = ({ user, onSelect }) => {
             {filteredValuations.map((valuation) => (
               <div key={valuation.id} className="history-card" onClick={() => onSelect(valuation)}>
                 <div className="history-card-header">
-                  <span className="valuation-id">ID: {valuation.id.substring(0, 8)}...</span>
+                  <div className="header-id-group">
+                    <span className="valuation-id">ID: {valuation.id.substring(0, 8)}...</span>
+                    <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
+                      {valuation.status || 'BORRADOR'}
+                    </span>
+                  </div>
                   <span className="valuation-date">
                     <Calendar size={14} />
                     {new Date(valuation.updatedAt || valuation.createdAt).toLocaleDateString()}
@@ -161,7 +166,12 @@ const HistoryList = ({ user, onSelect }) => {
             {filteredValuations.map((valuation) => (
               <div key={valuation.id} className="history-list-item" onClick={() => onSelect(valuation)}>
                 <div className="col-id">
-                  <span className="list-id">#{valuation.id.substring(0, 6)}</span>
+                  <div className="list-id-group">
+                    <span className="list-id">#{valuation.id.substring(0, 6)}</span>
+                    <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
+                      {valuation.status || 'BORRADOR'}
+                    </span>
+                  </div>
                   <span className="list-date">{new Date(valuation.updatedAt || valuation.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="col-client font-bold">{valuation.metadata?.cliente || 'Sin nombre'}</div>

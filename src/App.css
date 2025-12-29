@@ -2051,11 +2051,36 @@ option {
   margin-top: -0.25rem;
 }
 
+.form-actions-footer {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-draft-large {
+  background: white;
+  color: var(--gold-accent);
+  border: 1px solid var(--gold-accent);
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-draft-large:hover {
+  background: rgba(196, 161, 89, 0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
 .btn-official-large {
   background: var(--gold-accent);
   color: white;
   border: none;
-  padding: 1rem 3rem;
+  padding: 1rem 3.5rem;
   border-radius: 6px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -2071,11 +2096,33 @@ option {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.btn-official-large:disabled {
+.btn-official-large:disabled, .btn-draft-large:disabled {
   background: #475569;
+  color: #cbd5e1;
+  border-color: #475569;
   cursor: not-allowed;
   transform: none;
   opacity: 0.8;
+}
+
+/* Status Badges */
+.status-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status-badge.finalizado {
+  background: rgba(5, 150, 105, 0.1);
+  color: #059669;
+}
+
+.status-badge.borrador {
+  background: rgba(196, 161, 89, 0.1);
+  color: #c4a159;
 }
 
 .btn-content {
