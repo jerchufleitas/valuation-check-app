@@ -1,12 +1,12 @@
-import React from 'react';
 import { WelcomeSection } from './components/WelcomeSection';
 import { AnalyticsWidgets } from './components/AnalyticsWidgets';
 import { RecentActivity } from './components/RecentActivity';
+import LegalFooter from '../../components/ui/LegalFooter';
 
 export default function Dashboard({ user, onNewValuation, setView }) {
   return (
-    <div className="absolute inset-0 bg-[#0d1b2a] overflow-y-auto">
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
+    <div className="absolute inset-0 bg-[#0d1b2a] overflow-y-auto flex flex-col">
+      <div className="max-w-7xl mx-auto p-8 space-y-8 flex-1">
         {/* Welcome Section */}
         <WelcomeSection user={user} onNewValuation={onNewValuation} />
 
@@ -20,6 +20,8 @@ export default function Dashboard({ user, onNewValuation, setView }) {
           </div>
         </div>
       </div>
+      
+      <LegalFooter isDark={true} />
     </div>
   );
 }

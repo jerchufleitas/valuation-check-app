@@ -5,7 +5,6 @@ import { BookOpen, ShieldCheck, LogOut, User } from 'lucide-react';
 import './App.css';
 
 import LegalFooter from './components/ui/LegalFooter';
-import ChatBot from './components/ui/ChatBot';
 import SplashScreen from './components/ui/SplashScreen';
 import HistoryList from './features/valuation/components/HistoryList';
 import DashboardPage from './features/dashboard/DashboardPage';
@@ -127,12 +126,8 @@ function App() {
               />
             )}
           </main>
-          
-          <LegalFooter />
         </div>
       </div>
-      
-      <ChatBot />
     </>
   );
 }
