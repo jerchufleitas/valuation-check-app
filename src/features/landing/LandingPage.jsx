@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from "motion/react";
-import { ShieldCheck, Cloud, FileText, ArrowRight, Zap, FileSearch, LogIn } from "lucide-react";
+import { ShieldCheck, Cloud, FileText, ArrowRight, Zap, FileSearch, Upload } from "lucide-react";
 
 const LandingPage = ({ onLogin }) => {
   const fadeInUp = {
@@ -30,11 +30,11 @@ const LandingPage = ({ onLogin }) => {
           <motion.h1
             {...fadeInUp}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl mb-6 tracking-tight font-bold leading-[1.1]"
+            className="text-5xl md:text-7xl mb-6 tracking-tight font-bold leading-[1.1] text-white"
           >
             Elimine errores de valoración
             <br />
-            <span className="bg-gradient-to-r from-[#c5a059] to-[#d4af6a] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#c5a059] via-[#d4af6a] to-[#c5a059] bg-clip-text text-transparent">
               y multas aduaneras
             </span>{" "}
             en segundos
@@ -55,18 +55,21 @@ const LandingPage = ({ onLogin }) => {
           >
             <button 
               onClick={onLogin}
-              className="group relative px-8 py-4 bg-gradient-to-r from-[#c5a059] to-[#d4af6a] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(197,160,89,0.3)] hover:shadow-[0_20px_60px_rgba(197,160,89,0.4)] transition-all duration-300"
+              className="group relative px-10 py-5 bg-gradient-to-r from-[#c5a059] to-[#d4af6a] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(197,160,89,0.3)] hover:shadow-[0_20px_60px_rgba(197,160,89,0.5)] transition-all duration-300 transform hover:-translate-y-1"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <span className="relative flex items-center gap-2 text-[#0f172a] font-semibold">
-                Ingresar con Google
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="relative flex items-center gap-3 text-[#0f172a] font-bold text-lg">
+                Empiece ahora
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </span>
             </button>
             
-            <a href="#features" className="px-8 py-4 rounded-2xl border border-[#cbd5e1]/20 bg-[#1e293b]/50 backdrop-blur-sm hover:bg-[#1e293b]/80 transition-all duration-300 font-semibold">
-              Ver características
-            </a>
+            <button 
+              onClick={onLogin}
+              className="px-10 py-5 rounded-2xl border border-[#cbd5e1]/20 bg-[#1e293b]/50 backdrop-blur-md hover:bg-[#1e293b]/80 transition-all duration-300 font-bold text-lg"
+            >
+              Ver demo
+            </button>
           </motion.div>
 
           {/* Trust Bar */}
@@ -259,7 +262,7 @@ const LandingPage = ({ onLogin }) => {
                 </div>
 
                 {index < 2 && (
-                  <div className="absolute left-8 top-20 w-0.5 h-12 bg-gradient-to-b from-[#c5a059]/50 to-transparent" />
+                  <div className="absolute left-8 top-20 w-1 h-12 bg-gradient-to-b from-[#c5a059] to-transparent opacity-30" />
                 )}
               </motion.div>
             ))}
