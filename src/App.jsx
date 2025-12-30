@@ -223,13 +223,11 @@ function App() {
                 }} 
               />
             ) : view === 'form' ? (
-              <div className="force-light-theme">
-                <ValuationForm 
-                  onCalculate={handleCalculate} 
-                  user={user} 
-                  initialData={editingDraft} 
-                />
-              </div>
+              <ValuationForm 
+                onCalculate={handleCalculate} 
+                user={user} 
+                initialData={editingDraft} 
+              />
             ) : view === 'history' ? (
               <HistoryList 
                 user={user} 

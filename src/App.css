@@ -2848,121 +2848,56 @@ option {
   }
 }
 
-/* --- DEFINITIVE VALUATION FORM LIGHT-MODE RESTORATION --- */
-/* This block overrides EVERY .dark rule for the Nueva Valoración tab */
+/* --- TARGETED DARK MODE FIX FOR VALUATION FORM HEADERS & FOOTER --- */
+/* Ensures high contrast white text in dark blocks (Bloques A-D and Footer) */
 
-.dark .force-light-theme {
-  background-color: #f0f2f5 !important;
-  background: #f0f2f5 !important;
-  color: #1e293b !important;
-}
-
-/* Backgrounds: Force back to Light Original */
-.dark .force-light-theme .official-paper,
-.dark .force-light-theme .form-section,
-.dark .force-light-theme section,
-.dark .force-light-theme .valuation-form section,
-.dark .force-light-theme .bg-white,
-.dark .force-light-theme .valuation-question-item,
-.dark .force-light-theme .official-grid,
-.dark .force-light-theme .official-cell {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
-  color: #1e293b !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-/* Headers: MUST be Navy with White Text (Image 1 fix) */
-.dark .force-light-theme .block-header,
-.dark .force-light-theme .subblock-header,
-.dark .force-light-theme .valuation-footer {
-  background: #0d1b2a !important;
-  background-color: #0d1b2a !important;
-}
-
-.dark .force-light-theme .block-header h3,
-.dark .force-light-theme .subblock-header *,
-.dark .force-light-theme .valuation-footer *,
-.dark .force-light-theme .collapse-icon,
-.dark .force-light-theme .block-info {
+.dark .valuation-form .block-header h3,
+.dark .valuation-form .block-header span,
+.dark .valuation-form .subblock-header *,
+.dark .valuation-form .valuation-footer *,
+.dark .valuation-form .grand-total,
+.dark .valuation-form .subtotal-value,
+.dark .valuation-form .summary-value:not(.summary-highlight):not(.additions-value):not(.deductions-value) {
   color: #ffffff !important;
 }
 
-/* Special Case for Subblock Headers (Additions/Deductions) */
-.dark .force-light-theme .subblock-header.additions { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; }
-.dark .force-light-theme .subblock-header.deductions { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
-
-/* Content Typography: Force back to Dark */
-.dark .force-light-theme span:not(.block-tag):not(.upload-btn):not(.btn-official-large *),
-.dark .force-light-theme p,
-.dark .force-light-theme label,
-.dark .force-light-theme strong,
-.dark .force-light-theme b,
-.dark .force-light-theme .question-text,
-.dark .force-light-theme .question-number {
-  color: #1e293b !important;
-}
-
-/* Re-apply white text for spans inside dark headers to avoid the above generic rule */
-.dark .force-light-theme .block-header span,
-.dark .force-light-theme .subblock-header span,
-.dark .force-light-theme .valuation-footer span,
-.dark .force-light-theme .valuation-footer div,
-.dark .force-light-theme .valuation-footer h2,
-.dark .force-light-theme .grand-total,
-.dark .force-light-theme .summary-value {
-  color: #ffffff !important;
-}
-
-.dark .force-light-theme .summary-label {
+.dark .valuation-form .summary-label {
   color: rgba(255, 255, 255, 0.7) !important;
 }
 
-.dark .force-light-theme .summary-value.summary-highlight {
+.dark .valuation-form .currency-subtitle {
   color: var(--gold-accent) !important;
 }
 
-.dark .force-light-theme .summary-value.additions-value {
+.dark .valuation-form .summary-value.additions-value {
   color: #34d399 !important;
 }
 
-.dark .force-light-theme .summary-value.deductions-value {
+.dark .valuation-form .summary-value.deductions-value {
   color: #f87171 !important;
 }
 
-/* Form Actions Buttons */
-.dark .force-light-theme .btn-draft-large {
-  background: white !important;
+.dark .valuation-form .summary-value.summary-highlight {
   color: var(--gold-accent) !important;
-  border: 1px solid var(--gold-accent) !important;
 }
 
-.dark .force-light-theme .btn-official-large {
+.dark .valuation-form .block-tag {
   background: var(--gold-accent) !important;
-  color: white !important;
-  border: none !important;
+  color: #000000 !important;
 }
 
-/* Form Elements */
-.dark .force-light-theme input,
-.dark .force-light-theme select,
-.dark .force-light-theme textarea {
-  background-color: #ffffff !important;
-  color: #1e293b !important;
-  border: 1px solid #cbd5e1 !important;
+.dark .valuation-form .btn-si-no {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
 }
 
-.dark .force-light-theme .btn-si-no {
-  background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  color: #64748b !important;
+.dark .valuation-form .btn-si-no.si-active {
+  background-color: var(--gold-accent) !important;
+  color: #000000 !important;
 }
 
-.dark .force-light-theme .si-active { background-color: #0d1b2a !important; color: #ffffff !important; border-color: #0d1b2a !important; }
-.dark .force-light-theme .no-active { background-color: #64748b !important; color: #ffffff !important; border-color: #475569 !important; }
-
-.dark .force-light-theme .pending-selection {
-  background: #f8fafc !important;
-  border: 1px dashed #cbd5e1 !important;
-  color: #64748b !important;
+.dark .valuation-form .btn-si-no.no-active {
+  background-color: #94a3b8 !important;
+  color: #000000 !important;
 }
