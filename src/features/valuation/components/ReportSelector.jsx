@@ -28,11 +28,11 @@ const ReportSelector = ({ onSelect }) => {
   ];
 
   return (
-    <div style={{ marginBottom: '1.5rem', background: '#f8fafc', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-      <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-muted)' }}>
+    <div className="report-selector-container">
+      <p className="report-selector-title">
         SELECCIONAR FORMATO DE REPORTE:
       </p>
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div className="report-selector-grid">
         {options.map((opt) => {
           const isActive = selected === opt.id;
           const Icon = opt.icon;
@@ -40,31 +40,17 @@ const ReportSelector = ({ onSelect }) => {
             <button
               key={opt.id}
               onClick={() => handleSelect(opt.id)}
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: isActive ? '2px solid var(--gold-accent)' : '1px solid var(--border-color)',
-                backgroundColor: isActive ? 'white' : 'transparent',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                opacity: isActive ? 1 : 0.7,
-                boxShadow: isActive ? '0 4px 6px -1px rgba(0,0,0,0.1)' : 'none'
-              }}
+              className={`report-option-card ${isActive ? 'active' : ''}`}
             >
-              <Icon size={20} color={isActive ? 'var(--primary-color)' : 'var(--text-muted)'} />
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: '600', color: isActive ? 'var(--primary-color)' : 'var(--text-muted)' }}>
+              <Icon size={20} className="report-icon" />
+              <div className="report-option-content">
+                <div className="report-option-label">
                   {opt.label}
                 </div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{opt.desc}</div>
+                <div className="report-option-desc">{opt.desc}</div>
               </div>
             </button>
-          );
+          )
         })}
       </div>
     </div>

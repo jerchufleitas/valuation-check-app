@@ -37,23 +37,23 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
 
   return (
     <div className="report-card fade-in">
-      <div className="report-header" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="report-header">
+        <div className="report-header-title">
           <FileText size={24} className="text-accent" />
           <h2>Dictamen de Valoración</h2>
         </div>
         
         {studioLogo && (
-          <div style={{ textAlign: 'right' }}>
-            <img src={studioLogo} alt="Studio Logo" style={{ height: '40px', objectFit: 'contain' }} />
-            {studioName && <p style={{ fontSize: '0.7rem', color: '#666', fontWeight: 'bold', margin: 0 }}>{studioName}</p>}
+          <div className="report-header-logo">
+            <img src={studioLogo} alt="Studio Logo" />
+            {studioName && <p>{studioName}</p>}
           </div>
         )}
       </div>
 
       <div className="report-summary">
-        <div style={{ marginBottom: '1.5rem', padding: '1rem', borderBottom: '1px solid #eee' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', fontSize: '0.85rem' }}>
+        <div className="report-summary-header">
+          <div className="summary-grid">
             <div>
               <strong>Exportador:</strong> {header.exporterName} <br/>
               <strong>ID Fiscal:</strong> {header.exporterTaxId} <br/>
@@ -127,7 +127,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
         )}
       </div>
 
-      <div style={{ padding: '0 1.5rem' }}>
+      <div className="report-selector-wrapper">
          <ReportSelector onSelect={setReportFormat} />
       </div>
 
