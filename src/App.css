@@ -1192,6 +1192,77 @@ option {
   background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
+/* --- Report Actions Premium Styling --- */
+.report-actions {
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-report-primary,
+.btn-report-secondary {
+  flex: 1;
+  max-width: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.btn-report-primary {
+  background: var(--gold-accent);
+  color: #000000;
+  border: none;
+  box-shadow: 0 4px 12px rgba(196, 161, 89, 0.25);
+}
+
+.btn-report-primary:hover {
+  background: #d4b470;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(196, 161, 89, 0.35);
+}
+
+.btn-report-secondary {
+  background: transparent;
+  color: var(--text-main);
+  border: 2px solid var(--border-color);
+}
+
+.btn-report-secondary:hover {
+  border-color: var(--gold-accent);
+  color: var(--gold-accent);
+  background: rgba(196, 161, 89, 0.05);
+  transform: translateY(-2px);
+}
+
+/* Dark Mode Specific Adjustments for Report Buttons */
+.dark .btn-report-secondary {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.dark .btn-report-secondary:hover {
+  border-color: var(--gold-accent);
+  color: var(--gold-accent);
+  background: rgba(196, 161, 89, 0.1);
+}
+
+.dark .btn-report-primary {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 .app-footer {
   text-align: center;
   padding: 3rem;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, AlertTriangle, FileText, Download } from 'lucide-react';
+import { CheckCircle, AlertTriangle, FileText, Download, Edit2 } from 'lucide-react';
 import { valuationQuestions } from '../data/valuationLogic';
 import { getCurrencySymbol } from '../data/currencyData';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
@@ -132,8 +132,10 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
       </div>
 
       <div className="report-actions">
-        <button className="btn-secondary" onClick={onReset}>Volver a Editar</button>
-        <button className="btn-primary" onClick={() => generateValuationPDF({ 
+        <button className="btn-report-secondary" onClick={onReset}>
+          <Edit2 size={18} /> Volver a Editar
+        </button>
+        <button className="btn-report-primary" onClick={() => generateValuationPDF({ 
           baseValue: item.totalValue, 
           adjustments: [...activeAdds, ...activeSubs.map(s => ({...s, type: 'deduction'}))], 
           currency: transaction.currency, 
