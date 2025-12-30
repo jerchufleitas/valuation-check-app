@@ -2848,56 +2848,119 @@ option {
   }
 }
 
-/* --- TARGETED DARK MODE FIX FOR VALUATION FORM HEADERS & FOOTER --- */
-/* Ensures high contrast white text in dark blocks (Bloques A-D and Footer) */
+/* --- TARGETED DARK MODE FIX FOR VALUATION FORM (NEW VALUATION TAB) --- */
+/* Ensures all elements are perfectly readable and themed in Dark Mode */
 
-.dark .valuation-form .block-header h3,
-.dark .valuation-form .block-header span,
-.dark .valuation-form .subblock-header *,
-.dark .valuation-form .valuation-footer *,
-.dark .valuation-form .grand-total,
-.dark .valuation-form .subtotal-value,
-.dark .valuation-form .summary-value:not(.summary-highlight):not(.additions-value):not(.deductions-value) {
+/* 1. Surfaces & Containers */
+.dark .valuation-form .official-paper,
+.dark .valuation-form .valuation-question-item {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 2. Active Question Highlight (Fix for 'White Green' issue) */
+.dark .valuation-form .valuation-question-item.active {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: #10b981 !important;
+}
+
+/* 3. Inputs and Typography inside Form Groups */
+.dark .valuation-form input,
+.dark .valuation-form select,
+.dark .valuation-form textarea,
+.dark .valuation-form .official-cell input,
+.dark .valuation-form .official-cell select {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Fix for dark options in dark select */
+.dark .valuation-form select option {
+  background-color: #0f172a !important;
   color: #ffffff !important;
 }
 
+.dark .valuation-form .question-text,
+.dark .valuation-form .question-number,
+.dark .valuation-form label,
+.dark .valuation-form strong,
 .dark .valuation-form .summary-label {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: #ffffff !important;
 }
 
-.dark .valuation-form .currency-subtitle {
-  color: var(--gold-accent) !important;
+/* 4. Category Boxes (Interior/Metro, etc.) */
+.dark .valuation-form .btn-category {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-.dark .valuation-form .summary-value.additions-value {
-  color: #34d399 !important;
+.dark .valuation-form .btn-category:hover {
+  border-color: var(--gold-accent) !important;
+  background-color: #243048 !important;
 }
 
-.dark .valuation-form .summary-value.deductions-value {
-  color: #f87171 !important;
+.dark .valuation-form .btn-category .label {
+  color: #ffffff !important;
 }
 
-.dark .valuation-form .summary-value.summary-highlight {
-  color: var(--gold-accent) !important;
+/* 5. Terminal & Selection Panels */
+.dark .valuation-form .terminal-reveal-panel,
+.dark .valuation-form .selection-active-badge {
+  background-color: #1e293b !important;
+  border-color: var(--gold-accent) !important;
 }
 
-.dark .valuation-form .block-tag {
-  background: var(--gold-accent) !important;
-  color: #000000 !important;
-}
-
-.dark .valuation-form .btn-si-no {
+.dark .valuation-form .btn-option-card {
   background-color: rgba(255, 255, 255, 0.05) !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .valuation-form .btn-option-card:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .valuation-form .opt-name {
   color: #ffffff !important;
 }
 
-.dark .valuation-form .btn-si-no.si-active {
-  background-color: var(--gold-accent) !important;
-  color: #000000 !important;
+/* 6. Action Buttons in Footer */
+.dark .valuation-form .btn-draft-large {
+  background-color: transparent !important;
+  color: var(--gold-accent) !important;
+  border: 1px solid var(--gold-accent) !important;
 }
 
-.dark .valuation-form .btn-si-no.no-active {
-  background-color: #94a3b8 !important;
-  color: #000000 !important;
+.dark .valuation-form .btn-draft-large:hover {
+  background-color: rgba(196, 161, 89, 0.1) !important;
 }
+
+.dark .valuation-form .btn-official-large {
+  background-color: var(--gold-accent) !important;
+  color: #000000 !important;
+  border: none !important;
+}
+
+/* 7. Footer Totals & Summary */
+.dark .valuation-form .valuation-footer {
+  background-color: #020617 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .valuation-form .grand-total {
+  color: #ffffff !important;
+}
+
+.dark .valuation-form .valuation-summary {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Re-ensure SI/NO buttons contrast */
+.dark .valuation-form .btn-si-no {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .valuation-form .btn-si-no.si-active { background-color: var(--gold-accent) !important; color: #000000 !important; }
+.dark .valuation-form .btn-si-no.no-active { background-color: #94a3b8 !important; color: #000000 !important; }
