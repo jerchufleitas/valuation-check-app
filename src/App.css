@@ -27,94 +27,93 @@
   --radius: 12px;
 }
 
-/* Dark Mode Overrides - Premium Refinement (Matching Image 1) */
+/* --- Master Dark Mode Overrides: DEFINITIVE NUCLEAR PREMIUM FIX --- */
 .dark {
   --bg-color: #020617;
   --card-bg: #0f172a;
   --panel-bg: #1e293b;
   --text-main: #ffffff !important;
-  --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark .main-workspace { background-color: #020617 !important; }
-.dark body { background-color: #020617 !important; color: #ffffff !important; }
+/* Base resets for Dark Mode */
+.dark .main-workspace, .dark body { 
+  background-color: #020617 !important; 
+  color: #ffffff !important; 
+}
 
-/* Force all white backgrounds to brand navy */
+/* 1. Surfaces & Containers - Forced Navy Transformation */
 .dark .bg-white, 
 .dark .bg-slate-50, 
 .dark .bg-gray-50, 
 .dark .bg-slate-100,
 .dark .official-paper,
-.dark .form-section {
+.dark .form-section,
+.dark .history-container,
+.dark .history-grid,
+.dark .history-list,
+.dark .history-card,
+.dark .history-card-header,
+.dark .history-card-body,
+.dark .history-card-footer,
+.dark .history-list-item,
+.dark .history-list-header,
+.dark .analytics-card,
+.dark .valuation-form section,
+.dark .history-search-bar,
+.dark .bg-slate-50\/50,
+.dark .lg-col-span-2 > div {
   background-color: #0f172a !important;
   background: #0f172a !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Global White Text Overrides */
+/* 2. Global Typography forced to White */
+/* Specific text overrides that are known to fail */
 .dark .text-slate-900, .dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600, .dark .text-slate-500, .dark .text-slate-400,
-.dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700,
+.dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700, .dark .text-gray-600,
 .dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark label, .dark strong, .dark b, .dark span:not(.status-badge) {
   color: #ffffff !important;
 }
 
-/* 1. Global Form Inputs: Premium Navy Style (Matching Image 1) */
+/* Label Fix for better readability */
+.dark label, .dark .info-text label, .dark .valuation-form label, .dark .history-list-header div {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* 3. Global Form Inputs: Premium Navy Style */
 .dark input, 
 .dark select, 
 .dark textarea {
   background-color: rgba(255, 255, 255, 0.05) !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
-.dark input:focus, 
-.dark select:focus, 
-.dark textarea:focus {
+.dark input:focus, .dark select:focus, .dark textarea:focus {
   border-color: var(--gold-accent) !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark input::placeholder {
-  color: rgba(255, 255, 255, 0.3) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
 
-/* 2. Recent Activity Card Redesign */
-.recent-activity-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--card-bg);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  margin-bottom: 1rem;
-}
-
-.recent-activity-card:hover {
-  border-width: 3px !important;
-  border-color: var(--gold-accent) !important;
-  transform: translateY(-2.5px);
-  box-shadow: 0 10px 20px -5px rgba(196, 161, 89, 0.2);
-}
-
-.dark .recent-activity-card:hover {
-  background-color: rgba(255, 255, 255, 0.02) !important;
-}
-
-/* 3. History & Toggles: Fix visibility */
-.dark .view-toggles, .dark .history-actions {
+/* 4. Buttons Overrides */
+.dark .btn-si-no {
   background-color: rgba(255, 255, 255, 0.05) !important;
-  border-radius: 12px;
-  padding: 4px;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
 }
+
+.dark .btn-si-no.si-active { background-color: var(--gold-accent) !important; color: #000000 !important; border-color: var(--gold-accent) !important; }
+.dark .btn-si-no.no-active { background-color: #94a3b8 !important; color: #000000 !important; border-color: #94a3b8 !important; }
+
+.dark .view-toggles, .dark .history-actions { background-color: rgba(255, 255, 255, 0.05) !important; }
 
 .dark .view-btn, .dark .sort-toggle-btn {
   background-color: transparent !important;
   color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark .view-btn.active {
@@ -123,41 +122,25 @@
   border-color: var(--gold-accent) !important;
 }
 
-/* 4. List Mode Logic Fixes */
-.dark .history-list-header {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+.dark .btn-view-history, .dark .btn-list-action {
+  background-color: var(--gold-accent) !important;
+  color: #000000 !important;
+  border: none !important;
 }
 
-.dark .history-list-item {
-  border-bottom-color: rgba(255, 255, 255, 0.05) !important;
-  background-color: transparent !important;
+/* 5. Special History & Activity Fixes */
+.dark .history-card-footer { border-top-color: rgba(255, 255, 255, 0.1) !important; }
+.dark .history-list-header { border-bottom-color: rgba(255, 255, 255, 0.1) !important; }
+
+.dark .recent-activity-card {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
+.dark .recent-activity-card:hover { border-color: var(--gold-accent) !important; border-width: 3px !important; }
 
-.dark .history-list-item:hover {
-  background-color: rgba(255, 255, 255, 0.03) !important;
-}
-
-.dark .col-client, .dark .col-ref, .dark .col-price, .dark .col-id {
-  color: #ffffff !important;
-}
-
-/* Status Badges */
-.status-badge.finalizado { background-color: rgba(5, 150, 105, 0.15); color: #059669; }
-.status-badge.borrador { background-color: rgba(196, 161, 89, 0.15); color: #c4a159; }
-
-/* IDs and Gold highlights */
-.id-gold-accent { color: var(--gold-accent) !important; }
-
-/* Final specificity fixes for block headers */
-.dark .valuation-form .block-header h3 {
-  color: #ffffff !important;
-}
-
-/* Fix for unreadable backgrounds in Dark Mode cards */
-.dark .bg-slate-50\/50, .dark .bg-slate-50 {
-  background-color: rgba(255, 255, 255, 0.08) !important;
-}
+/* Status Badges Colors for better contrast in Dark Mode */
+.dark .status-badge.finalizado { background-color: rgba(16, 185, 129, 0.2) !important; color: #10b981 !important; }
+.dark .status-badge.borrador { background-color: rgba(196, 161, 89, 0.2) !important; color: #c4a159 !important; }
 
 /* Scrollbar adaptation */
 .dark .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
