@@ -2860,8 +2860,8 @@ option {
 
 /* 2. Active Question Highlight (Fix for 'White Green' issue) */
 .dark .valuation-form .valuation-question-item.active {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  background: rgba(16, 185, 129, 0.15) !important;
+  background-color: #064e3b !important; /* Deep Emerald 900 */
+  background: #064e3b !important;
   border-color: #10b981 !important;
 }
 
