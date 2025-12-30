@@ -61,17 +61,26 @@
 .dark .valuation-form section,
 .dark .history-search-bar,
 .dark .bg-slate-50\/50,
-.dark .lg-col-span-2 > div {
+.dark .lg-col-span-2 > div,
+.dark .valuation-question-item,
+.dark .official-grid,
+.dark .official-cell {
   background-color: #0f172a !important;
   background: #0f172a !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* Special fix for active question blocks */
+.dark .valuation-question-item.active {
+  background-color: rgba(5, 150, 105, 0.1) !important;
+  border-color: var(--success-color) !important;
+}
+
 /* 2. Global Typography forced to White */
-/* Specific text overrides that are known to fail */
 .dark .text-slate-900, .dark .text-slate-800, .dark .text-slate-700, .dark .text-slate-600, .dark .text-slate-500, .dark .text-slate-400,
 .dark .text-gray-900, .dark .text-gray-800, .dark .text-gray-700, .dark .text-gray-600,
-.dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark label, .dark strong, .dark b, .dark span:not(.status-badge) {
+.dark h1, .dark h2, .dark h3, .dark h4, .dark p, .dark label, .dark strong, .dark b, 
+.dark span:not(.status-badge), .dark .question-text, .dark .question-number {
   color: #ffffff !important;
 }
 
