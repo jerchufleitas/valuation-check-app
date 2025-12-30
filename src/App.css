@@ -2907,8 +2907,27 @@ option {
 .dark .force-light-theme .block-header span,
 .dark .force-light-theme .subblock-header span,
 .dark .force-light-theme .valuation-footer span,
-.dark .force-light-theme .valuation-footer div {
+.dark .force-light-theme .valuation-footer div,
+.dark .force-light-theme .valuation-footer h2,
+.dark .force-light-theme .grand-total,
+.dark .force-light-theme .summary-value {
   color: #ffffff !important;
+}
+
+.dark .force-light-theme .summary-label {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.dark .force-light-theme .summary-value.summary-highlight {
+  color: var(--gold-accent) !important;
+}
+
+.dark .force-light-theme .summary-value.additions-value {
+  color: #34d399 !important;
+}
+
+.dark .force-light-theme .summary-value.deductions-value {
+  color: #f87171 !important;
 }
 
 /* Form Actions Buttons */
