@@ -155,6 +155,84 @@
 .dark .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
 
+/* 6. Force Light Theme for Valuation Form (Exclusion requested by user) */
+.dark .force-light-theme {
+  background-color: #f0f2f5 !important;
+  padding: 1rem;
+  border-radius: var(--radius);
+  color: #1e293b;
+}
+
+.dark .force-light-theme .official-paper,
+.dark .force-light-theme .form-section,
+.dark .force-light-theme .valuation-form section,
+.dark .force-light-theme .official-grid,
+.dark .force-light-theme .official-cell,
+.dark .force-light-theme .valuation-question-item,
+.dark .force-light-theme .bg-white {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+.dark .force-light-theme .valuation-question-item.active {
+  background-color: #f0fdf4 !important;
+  border-color: #059669 !important;
+}
+
+.dark .force-light-theme h1,
+.dark .force-light-theme h2,
+.dark .force-light-theme h3,
+.dark .force-light-theme h4,
+.dark .force-light-theme p,
+.dark .force-light-theme label,
+.dark .force-light-theme strong,
+.dark .force-light-theme b,
+.dark .force-light-theme span:not(.status-badge),
+.dark .force-light-theme .question-text,
+.dark .force-light-theme .question-number {
+  color: #1e293b !important;
+}
+
+.dark .force-light-theme input,
+.dark .force-light-theme select,
+.dark .force-light-theme textarea {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.dark .force-light-theme input:focus,
+.dark .force-light-theme select:focus,
+.dark .force-light-theme textarea:focus {
+  border-color: var(--primary-color) !important;
+}
+
+.dark .force-light-theme .btn-si-no {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #64748b !important;
+}
+
+.dark .force-light-theme .btn-si-no.si-active { 
+  background-color: var(--primary-color) !important; 
+  color: #ffffff !important; 
+  border-color: var(--primary-color) !important; 
+}
+
+.dark .force-light-theme .btn-si-no.no-active { 
+  background-color: #64748b !important; 
+  color: #ffffff !important; 
+  border-color: #475569 !important; 
+}
+
+.dark .force-light-theme .pending-selection {
+  background-color: #f8fafc !important;
+  border: 1px dashed #cbd5e1 !important;
+  color: #64748b !important;
+}
+
 
 
 
