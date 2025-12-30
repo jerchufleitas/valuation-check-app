@@ -155,46 +155,65 @@
 .dark .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
 .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); }
 
-/* 6. Force Light Theme for Valuation Form (Exclusion requested by user) */
+/* 6. Force Light Theme for Valuation Form (Reverting to original Look) */
 .dark .force-light-theme {
   background-color: #f0f2f5 !important;
-  padding: 1rem;
-  border-radius: var(--radius);
-  color: #1e293b;
+  color: #1e293b !important;
+  --bg-color: #f0f2f5;
+  --card-bg: #ffffff;
+  --panel-bg: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
 }
 
+/* Force backgrounds back to white */
 .dark .force-light-theme .official-paper,
 .dark .force-light-theme .form-section,
+.dark .force-light-theme section,
+.dark .force-light-theme .bg-white,
 .dark .force-light-theme .valuation-form section,
 .dark .force-light-theme .official-grid,
 .dark .force-light-theme .official-cell,
-.dark .force-light-theme .valuation-question-item,
-.dark .force-light-theme .bg-white {
+.dark .force-light-theme .valuation-question-item {
   background-color: #ffffff !important;
   background: #ffffff !important;
   color: #1e293b !important;
-  border: 1px solid #e2e8f0 !important;
+  border-color: #e2e8f0 !important;
 }
 
-.dark .force-light-theme .valuation-question-item.active {
-  background-color: #f0fdf4 !important;
-  border-color: #059669 !important;
+.dark .force-light-theme .official-grid {
+  background-color: #e5e7eb !important;
 }
 
-.dark .force-light-theme h1,
-.dark .force-light-theme h2,
-.dark .force-light-theme h3,
-.dark .force-light-theme h4,
+/* Headers: MUST be Navy with WHITE text (Original Light Mode Look) */
+.dark .force-light-theme .block-header,
+.dark .force-light-theme .subblock-header {
+  background: #0d1b2a !important;
+}
+
+.dark .force-light-theme .subblock-header.additions { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; }
+.dark .force-light-theme .subblock-header.deductions { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
+
+.dark .force-light-theme .block-header h3,
+.dark .force-light-theme .subblock-header *,
+.dark .force-light-theme .block-info,
+.dark .force-light-theme .collapse-icon {
+  color: #ffffff !important;
+}
+
+/* Typography in content areas: MUST be Dark */
 .dark .force-light-theme p,
 .dark .force-light-theme label,
+.dark .force-light-theme span:not(.block-tag):not(.status-badge):not(.upload-btn),
 .dark .force-light-theme strong,
 .dark .force-light-theme b,
-.dark .force-light-theme span:not(.status-badge),
 .dark .force-light-theme .question-text,
 .dark .force-light-theme .question-number {
   color: #1e293b !important;
 }
 
+/* Inputs in the light form */
 .dark .force-light-theme input,
 .dark .force-light-theme select,
 .dark .force-light-theme textarea {
@@ -203,10 +222,13 @@
   border: 1px solid #cbd5e1 !important;
 }
 
-.dark .force-light-theme input:focus,
-.dark .force-light-theme select:focus,
-.dark .force-light-theme textarea:focus {
-  border-color: var(--primary-color) !important;
+.dark .force-light-theme .valuation-footer {
+  background: #0d1b2a !important;
+  color: #ffffff !important;
+}
+
+.dark .force-light-theme .valuation-footer * {
+  color: #ffffff !important;
 }
 
 .dark .force-light-theme .btn-si-no {
@@ -215,20 +237,11 @@
   color: #64748b !important;
 }
 
-.dark .force-light-theme .btn-si-no.si-active { 
-  background-color: var(--primary-color) !important; 
-  color: #ffffff !important; 
-  border-color: var(--primary-color) !important; 
-}
-
-.dark .force-light-theme .btn-si-no.no-active { 
-  background-color: #64748b !important; 
-  color: #ffffff !important; 
-  border-color: #475569 !important; 
-}
+.dark .force-light-theme .si-active { background-color: #0d1b2a !important; color: white !important; }
+.dark .force-light-theme .no-active { background-color: #64748b !important; color: white !important; }
 
 .dark .force-light-theme .pending-selection {
-  background-color: #f8fafc !important;
+  background: #f8fafc !important;
   border: 1px dashed #cbd5e1 !important;
   color: #64748b !important;
 }
