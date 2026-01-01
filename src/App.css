@@ -3082,6 +3082,11 @@ option {
   letter-spacing: 0.05em;
 }
 
+.history-list-header .col-price {
+  text-align: right;
+  padding-right: 1.5rem;
+}
+
 .history-list-item {
   display: grid;
   grid-template-columns: 180px 1fr 1fr 150px 140px;

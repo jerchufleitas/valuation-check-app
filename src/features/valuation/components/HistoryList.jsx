@@ -113,12 +113,12 @@ const HistoryList = ({ user, onSelect }) => {
             {filteredValuations.map((valuation) => (
               <div key={valuation.id} className="history-card">
                 <div className="history-card-header">
-                  <div className="header-id-group">
-                    <span className="valuation-id id-gold-accent">#{valuation.id.substring(0, 6)}</span>
+                  <div className="header-id-group flex items-center gap-2">
                     <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
                       <span className="status-dot"></span>
                       {valuation.status || 'BORRADOR'}
                     </span>
+                    <span className="valuation-id id-gold-accent">#{valuation.id.substring(0, 6)}</span>
                   </div>
                   <span className="valuation-date">
                     <Calendar size={14} />
@@ -173,13 +173,15 @@ const HistoryList = ({ user, onSelect }) => {
                 <div key={valuation.id} className="history-list-item">
                   <div className="col-id">
                     <div className="list-id-date-block">
-                      <span className="list-id-subtle">#{valuation.id.substring(0, 6).toUpperCase()}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()} scale-90 origin-left`}>
+                          <span className="status-dot"></span>
+                          {valuation.status || 'BORRADOR'}
+                        </span>
+                        <span className="list-id-subtle">#{valuation.id.substring(0, 6).toUpperCase()}</span>
+                      </div>
                       <span className="list-date-stylized">{new Date(valuation.updatedAt || valuation.createdAt).toLocaleDateString()}</span>
                     </div>
-                    <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
-                      <span className="status-dot"></span>
-                      {valuation.status || 'BORRADOR'}
-                    </span>
                   </div>
                   <div className="col-client">
                     <div className="list-info-with-icon">
