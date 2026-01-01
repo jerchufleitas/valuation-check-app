@@ -3,11 +3,17 @@ import { useState, useEffect } from "react";
 import { getValuations } from "../../../firebase/valuationService";
 import { motion } from "motion/react";
 
-export function RecentActivity({ setView, user, onSelect }) {
-  const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
+export function RecentActivity({ setView, user, onSelect, initialData, loading: parentLoading }) {
+  const [activities, setActivities] = useState(initialData || []);
+  const [loading, setLoading] = useState(initialData ? false : true);
 
   useEffect(() => {
+    if (initialData) {
+      setActivities(initialData);
+      setLoading(parentLoading !== undefined ? parentLoading : false);
+      return;
+    }
+
     const fetchRecent = async () => {
       if (!user?.uid) return;
       try {
@@ -21,7 +27,7 @@ export function RecentActivity({ setView, user, onSelect }) {
       }
     };
     fetchRecent();
-  }, [user?.uid]);
+  }, [user?.uid, initialData, parentLoading]);
 
   const getTimeAgo = (date) => {
     if (!date) return 'Desconocido';
