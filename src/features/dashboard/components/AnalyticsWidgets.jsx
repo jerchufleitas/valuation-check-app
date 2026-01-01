@@ -5,49 +5,63 @@ import { useMemo } from "react";
 export function AnalyticsWidgets({ valuations = [], loading }) {
   const stats = useMemo(() => {
     const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(now.getDate() - 30);
 
-    const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    const sixtyDaysAgo = new Date();
+    sixtyDaysAgo.setDate(now.getDate() - 60);
 
-    const thisMonthDocs = valuations.filter(v => {
+    const parseValue = (val) => {
+      if (typeof val === 'number') return val;
+      if (!val || typeof val !== 'string') return 0;
+      // Remove currency symbols, units like "DOL", spaces, and thousands separators (.)
+      // Then turn decimal comma (,) into a dot (.)
+      const clean = val.replace(/[^\d,]/g, '').replace(',', '.');
+      const parsed = parseFloat(clean);
+      return isNaN(parsed) ? 0 : parsed;
+    };
+
+    const recentDocs = valuations.filter(v => {
       const d = new Date(v.updatedAt || v.createdAt);
-      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      return d >= thirtyDaysAgo;
     });
 
-    const lastMonthDocs = valuations.filter(v => {
+    const previousDocs = valuations.filter(v => {
       const d = new Date(v.updatedAt || v.createdAt);
-      return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+      return d >= sixtyDaysAgo && d < thirtyDaysAgo;
     });
 
-    // 1. Valoraciones este mes
-    const countThisMonth = thisMonthDocs.length;
-    const countLastMonth = lastMonthDocs.length;
-    const countChange = countLastMonth === 0 
-      ? (countThisMonth > 0 ? "+100%" : "0%") 
-      : `${Math.round(((countThisMonth - countLastMonth) / countLastMonth) * 100)}%`;
+    // 1. Valoraciones (Últimos 30 días)
+    const countRecent = recentDocs.length;
+    const countPrevious = previousDocs.length;
+    let countChange = "0%";
+    if (countPrevious > 0) {
+      countChange = `${Math.round(((countRecent - countPrevious) / countPrevious) * 100)}%`;
+    } else if (countRecent > 0) {
+      countChange = "+100%";
+    }
 
     // 2. Valor Total Procesado
-    const totalThisMonth = thisMonthDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || 0;
-      const numericVal = typeof val === 'string' ? parseFloat(val.replace(/\./g, '').replace(',', '.')) : val;
-      return acc + (isNaN(numericVal) ? 0 : numericVal);
+    const totalRecent = recentDocs.reduce((acc, curr) => {
+      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || 0;
+      return acc + parseValue(val);
     }, 0);
 
-    const totalLastMonth = lastMonthDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || 0;
-      const numericVal = typeof val === 'string' ? parseFloat(val.replace(/\./g, '').replace(',', '.')) : val;
-      return acc + (isNaN(numericVal) ? 0 : numericVal);
+    const totalPrevious = previousDocs.reduce((acc, curr) => {
+      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || 0;
+      return acc + parseValue(val);
     }, 0);
 
-    const totalChange = totalLastMonth === 0 
-      ? (totalThisMonth > 0 ? "+100%" : "0%") 
-      : `${Math.round(((totalThisMonth - totalLastMonth) / totalLastMonth) * 100)}%`;
+    let totalChange = "0%";
+    if (totalPrevious > 0) {
+      totalChange = `${Math.round(((totalRecent - totalPrevious) / totalPrevious) * 100)}%`;
+    } else if (totalRecent > 0) {
+      totalChange = "+100%";
+    }
 
     const formatCurrency = (val) => {
-      if (val >= 1000000) return `USD ${(val / 1000000).toFixed(1)}M`;
-      if (val >= 1000) return `USD ${(val / 1000).toFixed(0)}K`;
+      if (val >= 1000000) return `USD ${(val / 1000000).toFixed(2)}M`;
+      if (val >= 1000) return `USD ${(val / 1000).toFixed(1)}K`;
       return `USD ${val.toFixed(0)}`;
     };
 
@@ -57,20 +71,17 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       ? Math.round((finalizedCount / valuations.length) * 100) 
       : 0;
     
-    // Simulación de cambio de eficiencia (puedes ajustarlo si tienes histórico)
-    const efficiencyChange = efficiency > 0 ? "OPTIMIZADO" : "N/A";
-
     return [
       {
-        title: "Valoraciones este mes",
-        value: countThisMonth.toString(),
+        title: "Valoraciones (30 días)",
+        value: countRecent.toString(),
         change: countChange.startsWith('-') ? countChange : (countChange === '0%' ? '0%' : `+${countChange}`),
         icon: TrendingUp,
         color: "#c4a159",
       },
       {
         title: "Valor Total Procesado",
-        value: formatCurrency(totalThisMonth),
+        value: formatCurrency(totalRecent),
         change: totalChange.startsWith('-') ? totalChange : (totalChange === '0%' ? '0%' : `+${totalChange}`),
         icon: DollarSign,
         color: "#3b82f6",
@@ -78,7 +89,7 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       {
         title: "Tasa de Eficiencia",
         value: `${efficiency}%`,
-        change: efficiencyChange,
+        change: efficiency > 80 ? "ALTA" : (efficiency > 50 ? "MEDIA" : "MEJORABLE"),
         icon: Activity,
         color: "#059669",
       },
