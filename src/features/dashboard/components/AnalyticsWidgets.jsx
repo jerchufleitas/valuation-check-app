@@ -8,21 +8,6 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(now.getDate() - 30);
 
-    const sixtyDaysAgo = new Date();
-    sixtyDaysAgo.setDate(now.getDate() - 60);
-
-    // Tasas de conversión fijas (Basadas en USD como base)
-    const conversionRates = {
-      'DOL': 1.0,
-      '060': 1.08, // EURO
-      '012': 0.18, // REAL
-      '021': 1.27, // LIBRA
-      'PES': 0.001, // PESO ARG (Estimado para dashboard)
-      '011': 0.025, // PESO URU
-      '009': 1.15,  // FRANCO SUIZO
-      '061': 0.14,  // YUAN
-    };
-
     const parseValue = (val) => {
       if (typeof val === 'number') return val;
       if (!val) return 0;
@@ -34,14 +19,6 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
         return parseFloat(str.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
       }
       return parseFloat(str.replace(/[^\d.]/g, '')) || 0;
-    };
-
-    const getUsdValue = (v) => {
-      const value = v.valoracion?.totales?.fob || v.item?.totalValue || v.precioBase || v.totalValue || 0;
-      const currency = v.transaction?.currency || 'DOL';
-      const num = parseValue(value);
-      const rate = conversionRates[currency] || 1.0;
-      return num * rate;
     };
 
     const parseDate = (v) => {
@@ -56,40 +33,27 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       return d >= thirtyDaysAgo;
     });
 
-    const previousDocs = valuations.filter(v => {
-      const d = parseDate(v);
-      return d >= sixtyDaysAgo && d < thirtyDaysAgo;
-    });
-
-    // Detectar si hay múltiples divisas en el periodo reciente
-    const uniqueCurrencies = [...new Set(recentDocs.map(v => v.transaction?.currency || 'DOL'))];
-    const isMultiCurrency = uniqueCurrencies.length > 1;
-
     // 1. Operaciones (Móvil 30d)
     const countRecent = recentDocs.length;
-    const countPrevious = previousDocs.length;
-    let countChange = "0%";
-    if (countPrevious > 0) {
-      countChange = `${Math.round(((countRecent - countPrevious) / countPrevious) * 100)}%`;
-    } else if (countRecent > 0) {
-      countChange = "+100%";
-    }
 
-    // 2. Capital Total Procesado (Normalizado a USD)
-    const totalRecent = recentDocs.reduce((acc, curr) => acc + getUsdValue(curr), 0);
-    const totalPrevious = previousDocs.reduce((acc, curr) => acc + getUsdValue(curr), 0);
+    // 2. Capital por Divisa (Sin mezclar)
+    const totalsByCurrency = recentDocs.reduce((acc, curr) => {
+      const currency = curr.transaction?.currency || 'DOL';
+      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
+      acc[currency] = (acc[currency] || 0) + parseValue(val);
+      return acc;
+    }, {});
 
-    let totalChange = "0%";
-    if (totalPrevious > 0) {
-      totalChange = `${Math.round(((totalRecent - totalPrevious) / totalPrevious) * 100)}%`;
-    } else if (totalRecent > 0) {
-      totalChange = "+100%";
-    }
+    const sortedCurrencies = Object.keys(totalsByCurrency).sort((a, b) => totalsByCurrency[b] - totalsByCurrency[a]);
+    const mainCurrency = sortedCurrencies[0] || 'DOL';
+    const otherCurrencies = sortedCurrencies.slice(1);
 
-    const formatCurrency = (val) => {
-      if (val >= 1000000) return `USD ${(val / 1000000).toFixed(2)}M`;
-      if (val >= 1000) return `USD ${(val / 1000).toFixed(1)}K`;
-      return `USD ${val.toFixed(0)}`;
+    const formatShort = (val, code) => {
+      let formatted = val;
+      if (val >= 1000000) formatted = `${(val / 1000000).toFixed(2)}M`;
+      else if (val >= 1000) formatted = `${(val / 1000).toFixed(1)}K`;
+      else formatted = val.toFixed(0);
+      return `${code} ${formatted}`;
     };
 
     // 3. Tasa de Precisión (Histórica)
@@ -102,14 +66,15 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       {
         title: "OPERACIONES (30 DÍAS)",
         value: countRecent.toString(),
-        change: countChange.startsWith('-') ? countChange : (countChange === '0%' ? '0%' : `+${countChange}`),
+        change: countRecent > 0 ? "ACTIVO" : "SIN DATOS",
         icon: TrendingUp,
         color: "#c4a159",
       },
       {
         title: "CAPITAL PROCESADO",
-        value: formatCurrency(totalRecent),
-        change: isMultiCurrency ? "+Multidivisa" : (totalChange.startsWith('-') ? totalChange : (totalChange === '0%' ? '0%' : `+${totalChange}`)),
+        value: totalsByCurrency[mainCurrency] ? formatShort(totalsByCurrency[mainCurrency], mainCurrency) : "USD 0",
+        subValue: otherCurrencies.length > 0 ? `+ ${otherCurrencies.map(c => formatShort(totalsByCurrency[c], c)).join(', ')}` : null,
+        change: otherCurrencies.length > 0 ? "MULTIDIVISA" : "NOMINAL",
         icon: DollarSign,
         color: "#3b82f6",
       },
@@ -139,9 +104,8 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {stats.map((card, index) => {
         const Icon = card.icon;
-        const isNeutral = card.change === "0%" || card.change === "OPTIMIZADO" || card.change === "N/A";
-        const isNegative = card.change.startsWith("-");
-
+        const isNeutral = card.change === "NOMINAL" || card.change === "ACTIVO" || card.change === "MULTIDIVISA";
+        
         return (
           <motion.div
             key={card.title}
@@ -161,18 +125,23 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
                   <Icon className="w-6 h-6" style={{ color: card.color }} />
                 </div>
                 <span
-                  className="text-xs font-bold px-3 py-1 rounded-lg"
+                  className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-tighter"
                   style={{
-                    backgroundColor: isNegative ? 'rgba(239, 68, 68, 0.1)' : `${card.color}10`,
-                    color: isNegative ? '#ef4444' : (isNeutral ? card.color : card.color),
+                    backgroundColor: `${card.color}10`,
+                    color: card.color,
                   }}
                 >
                   {card.change}
                 </span>
               </div>
 
-              <h3 className="text-3xl mb-1 text-slate-900 font-bold">{card.value}</h3>
-              <p className="text-sm text-slate-500 font-bold uppercase tracking-wider">{card.title}</p>
+              <h3 className="text-2xl mb-1 text-slate-900 font-bold leading-tight">{card.value}</h3>
+              {card.subValue && (
+                <p className="text-[11px] font-semibold text-slate-400 mb-2 truncate" title={card.subValue}>
+                  {card.subValue}
+                </p>
+              )}
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">{card.title}</p>
             </div>
           </motion.div>
         );
