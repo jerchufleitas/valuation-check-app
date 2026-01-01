@@ -11,21 +11,37 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(now.getDate() - 60);
 
+    // Tasas de conversión fijas (Basadas en USD como base)
+    const conversionRates = {
+      'DOL': 1.0,
+      '060': 1.08, // EURO
+      '012': 0.18, // REAL
+      '021': 1.27, // LIBRA
+      'PES': 0.001, // PESO ARG (Estimado para dashboard)
+      '011': 0.025, // PESO URU
+      '009': 1.15,  // FRANCO SUIZO
+      '061': 0.14,  // YUAN
+    };
+
     const parseValue = (val) => {
       if (typeof val === 'number') return val;
       if (!val) return 0;
       const str = String(val);
-      // Remove everything except digits and commas/dots
-      // If it has both . and , (like 1.020,50), remove . and replace , with .
       if (str.includes('.') && str.includes(',')) {
         return parseFloat(str.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
       }
-      // If it only has comma as decimal (like 2550,00)
       if (str.includes(',') && !str.includes('.')) {
         return parseFloat(str.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
       }
-      // Standard US format or plain number
       return parseFloat(str.replace(/[^\d.]/g, '')) || 0;
+    };
+
+    const getUsdValue = (v) => {
+      const value = v.valoracion?.totales?.fob || v.item?.totalValue || v.precioBase || v.totalValue || 0;
+      const currency = v.transaction?.currency || 'DOL';
+      const num = parseValue(value);
+      const rate = conversionRates[currency] || 1.0;
+      return num * rate;
     };
 
     const parseDate = (v) => {
@@ -45,7 +61,11 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       return d >= sixtyDaysAgo && d < thirtyDaysAgo;
     });
 
-    // 1. Valoraciones (Móvil 30d)
+    // Detectar si hay múltiples divisas en el periodo reciente
+    const uniqueCurrencies = [...new Set(recentDocs.map(v => v.transaction?.currency || 'DOL'))];
+    const isMultiCurrency = uniqueCurrencies.length > 1;
+
+    // 1. Operaciones (Móvil 30d)
     const countRecent = recentDocs.length;
     const countPrevious = previousDocs.length;
     let countChange = "0%";
@@ -55,16 +75,9 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       countChange = "+100%";
     }
 
-    // 2. Capital Total Procesado (Móvil 30d)
-    const totalRecent = recentDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
-      return acc + parseValue(val);
-    }, 0);
-
-    const totalPrevious = previousDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
-      return acc + parseValue(val);
-    }, 0);
+    // 2. Capital Total Procesado (Normalizado a USD)
+    const totalRecent = recentDocs.reduce((acc, curr) => acc + getUsdValue(curr), 0);
+    const totalPrevious = previousDocs.reduce((acc, curr) => acc + getUsdValue(curr), 0);
 
     let totalChange = "0%";
     if (totalPrevious > 0) {
@@ -96,7 +109,7 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       {
         title: "CAPITAL PROCESADO",
         value: formatCurrency(totalRecent),
-        change: totalChange.startsWith('-') ? totalChange : (totalChange === '0%' ? '0%' : `+${totalChange}`),
+        change: isMultiCurrency ? "+Multidivisa" : (totalChange.startsWith('-') ? totalChange : (totalChange === '0%' ? '0%' : `+${totalChange}`)),
         icon: DollarSign,
         color: "#3b82f6",
       },
