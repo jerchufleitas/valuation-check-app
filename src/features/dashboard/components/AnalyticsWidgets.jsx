@@ -1,6 +1,7 @@
 import { TrendingUp, DollarSign, Activity, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useMemo } from "react";
+import { getCurrencyLabel, parseRecordDate } from "../../../utils/formatters";
 
 export function AnalyticsWidgets({ valuations = [], loading }) {
   const stats = useMemo(() => {
@@ -21,15 +22,8 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       return parseFloat(str.replace(/[^\d.]/g, '')) || 0;
     };
 
-    const parseDate = (v) => {
-      const val = v.updatedAt || v.createdAt || (v.serverUpdatedAt?.toDate ? v.serverUpdatedAt.toDate() : null);
-      if (!val) return new Date(0);
-      const d = new Date(val);
-      return isNaN(d.getTime()) ? new Date(0) : d;
-    };
-
     const recentDocs = valuations.filter(v => {
-      const d = parseDate(v);
+      const d = parseRecordDate(v);
       return d >= thirtyDaysAgo;
     });
 
@@ -38,22 +32,23 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
 
     // 2. Capital por Divisa (Sin mezclar)
     const totalsByCurrency = recentDocs.reduce((acc, curr) => {
-      const currency = curr.transaction?.currency || 'DOL';
+      const rawCode = curr.transaction?.currency || 'DOL';
+      const label = getCurrencyLabel(rawCode);
       const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
-      acc[currency] = (acc[currency] || 0) + parseValue(val);
+      acc[label] = (acc[label] || 0) + parseValue(val);
       return acc;
     }, {});
 
-    const sortedCurrencies = Object.keys(totalsByCurrency).sort((a, b) => totalsByCurrency[b] - totalsByCurrency[a]);
-    const mainCurrency = sortedCurrencies[0] || 'DOL';
-    const otherCurrencies = sortedCurrencies.slice(1);
+    const sortedLabels = Object.keys(totalsByCurrency).sort((a, b) => totalsByCurrency[b] - totalsByCurrency[a]);
+    const mainLabel = sortedLabels[0] || 'USD';
+    const otherLabels = sortedLabels.slice(1);
 
-    const formatShort = (val, code) => {
+    const formatShort = (val, label) => {
       let formatted = val;
       if (val >= 1000000) formatted = `${(val / 1000000).toFixed(2)}M`;
       else if (val >= 1000) formatted = `${(val / 1000).toFixed(1)}K`;
       else formatted = val.toFixed(0);
-      return `${code} ${formatted}`;
+      return `${label} ${formatted}`;
     };
 
     // 3. Tasa de Precisión (Histórica)
@@ -66,15 +61,15 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       {
         title: "OPERACIONES (30 DÍAS)",
         value: countRecent.toString(),
-        change: countRecent > 0 ? "ACTIVO" : "SIN DATOS",
+        change: countRecent > 0 ? "EN CURSO" : "SIN DATOS",
         icon: TrendingUp,
         color: "#c4a159",
       },
       {
         title: "CAPITAL PROCESADO",
-        value: totalsByCurrency[mainCurrency] ? formatShort(totalsByCurrency[mainCurrency], mainCurrency) : "USD 0",
-        subValue: otherCurrencies.length > 0 ? `+ ${otherCurrencies.map(c => formatShort(totalsByCurrency[c], c)).join(', ')}` : null,
-        change: otherCurrencies.length > 0 ? "MULTIDIVISA" : "NOMINAL",
+        value: totalsByCurrency[mainLabel] ? formatShort(totalsByCurrency[mainLabel], mainLabel) : "USD 0",
+        subValue: otherLabels.length > 0 ? `+ ${otherLabels.map(l => formatShort(totalsByCurrency[l], l)).join(', ')}` : null,
+        change: otherLabels.length > 0 ? "FLEXIBLE" : "NOMINAL",
         icon: DollarSign,
         color: "#3b82f6",
       },
@@ -104,7 +99,6 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {stats.map((card, index) => {
         const Icon = card.icon;
-        const isNeutral = card.change === "NOMINAL" || card.change === "ACTIVO" || card.change === "MULTIDIVISA";
         
         return (
           <motion.div

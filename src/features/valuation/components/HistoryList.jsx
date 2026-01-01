@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getValuations } from '../../../firebase/valuationService';
 import { Calendar, User, FileText, ChevronRight, Search, Loader2, LayoutGrid, List, SortAsc, SortDesc } from 'lucide-react';
+import { getCurrencyLabel, parseRecordDate } from '../../../utils/formatters';
 
 const HistoryList = ({ user, onSelect }) => {
   const [valuations, setValuations] = useState([]);
@@ -25,8 +26,8 @@ const HistoryList = ({ user, onSelect }) => {
   }, [user.uid]);
 
   const sortedValuations = [...valuations].sort((a, b) => {
-    const dateA = new Date(a.updatedAt || a.createdAt);
-    const dateB = new Date(b.updatedAt || b.createdAt);
+    const dateA = parseRecordDate(a);
+    const dateB = parseRecordDate(b);
     return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
   });
 
@@ -144,7 +145,7 @@ const HistoryList = ({ user, onSelect }) => {
 
                 <div className="history-card-footer">
                   <span className="price-tag">
-                    {valuation.transaction?.currency || 'USD'} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                    {getCurrencyLabel(valuation.transaction?.currency)} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                   </span>
                   <button 
                     className="btn-view-history" 
@@ -180,7 +181,7 @@ const HistoryList = ({ user, onSelect }) => {
                 <div className="col-client font-bold">{valuation.metadata?.cliente || 'Sin nombre'}</div>
                 <div className="col-ref text-muted">{valuation.metadata?.referencia || 'Sin ref.'}</div>
                 <div className="col-price font-bold text-slate-800">
-                  {valuation.transaction?.currency || 'USD'} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                  {getCurrencyLabel(valuation.transaction?.currency)} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </div>
                 <div className="col-action">
                   <button 

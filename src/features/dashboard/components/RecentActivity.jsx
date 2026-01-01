@@ -2,6 +2,7 @@ import { FileText, ChevronRight, Clock, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getValuations } from "../../../firebase/valuationService";
 import { motion } from "motion/react";
+import { getCurrencyLabel, parseRecordDate } from "../../../utils/formatters";
 
 export function RecentActivity({ setView, user, onSelect, initialData, loading: parentLoading }) {
   const [activities, setActivities] = useState(initialData || []);
@@ -102,11 +103,11 @@ export function RecentActivity({ setView, user, onSelect, initialData, loading: 
               <div className="flex flex-col items-end gap-2">
                 <div className="text-right">
                   <p className="text-lg font-bold text-slate-900">
-                    {item.transaction?.currency || 'USD'} {item.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                    {getCurrencyLabel(item.transaction?.currency)} {item.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                   </p>
                   <div className="flex items-center justify-end gap-1.5 text-slate-400 text-xs font-bold uppercase tracking-wider">
                     <Clock className="w-3.5 h-3.5" />
-                    {getTimeAgo(item.updatedAt || item.createdAt)}
+                    {getTimeAgo(parseRecordDate(item))}
                   </div>
                 </div>
                 <button 
