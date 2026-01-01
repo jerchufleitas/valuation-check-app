@@ -83,9 +83,14 @@ function App() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = (dataToEdit) => {
     setResult(null);
-    setEditingDraft(null);
+    if (dataToEdit && typeof dataToEdit === 'object') {
+      setEditingDraft(dataToEdit);
+      setView('form');
+    } else {
+      setEditingDraft(null);
+    }
   };
 
   const handleSetView = (newView) => {

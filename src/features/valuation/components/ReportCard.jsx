@@ -173,7 +173,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
       </div>
 
       <div className="report-actions">
-        <button className="btn-report-secondary" onClick={onReset}>
+        <button className="btn-report-secondary" onClick={() => onReset(blocks)}>
           <Edit2 size={18} /> Volver a Editar
         </button>
         <button className="btn-report-primary" onClick={() => generateValuationPDF({ 
