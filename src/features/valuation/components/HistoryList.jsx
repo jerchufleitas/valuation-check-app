@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getValuations } from '../../../firebase/valuationService';
-import { Calendar, User, FileText, ChevronRight, Search, Loader2, LayoutGrid, List, SortAsc, SortDesc } from 'lucide-react';
+import { Calendar, User, FileText, ChevronRight, Search, Loader2, LayoutGrid, List, SortAsc, SortDesc, Building2, Hash, FileDigit } from 'lucide-react';
 import { getCurrencyLabel, parseRecordDate } from '../../../utils/formatters';
 
 const HistoryList = ({ user, onSelect }) => {
@@ -114,8 +114,9 @@ const HistoryList = ({ user, onSelect }) => {
               <div key={valuation.id} className="history-card">
                 <div className="history-card-header">
                   <div className="header-id-group">
-                    <span className="valuation-id id-gold-accent">ID: {valuation.id.substring(0, 8)}...</span>
+                    <span className="valuation-id id-gold-accent">#{valuation.id.substring(0, 6)}</span>
                     <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
+                      <span className="status-dot"></span>
                       {valuation.status || 'BORRADOR'}
                     </span>
                   </div>
@@ -145,7 +146,8 @@ const HistoryList = ({ user, onSelect }) => {
 
                 <div className="history-card-footer">
                   <span className="price-tag">
-                    {getCurrencyLabel(valuation.transaction?.currency)} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                    <span className="text-[10px] opacity-60 font-bold mr-1">{getCurrencyLabel(valuation.transaction?.currency)}</span>
+                    {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                   </span>
                   <button 
                     className="btn-view-history" 
@@ -167,32 +169,46 @@ const HistoryList = ({ user, onSelect }) => {
               <div className="col-price">MONTO</div>
               <div className="col-action">ACCION</div>
             </div>
-            {filteredValuations.map((valuation) => (
-              <div key={valuation.id} className="history-list-item">
-                <div className="col-id">
-                  <div className="list-id-group">
-                    <span className="list-id id-gold-accent">#{valuation.id.substring(0, 6)}</span>
+              {filteredValuations.map((valuation) => (
+                <div key={valuation.id} className="history-list-item">
+                  <div className="col-id">
+                    <div className="list-id-date-block">
+                      <span className="list-id-subtle">#{valuation.id.substring(0, 6).toUpperCase()}</span>
+                      <span className="list-date-stylized">{new Date(valuation.updatedAt || valuation.createdAt).toLocaleDateString()}</span>
+                    </div>
                     <span className={`status-badge ${(valuation.status || 'BORRADOR').toLowerCase()}`}>
+                      <span className="status-dot"></span>
                       {valuation.status || 'BORRADOR'}
                     </span>
                   </div>
-                  <span className="list-date">{new Date(valuation.updatedAt || valuation.createdAt).toLocaleDateString()}</span>
+                  <div className="col-client">
+                    <div className="list-info-with-icon">
+                      <Building2 size={16} className="list-info-icon" />
+                      <span className="font-bold text-slate-800 dark:text-slate-200">{valuation.metadata?.cliente || 'Sin nombre'}</span>
+                    </div>
+                  </div>
+                  <div className="col-ref">
+                    <div className="list-info-with-icon">
+                      <FileDigit size={16} className="list-info-icon" />
+                      <span className="text-muted font-medium italic">{valuation.metadata?.referencia || 'Sin ref.'}</span>
+                    </div>
+                  </div>
+                  <div className="col-price">
+                    <div className="list-monto-group">
+                      <span className="list-currency-tag">{getCurrencyLabel(valuation.transaction?.currency)}</span>
+                      <span className="list-amount-value">{valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  </div>
+                  <div className="col-action">
+                    <button 
+                      className="btn-list-action"
+                      onClick={() => onSelect(valuation)}
+                    >
+                      {(valuation.status || 'BORRADOR') === 'BORRADOR' ? 'CONTINUAR' : 'VER REPORTE'}
+                    </button>
+                  </div>
                 </div>
-                <div className="col-client font-bold">{valuation.metadata?.cliente || 'Sin nombre'}</div>
-                <div className="col-ref text-muted">{valuation.metadata?.referencia || 'Sin ref.'}</div>
-                <div className="col-price font-bold text-slate-800">
-                  {getCurrencyLabel(valuation.transaction?.currency)} {valuation.valoracion?.precioBase?.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
-                </div>
-                <div className="col-action">
-                  <button 
-                    className="btn-list-action"
-                    onClick={() => onSelect(valuation)}
-                  >
-                    {(valuation.status || 'BORRADOR') === 'BORRADOR' ? 'CONTINUAR' : 'VER REPORTE'}
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>

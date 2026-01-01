@@ -539,9 +539,11 @@
   margin-top: 0.1rem;
 }
 
-.ncm-content {
+.ncm-.col-id {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
 }
 
 .ncm-code {
@@ -2463,24 +2465,139 @@ option {
   opacity: 0.8;
 }
 
-/* Status Badges */
+/* Status Badges - Premium Glassmorphism */
 .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px; /* Pill style */
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  backdrop-filter: blur(4px);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .status-badge.finalizado {
-  background: rgba(5, 150, 105, 0.1);
+  background: rgba(5, 150, 105, 0.08); /* Emerald */
   color: #059669;
+  border-color: rgba(5, 150, 105, 0.15);
+}
+.status-badge.finalizado .status-dot {
+  background-color: #059669;
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4);
 }
 
 .status-badge.borrador {
-  background: rgba(196, 161, 89, 0.1);
+  background: rgba(196, 161, 89, 0.08); /* Gold */
   color: #c4a159;
+  border-color: rgba(196, 161, 89, 0.15);
+}
+.status-badge.borrador .status-dot {
+  background-color: #c4a159;
+  box-shadow: 0 0 8px rgba(196, 161, 89, 0.4);
+}
+
+.dark .status-badge.finalizado {
+  background: rgba(52, 211, 153, 0.1);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.2);
+}
+.dark .status-badge.borrador {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.2);
+}
+
+/* List Item Typography & Hierarchy */
+.list-id-date-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.list-id-subtle {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0.65;
+  font-weight: 500;
+}
+
+.list-date-stylized {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.list-info-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-info-icon {
+  color: var(--text-muted);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.list-monto-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.list-currency-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: var(--border-color);
+  padding: 1px 4px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.list-amount-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.dark .list-amount-value {
+  color: #f8fafc;
+}
+
+.dark .list-id-subtle {
+  color: #94a3b8;
+  opacity: 0.5;
+}
+
+.dark .list-date-stylized {
+  color: #f1f5f9;
+}
+
+.dark .list-info-icon {
+  color: #94a3b8;
+  opacity: 0.4;
+}
+
+.dark .list-currency-tag {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
 }
 
 .btn-content {
@@ -2859,7 +2976,7 @@ option {
 
 .history-list-header {
   display: grid;
-  grid-template-columns: 120px 1fr 1fr 150px 120px;
+  grid-template-columns: 180px 1fr 1fr 150px 140px;
   padding: 1rem 1.5rem;
   background: var(--panel-bg);
   border-bottom: 1px solid var(--border-color);
@@ -2872,7 +2989,7 @@ option {
 
 .history-list-item {
   display: grid;
-  grid-template-columns: 120px 1fr 1fr 150px 120px;
+  grid-template-columns: 180px 1fr 1fr 150px 140px;
   padding: 1.25rem 1.5rem;
   align-items: center;
   border-bottom: 1px solid var(--border-color);
@@ -3189,3 +3306,32 @@ option {
 
 .dark .valuation-form .btn-si-no.si-active { background-color: var(--gold-accent) !important; color: #000000 !important; }
 .dark .valuation-form .btn-si-no.no-active { background-color: #94a3b8 !important; color: #000000 !important; }
+
+/* ========================================
+   LIST VIEW REFINEMENTS
+   ======================================== */
+.col-id {
+  display: flex;
+  flex-direction: column !important;
+  gap: 8px !important;
+  align-items: flex-start !important;
+}
+
+.col-client, .col-ref {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.dark .history-list-item:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.dark .history-list {
+  background: var(--card-bg) !important;
+}
+
+.list-info-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
