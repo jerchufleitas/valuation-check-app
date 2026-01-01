@@ -1378,6 +1378,33 @@ option {
   pointer-events: all;
 }
 
+.summary-total.premium-total {
+  background: var(--primary-color);
+  color: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .summary-total.premium-total {
+  background: var(--gold-accent);
+  color: var(--primary-color);
+}
+
+.premium-total .label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+.premium-total .value.total {
+  font-size: 1.75rem !important;
+  font-weight: 800;
+}
+
 .chatbot-header {
   background: var(--primary-color);
   color: white;
@@ -2889,7 +2916,24 @@ option {
   width: 100%;
 }
 
-.history-container {
+/* Standard Utilities */
+.flex { display: flex !important; }
+.items-center { align-items: center !important; }
+.items-end { align-items: flex-end !important; }
+.justify-between { justify-content: space-between !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.ml-4 { margin-left: 1rem !important; }
+.mt-1 { margin-top: 0.25rem !important; }
+.text-xs { font-size: 0.75rem !important; }
+.text-sm { font-size: 0.875rem !important; }
+.font-bold { font-weight: 700 !important; }
+.uppercase { text-transform: uppercase !important; }
+.opacity-60 { opacity: 0.6 !important; }
+
+.history-list-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;

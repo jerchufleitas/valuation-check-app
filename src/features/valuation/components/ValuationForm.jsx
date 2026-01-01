@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelpCircle, Search, User, Building2, CreditCard, ChevronRight } from 'lucide-react';
 import { getClients } from '../../../firebase/clientService';
+import { getCurrencyLabel } from '../../../utils/formatters';
 
 // The Parser: Regla de Oro - Comercio Exterior Argentina
 const parseArgentineNumber = (value) => {
