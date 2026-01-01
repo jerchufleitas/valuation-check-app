@@ -13,25 +13,39 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
 
     const parseValue = (val) => {
       if (typeof val === 'number') return val;
-      if (!val || typeof val !== 'string') return 0;
-      // Remove currency symbols, units like "DOL", spaces, and thousands separators (.)
-      // Then turn decimal comma (,) into a dot (.)
-      const clean = val.replace(/[^\d,]/g, '').replace(',', '.');
-      const parsed = parseFloat(clean);
-      return isNaN(parsed) ? 0 : parsed;
+      if (!val) return 0;
+      const str = String(val);
+      // Remove everything except digits and commas/dots
+      // If it has both . and , (like 1.020,50), remove . and replace , with .
+      if (str.includes('.') && str.includes(',')) {
+        return parseFloat(str.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      }
+      // If it only has comma as decimal (like 2550,00)
+      if (str.includes(',') && !str.includes('.')) {
+        return parseFloat(str.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+      }
+      // Standard US format or plain number
+      return parseFloat(str.replace(/[^\d.]/g, '')) || 0;
+    };
+
+    const parseDate = (v) => {
+      const val = v.updatedAt || v.createdAt || (v.serverUpdatedAt?.toDate ? v.serverUpdatedAt.toDate() : null);
+      if (!val) return new Date(0);
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? new Date(0) : d;
     };
 
     const recentDocs = valuations.filter(v => {
-      const d = new Date(v.updatedAt || v.createdAt);
+      const d = parseDate(v);
       return d >= thirtyDaysAgo;
     });
 
     const previousDocs = valuations.filter(v => {
-      const d = new Date(v.updatedAt || v.createdAt);
+      const d = parseDate(v);
       return d >= sixtyDaysAgo && d < thirtyDaysAgo;
     });
 
-    // 1. Valoraciones (Últimos 30 días)
+    // 1. Valoraciones (Móvil 30d)
     const countRecent = recentDocs.length;
     const countPrevious = previousDocs.length;
     let countChange = "0%";
@@ -41,14 +55,14 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       countChange = "+100%";
     }
 
-    // 2. Valor Total Procesado
+    // 2. Capital Total Procesado (Móvil 30d)
     const totalRecent = recentDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || 0;
+      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
       return acc + parseValue(val);
     }, 0);
 
     const totalPrevious = previousDocs.reduce((acc, curr) => {
-      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || 0;
+      const val = curr.valoracion?.totales?.fob || curr.item?.totalValue || curr.precioBase || curr.totalValue || 0;
       return acc + parseValue(val);
     }, 0);
 
@@ -65,7 +79,7 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
       return `USD ${val.toFixed(0)}`;
     };
 
-    // 3. Tasa de Eficiencia (Finalizados vs Total)
+    // 3. Tasa de Precisión (Histórica)
     const finalizedCount = valuations.filter(v => v.status === 'FINALIZADO').length;
     const efficiency = valuations.length > 0 
       ? Math.round((finalizedCount / valuations.length) * 100) 
@@ -73,21 +87,21 @@ export function AnalyticsWidgets({ valuations = [], loading }) {
     
     return [
       {
-        title: "Valoraciones (30 días)",
+        title: "OPERACIONES (30 DÍAS)",
         value: countRecent.toString(),
         change: countChange.startsWith('-') ? countChange : (countChange === '0%' ? '0%' : `+${countChange}`),
         icon: TrendingUp,
         color: "#c4a159",
       },
       {
-        title: "Valor Total Procesado",
+        title: "CAPITAL PROCESADO",
         value: formatCurrency(totalRecent),
         change: totalChange.startsWith('-') ? totalChange : (totalChange === '0%' ? '0%' : `+${totalChange}`),
         icon: DollarSign,
         color: "#3b82f6",
       },
       {
-        title: "Tasa de Eficiencia",
+        title: "PRECISIÓN TÉCNICA",
         value: `${efficiency}%`,
         change: efficiency > 80 ? "ALTA" : (efficiency > 50 ? "MEDIA" : "MEJORABLE"),
         icon: Activity,
