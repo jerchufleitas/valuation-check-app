@@ -1078,10 +1078,37 @@ option {
   font-size: 1.15rem;
   font-weight: 700;
 }
-.value.total {
-  font-size: 1.75rem;
-  color: var(--primary-color);
-  border-bottom: 3px solid var(--gold-accent);
+.summary-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0.75rem 0 !important;
+}
+
+.summary-info-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.mb-2 { margin-bottom: 0.5rem; }
+
+.premium-total {
+  background: rgba(196, 161, 89, 0.05);
+  padding: 1.5rem !important;
+  border-radius: 12px;
+  border: 1px solid rgba(196, 161, 89, 0.2);
+  margin-top: 1rem;
+}
+
+.dark .premium-total {
+  background: rgba(196, 161, 89, 0.1);
+}
+
+.main-base .label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em;
 }
 
 /* --- Report Selector Styles --- */
@@ -2600,11 +2627,35 @@ option {
   color: #94a3b8;
 }
 
-.btn-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+.premium-total-footer {
+  background: var(--primary-color) !important;
+  color: white !important;
+  padding: 1.5rem !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+  margin: 1rem 0 !important;
+}
+
+.premium-total-footer .list-currency-tag {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.premium-total-footer .grand-total {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.valuation-summary .summary-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
 }
 
 .loading-spinner {

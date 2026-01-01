@@ -1459,35 +1459,47 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
           <div className="valuation-summary">
             <div className="summary-row summary-main">
               <span className="summary-label">INCOTERM: {transaction.incoterm || '—'} — {transaction.loadingPlace || 'SIN LUGAR'}</span>
-              <span className="summary-value summary-highlight">
-                = {getCurrencySymbol(transaction.currency)} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
+              <div className="list-monto-group items-end">
+                <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+                <span className="summary-value summary-highlight">
+                  = {getCurrencySymbol(transaction.currency)} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
             <div className="summary-divider"></div>
             <div className="summary-row">
               <span className="summary-label">TOTAL DE AJUSTES A INCLUIR:</span>
-              <span className="summary-value additions-value">
-                + {getCurrencySymbol(transaction.currency)} {valuationQuestions
-                  .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
-                  .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
-                  .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
+              <div className="list-monto-group items-end">
+                <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+                <span className="summary-value additions-value">
+                  + {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                    .filter(q => q.category === 'additions' && valuation[q.id]?.status === 'SI')
+                    .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
+                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
             <div className="summary-row">
               <span className="summary-label">TOTAL DE AJUSTES A DEDUCIR:</span>
-              <span className="summary-value deductions-value">
-                − {getCurrencySymbol(transaction.currency)} {valuationQuestions
-                  .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
-                  .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
-                  .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
+              <div className="list-monto-group items-end">
+                <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+                <span className="summary-value deductions-value">
+                  − {getCurrencySymbol(transaction.currency)} {valuationQuestions
+                    .filter(q => q.category === 'deductions' && valuation[q.id]?.status === 'SI')
+                    .reduce((sum, q) => sum + parseArgentineNumber(valuation[q.id]?.amount || '0'), 0)
+                    .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="total-display">
-            <span>VALOR EN ADUANA TOTAL DECLARADO:</span>
-            <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            <span className="currency-subtitle">({getCurrencyName(transaction.currency)})</span>
+          <div className="total-display premium-total-footer">
+            <span className="text-xs font-bold opacity-60 uppercase mb-1">VALOR EN ADUANA TOTAL DECLARADO</span>
+            <div className="flex items-center gap-3">
+              <span className="list-currency-tag px-2 py-1 text-sm">{getCurrencyLabel(transaction.currency)}</span>
+              <span className="grand-total">{getCurrencySymbol(transaction.currency)} {getCalculatedValue().toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            </div>
+            <span className="currency-subtitle mt-1">({getCurrencyName(transaction.currency)})</span>
           </div>
           <div className="form-actions-footer">
             <button 

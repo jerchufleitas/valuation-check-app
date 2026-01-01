@@ -3,6 +3,8 @@ import { CheckCircle, AlertTriangle, FileText, Download, Edit2 } from 'lucide-re
 import { valuationQuestions } from '../data/valuationLogic';
 import { getCurrencySymbol } from '../data/currencyData';
 import { generateValuationPDF } from '../../pdf-generator/pdfGenerator';
+import { getCurrencyLabel } from '../../../utils/formatters';
+import { Building2, Globe, Truck, Anchor, MapPin, Hash, FileCheck, Info } from 'lucide-react';
 import ReportSelector from './ReportSelector';
 
 const parseArgentineNumber = (value) => {
@@ -54,53 +56,92 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
       <div className="report-summary">
         <div className="report-summary-header">
           <div className="summary-grid">
-            <div>
-              <strong>Exportador:</strong> {header.exporterName} <br/>
-              <strong>ID Fiscal:</strong> {header.exporterTaxId} <br/>
-              <strong>Posición NCM:</strong> {item.ncmCode}
+            <div className="summary-info-block">
+              <div className="list-info-with-icon mb-2">
+                <Building2 size={16} className="text-muted opacity-60" />
+                <span><strong>Exportador:</strong> {header.exporterName}</span>
+              </div>
+              <div className="list-info-with-icon mb-2">
+                <Hash size={16} className="text-muted opacity-60" />
+                <span><strong>ID Fiscal:</strong> {header.exporterTaxId}</span>
+              </div>
+              <div className="list-info-with-icon">
+                <FileCheck size={16} className="text-accent" />
+                <span><strong>Posición NCM:</strong> {item.ncmCode}</span>
+              </div>
             </div>
-            <div>
-              <strong>Transporte:</strong> {header.transportMode} <br/>
-              <strong>Lugar/Paso:</strong> {transaction.loadingPlace} / {header.borderCrossing} <br/>
-              <strong>CRT/Origen:</strong> {header.transportDocument} / {documentation.originCertificate}
+            <div className="summary-info-block">
+              <div className="list-info-with-icon mb-2">
+                <Truck size={16} className="text-muted opacity-60" />
+                <span><strong>Transporte:</strong> {header.transportMode}</span>
+              </div>
+              <div className="list-info-with-icon mb-2">
+                <MapPin size={16} className="text-muted opacity-60" />
+                <span><strong>Lugar/Paso:</strong> {transaction.loadingPlace} / {header.borderCrossing}</span>
+              </div>
+              <div className="list-info-with-icon">
+                <Hash size={16} className="text-muted opacity-60" />
+                <span><strong>CRT/Origen:</strong> {header.transportDocument} / {documentation.originCertificate}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="summary-item">
+        <div className="summary-item main-base">
           <span className="label">Valor Total del Ítem ({transaction.incoterm})</span>
-          <span className="value">{currencySymbol} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          <div className="list-monto-group">
+            <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+            <span className="list-amount-value">{currencySymbol} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
         </div>
         
         {activeAdds.map((adj, index) => (
           <div key={`add-${index}`} className="summary-item adjustment addition">
             <div className="adj-info">
-              <span className="adj-label">{adj.text}</span>
-              <span className="adj-legal">{adj.legal}</span>
+              <span className="adj-label flex items-center gap-2">
+                <span className="text-emerald-500 font-bold">+</span>
+                {adj.text}
+              </span>
+              <span className="adj-legal ml-4">{adj.legal}</span>
             </div>
-            <span className="value">
-              + {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
+            <div className="list-monto-group items-end">
+              <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+              <span className="value font-bold text-emerald-600">
+                {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
         ))}
 
         {activeSubs.map((adj, index) => (
           <div key={`sub-${index}`} className="summary-item adjustment deduction">
             <div className="adj-info">
-              <span className="adj-label">{adj.text}</span>
-              <span className="adj-legal">{adj.legal}</span>
+              <span className="adj-label flex items-center gap-2">
+                <span className="text-rose-500 font-bold">-</span>
+                {adj.text}
+              </span>
+              <span className="adj-legal ml-4">{adj.legal}</span>
             </div>
-            <span className="value">
-              - {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
+            <div className="list-monto-group items-end">
+              <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+              <span className="value font-bold text-rose-600">
+                {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
         ))}
 
         <div className="summary-divider"></div>
 
-        <div className="summary-total">
-          <span className="label">Valor Imponible (FOB/FCA)</span>
-          <span className="value total">{currencySymbol} {finalValue.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <div className="summary-total premium-total">
+          <span className="label flex items-center gap-2">
+            <Info size={14} className="text-gold-accent" />
+            Valor Imponible (FOB/FCA)
+          </span>
+          <div className="list-monto-group items-end">
+            <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+            <span className="value total">{currencySymbol} {finalValue.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+          </div>
         </div>
       </div>
 
