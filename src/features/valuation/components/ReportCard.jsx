@@ -134,9 +134,9 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
         <div className="summary-divider"></div>
 
         <div className="summary-total premium-total">
-          <span className="label flex items-center gap-2">
-            <Info size={14} className="text-gold-accent" />
-            Valor Imponible (FOB/FCA)
+          <span className="label">
+            <Info size={18} className="total-icon" />
+            VALOR IMPONIBLE (FOB/FCA)
           </span>
           <div className="list-monto-group items-end">
             <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>

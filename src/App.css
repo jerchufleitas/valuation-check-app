@@ -1382,28 +1382,58 @@ option {
 .summary-total.premium-total {
   background: var(--primary-color);
   color: white;
-  padding: 1.25rem;
-  border-radius: 12px;
-  margin-top: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  margin-top: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark .summary-total.premium-total {
-  background: var(--gold-accent);
+  background: linear-gradient(135deg, var(--gold-accent), #a17f38);
   color: var(--primary-color);
 }
 
 .premium-total .label {
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .premium-total .value.total {
-  font-size: 1.75rem !important;
-  font-weight: 800;
+  font-size: 2.25rem !important;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.premium-total .list-currency-tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 4px;
+}
+
+.dark .premium-total .list-currency-tag {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--primary-color);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.premium-total .total-icon {
+  color: var(--gold-accent);
+}
+
+.dark .premium-total .total-icon {
+  color: rgba(13, 27, 42, 0.4);
 }
 
 .chatbot-header {
