@@ -11,10 +11,13 @@ import {
   Camera,
   CheckCircle2,
   Layout,
-  Palette
+  Palette,
+  AlertTriangle,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { saveUserSettings, getUserSettings } from '../../firebase/settingsService';
+import { sendVerificationEmail, refreshUserStatus } from '../../firebase/authService';
 
 const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
   const [loading, setLoading] = useState(true);
@@ -24,6 +27,39 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
+
+  // Verification Logic
+  const [isVerified, setIsVerified] = useState(user.emailVerified);
+  const [verifying, setVerifying] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const handleSendVerification = async () => {
+    setVerifying(true);
+    try {
+      await sendVerificationEmail(user);
+      setEmailSent(true);
+      alert("Correo de verificación enviado. Revisa tu bandeja de entrada.");
+    } catch (error) {
+      console.error(error);
+      alert("Error al enviar correo: " + error.message);
+    } finally {
+      setVerifying(false);
+    }
+  };
+
+  const handleCheckStatus = async () => {
+    setVerifying(true);
+    try {
+      const status = await refreshUserStatus(user);
+      setIsVerified(status);
+      if(status) alert("¡Cuenta verificada exitosamente!");
+      else alert("Aún no detectamos la verificación. Asegúrate de haber hecho clic en el enlace del correo.");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const [formData, setFormData] = useState({
     professionalProfile: {
@@ -377,9 +413,39 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-lg text-slate-900 dark:text-white truncate">{user.displayName}</h3>
                       <p className="text-slate-500 dark:text-slate-400 text-sm truncate">{user.email}</p>
-                      <div className="flex items-center gap-1 mt-1 text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wider">
-                         <ShieldCheck size={12} /> Cuenta Verificada
-                      </div>
+                      {isVerified ? (
+                        <div className="flex items-center gap-1 mt-1 text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wider">
+                           <ShieldCheck size={12} /> Cuenta Verificada
+                        </div>
+                      ) : (
+                        <div className="mt-2">
+                          <div className="flex items-center gap-1 text-amber-500 font-bold uppercase tracking-wider text-xs mb-1">
+                             <AlertTriangle size={12} /> No Verificado
+                          </div>
+                          {!emailSent ? (
+                             <button 
+                               onClick={handleSendVerification} 
+                               disabled={verifying}
+                               className="text-xs font-bold text-[#c4a159] hover:text-[#b89350] hover:underline disabled:opacity-50 flex items-center gap-1"
+                             >
+                               {verifying && <Loader2 size={10} className="animate-spin" />}
+                               Verificar ahora (Enviar E-mail)
+                             </button>
+                          ) : (
+                             <div className="flex flex-col items-start gap-1">
+                                 <span className="text-[10px] text-slate-400">Correo enviado a tu casilla.</span>
+                                 <button 
+                                   onClick={handleCheckStatus} 
+                                   disabled={verifying}
+                                   className="text-xs font-bold text-blue-500 hover:text-blue-400 hover:underline disabled:opacity-50 flex items-center gap-1"
+                                 >
+                                   {verifying && <Loader2 size={10} className="animate-spin" />}
+                                   Ya verifiqué, actualizar
+                                 </button>
+                             </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
