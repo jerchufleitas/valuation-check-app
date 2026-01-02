@@ -95,41 +95,57 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
           </div>
         </div>
         
-        {activeAdds.map((adj, index) => (
-          <div key={`add-${index}`} className="summary-item adjustment addition">
-            <div className="adj-info">
-              <span className="adj-label flex items-center gap-2">
-                <span className="text-emerald-500 font-bold">+</span>
-                {adj.text}
-              </span>
-              <span className="adj-legal ml-4">{adj.legal}</span>
+        {activeAdds.length > 0 && (
+          <>
+            <div className="adjustment-section-header">
+              <span className="section-title">Adiciones al Precio</span>
+              <span className="section-subtitle">RG 2010/2006</span>
             </div>
-            <div className="flex items-center gap-2 justify-end">
-              <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
-              <span className="value font-bold text-emerald-600">
-                {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-        ))}
+            {activeAdds.map((adj, index) => (
+              <div key={`add-${index}`} className="summary-item adjustment addition">
+                <div className="adj-info">
+                  <span className="adj-question-number">Pregunta {adj.number}</span>
+                  <span className="adj-label flex items-center gap-2">
+                    <span className="text-emerald-500 font-bold">+</span>
+                    {adj.text}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 justify-end flex-nowrap" style={{minWidth: '150px'}}>
+                  <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+                  <span className="value font-bold text-emerald-600 whitespace-nowrap">
+                    {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
 
-        {activeSubs.map((adj, index) => (
-          <div key={`sub-${index}`} className="summary-item adjustment deduction">
-            <div className="adj-info">
-              <span className="adj-label flex items-center gap-2">
-                <span className="text-rose-500 font-bold">-</span>
-                {adj.text}
-              </span>
-              <span className="adj-legal ml-4">{adj.legal}</span>
+        {activeSubs.length > 0 && (
+          <>
+            <div className="adjustment-section-header">
+              <span className="section-title">Deducciones al Precio</span>
+              <span className="section-subtitle">RG 2010/2006</span>
             </div>
-            <div className="flex items-center gap-2 justify-end">
-              <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
-              <span className="value font-bold text-rose-600">
-                {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
-            </div>
-          </div>
-        ))}
+            {activeSubs.map((adj, index) => (
+              <div key={`sub-${index}`} className="summary-item adjustment deduction">
+                <div className="adj-info">
+                  <span className="adj-question-number">Pregunta {adj.number}</span>
+                  <span className="adj-label flex items-center gap-2">
+                    <span className="text-rose-500 font-bold">-</span>
+                    {adj.text}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 justify-end flex-nowrap" style={{minWidth: '150px'}}>
+                  <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+                  <span className="value font-bold text-rose-600 whitespace-nowrap">
+                    {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
 
         <div className="summary-divider"></div>
 
