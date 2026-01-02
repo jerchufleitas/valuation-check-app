@@ -4,12 +4,34 @@ import {
   GoogleAuthProvider, 
   signOut, 
   onAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { app } from "./config";
 
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+
+export const registerWithEmail = async (email, password, displayName) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Opcional: Actualizar perfil con nombre
+    // await updateProfile(userCredential.user, { displayName });
+    return userCredential.user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const loginWithEmail = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    return userCredential.user;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const loginWithGoogle = async () => {
   try {
