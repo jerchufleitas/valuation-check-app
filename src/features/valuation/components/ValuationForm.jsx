@@ -667,6 +667,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
 
   // AI OCR DATA MAPPING
   const handleOcrData = (extractedData) => {
+    // 1. Fill Form Sections
     if (extractedData.header) {
       Object.entries(extractedData.header).forEach(([field, value]) => updateSection('header', field, value, true));
     }
@@ -681,30 +682,20 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
        Object.entries(extractedData.documentation).forEach(([field, value]) => updateSection('documentation', field, value, true));
     }
     
-    // TODO: Reimplementar lógica OCR para nueva estructura de valoración
-    /* 
-    // specialized CIF/CIP logic
-    if ((extractedData.transaction?.incoterm === 'CIF' || extractedData.transaction?.incoterm === 'CIP') && extractedData.adjustments?.additions) {
-      Object.entries(extractedData.adjustments.additions).forEach(([id, data]) => {
-        setFormData(prev => ({
-          ...prev,
-          adjustments: { 
-            ...prev.adjustments, 
-            additions: { ...prev.adjustments.additions, [id]: { active: true, amount: data.amount } } 
-          }
-        }));
-        const fieldKey = `adjustments.additions.${id}`;
-        setHighlightedFields(prev => ({ ...prev, [fieldKey]: true }));
-        setTimeout(() => {
-          setHighlightedFields(prev => {
-            const next = {...prev};
-            delete next[fieldKey];
-            return next;
-          });
-        }, 5000);
-      });
+    // 2. Handle AI Warnings/Flags
+    if (extractedData.ai_metadata?.flags?.length > 0) {
+       // Simple alert for MVP. In future, use a custom Toast.
+       console.warn("AI Flags:", extractedData.ai_metadata.flags);
     }
-    */
+
+    // 3. Smart Suggestions (Freight/Insurance detection)
+    if (extractedData.ai_metadata?.detected_freight) {
+        if (confirm(`Gemini detectó un Flete por ${extractedData.ai_metadata.detected_freight}. ¿Desea agregarlo a los ajustes del Art. 8?`)) {
+            // TODO: Add logic to check 'SI' in valuation question for freight and set amount
+            // For now just logging, as mapping to specific question ID requires more logic
+            console.log("User accepted freight suggestion (Implementation pending mapping)");
+        }
+    }
   };
 
   const isHighlighted = (section, field) => highlightedFields[`${section}.${field}`] ? 'highlighted-fill' : '';
@@ -713,7 +704,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
     <div className="valuation-form fade-in">
       
       {/* OCR Dropzone hidden for Manual Mode */}
-      {/* <OcrDropzone onDataExtracted={handleOcrData} /> */}
+      <OcrDropzone onDataExtracted={handleOcrData} />
 
       <form onSubmit={handleSubmit}>
         
