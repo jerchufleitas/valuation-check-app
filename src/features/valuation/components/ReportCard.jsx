@@ -41,8 +41,8 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
     <div className="report-card fade-in">
       <div className="report-header">
         <div className="report-header-title">
-          <FileText size={24} className="text-accent" />
-          <h2>Dictamen de Valoración</h2>
+          <FileText size={28} className="text-accent" />
+          <h2 className="main-report-title">Dictamen de Valoración</h2>
         </div>
         
         {studioLogo && (
@@ -99,8 +99,10 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
           <>
             <div className="adjustment-section-header">
               <div className="section-header-left">
-                <span className="section-title">Adiciones al Precio</span>
-                <span className="section-subtitle">RG 2010/2006</span>
+                <div className="flex items-center gap-2">
+                  <span className="section-title">Adiciones al Precio</span>
+                  <span className="section-subtitle-badge">RG 2010/2006</span>
+                </div>
               </div>
               <div className="section-header-right">
                 <span className="section-total-label">Subtotal:</span>
@@ -136,8 +138,10 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
           <>
             <div className="adjustment-section-header">
               <div className="section-header-left">
-                <span className="section-title">Deducciones al Precio</span>
-                <span className="section-subtitle">RG 2010/2006</span>
+                <div className="flex items-center gap-2">
+                  <span className="section-title">Deducciones al Precio</span>
+                  <span className="section-subtitle-badge">RG 2010/2006</span>
+                </div>
               </div>
               <div className="section-header-right">
                 <span className="section-total-label">Subtotal:</span>
@@ -184,14 +188,14 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
       </div>
 
       <div className="report-analysis">
-        <h3>Análisis Técnico</h3>
+        <h3 className="analysis-title">Análisis Técnico</h3>
         {hasAdjustments ? (
           <div className="analysis-box warning">
             <AlertTriangle size={20} />
             <p>
-              <strong>Se REQUIEREN Ajustes.</strong><br/>
-              La operación declara elementos que deben ser {totalAdditions > 0 ? "ADICIONADOS" : ""} {totalAdditions > 0 && totalDeductions > 0 ? "y" : ""} {totalDeductions > 0 ? "DEDUCIDOS" : ""} 
-              del precio de factura para alcanzar el valor imponible correcto según normativa MERCOSUR.
+              <strong>SE REQUIEREN AJUSTES.</strong><br/>
+              La operación declara elementos que deben ser {totalAdditions > 0 ? "ADICIONADOS" : ""} {totalAdditions > 0 && totalDeductions > 0 ? "y" : ""} {totalDeductions > 0 ? "DEDUCIDOS del" : ""} 
+              precio de factura para alcanzar el valor imponible correcto según normativa MERCOSUR.
             </p>
           </div>
         ) : (

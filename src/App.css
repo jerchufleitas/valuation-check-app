@@ -1530,6 +1530,50 @@ option {
   color: var(--gold-accent);
 }
 
+/* Section Subtitle Badge */
+.section-subtitle-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gold-accent);
+  background: rgba(196, 161, 89, 0.15);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(196, 161, 89, 0.3);
+}
+
+.dark .section-subtitle-badge {
+  background: rgba(196, 161, 89, 0.2);
+  border-color: rgba(196, 161, 89, 0.4);
+}
+
+/* Analysis Title */
+.analysis-title {
+  font-size: 1.4rem !important;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Main Report Title */
+.main-report-title {
+  font-size: 1.8rem !important;
+  font-weight: 700;
+}
+
+/* Report Header Alignment */
+.report-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.report-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .chatbot-header {
   background: var(--primary-color);
   color: white;
