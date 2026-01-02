@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Building2, 
-  CreditCard, 
   Globe, 
   Moon, 
   Sun, 
   LogOut, 
   Save, 
   ShieldCheck,
-  FileText,
   Camera,
-  CheckCircle2
+  CheckCircle2,
+  Layout,
+  Palette
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { saveUserSettings, getUserSettings } from '../../firebase/settingsService';
@@ -20,6 +20,7 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile');
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
@@ -29,7 +30,7 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
       signatureName: '',
       registrationNumber: '',
       companyName: '',
-      logo: null // Base64 for now
+      logo: null
     },
     defaults: {
       currency: 'DOL',
@@ -105,6 +106,12 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
     }
   };
 
+  const tabs = [
+    { id: 'profile', label: 'Perfil Profesional', icon: Building2, subtitle: 'Identidad y firma legal' },
+    { id: 'defaults', label: 'Preferencias', icon: Globe, subtitle: 'Valores por defecto' },
+    { id: 'account', label: 'Cuenta y Apariencia', icon: Palette, subtitle: 'Personalización y sesión' },
+  ];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -114,227 +121,280 @@ const SettingsPage = ({ user, onLogout, onSettingsUpdate }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-10">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="max-w-6xl mx-auto p-4 md:p-8 h-full flex flex-col">
+      {/* Main Header with Save Button */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 shrink-0">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 flex items-center gap-4">
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+            <Layout className="text-[#c4a159]" />
             Configuración
           </h1>
-          <p className="text-slate-500 font-medium mt-2 text-lg">Personaliza tu perfil profesional y preferencias operativas</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium mt-1">Administra tus preferencias generales del sistema</p>
         </div>
         <button 
           onClick={handleSave}
           disabled={saving}
           className={`
-            flex items-center gap-3 px-8 py-4 rounded-2xl font-black transition-all
+            flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all
             ${success 
               ? 'bg-green-500 text-white' 
-              : 'bg-[#c4a159] hover:bg-[#b89350] text-white shadow-xl shadow-gold-accent/20'}
+              : 'bg-[#c4a159] hover:bg-[#b89350] text-white shadow-lg shadow-gold-accent/20'}
             ${saving ? 'opacity-70 cursor-wait' : ''}
           `}
         >
-          {success ? <CheckCircle2 size={22} /> : saving ? <div className="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full" /> : <Save size={22} />}
+          {success ? <CheckCircle2 size={20} /> : saving ? <div className="animate-spin h-5 w-5 border-2 border-white/30 border-t-white rounded-full" /> : <Save size={20} />}
           {success ? 'GUARDADO' : saving ? 'GUARDANDO...' : 'GUARDAR CAMBIOS'}
         </button>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Sidebar Mini */}
-        <div className="space-y-4">
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-2">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Mi Cuenta</h3>
-            <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-2xl">
-              <img src={user.photoURL} alt={user.displayName} className="w-12 h-12 rounded-full border-2 border-white shadow-sm" />
-              <div className="overflow-hidden">
-                <p className="font-bold text-slate-900 truncate">{user.displayName}</p>
-                <p className="text-xs text-slate-500 truncate">{user.email}</p>
-              </div>
-            </div>
-            <button 
-              onClick={onLogout}
-              className="w-full flex items-center gap-3 p-3 text-red-500 hover:bg-red-50 rounded-2xl font-bold transition-all mt-4"
+      <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0">
+        {/* Navigation Sidebar */}
+        <aside className="w-full lg:w-72 shrink-0 space-y-2">
+          {tabs.map(tab => {
+            const isActive = activeTab === tab.id;
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`
+                  w-full flex items-center gap-4 p-4 rounded-2xl transition-all text-left
+                  ${isActive 
+                    ? 'bg-white dark:bg-slate-800 shadow-md border-l-4 border-[#c4a159] text-slate-900 dark:text-white' 
+                    : 'hover:bg-slate-100 dark:hover:bg-slate-800/50 text-slate-500 dark:text-slate-400'}
+                `}
+              >
+                <div className={`
+                  w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors
+                  ${isActive ? 'bg-[#c4a159]/10 text-[#c4a159]' : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}
+                `}>
+                  <Icon size={20} />
+                </div>
+                <div>
+                  <p className={`font-bold text-sm ${isActive ? 'text-slate-900 dark:text-white' : ''}`}>{tab.label}</p>
+                  <p className="text-xs opacity-60 font-medium hidden md:block">{tab.subtitle}</p>
+                </div>
+              </button>
+            );
+          })}
+        </aside>
+
+        {/* Dynamic Content Area */}
+        <main className="flex-1 bg-white dark:bg-slate-800 rounded-[2rem] p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-700 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className="h-full"
             >
-              <LogOut size={18} />
-              Cerrar Sesión
-            </button>
-          </div>
-
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-2">Apariencia</h3>
-            <button 
-              onClick={toggleDarkMode}
-              className="w-full flex items-center justify-between p-4 bg-slate-50 rounded-2xl transition-all hover:bg-slate-100"
-            >
-              <div className="flex items-center gap-3 font-bold text-slate-700">
-                {darkMode ? <Moon size={20} className="text-indigo-500" /> : <Sun size={20} className="text-amber-500" />}
-                Modo {darkMode ? 'Oscuro' : 'Claro'}
-              </div>
-              <div className={`w-12 h-6 rounded-full transition-all relative ${darkMode ? 'bg-indigo-600' : 'bg-slate-300'}`}>
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${darkMode ? 'left-7' : 'left-1'}`} />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Form Area */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Perfil Profesional */}
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-[#c4a159]/10 rounded-2xl flex items-center justify-center text-[#c4a159]">
-                <ShieldCheck size={24} />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-slate-900">Perfil Profesional</h3>
-                <p className="text-sm text-slate-500 font-medium">Información oficial para los dictámenes legales</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Firma del Despachante</label>
-                <input 
-                  type="text" 
-                  value={formData.professionalProfile.signatureName}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    professionalProfile: { ...formData.professionalProfile, signatureName: e.target.value }
-                  })}
-                  placeholder="Ej: Juan Pérez"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/5 font-bold transition-all"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nº Registro / Matrícula</label>
-                <input 
-                  type="text" 
-                  value={formData.professionalProfile.registrationNumber}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    professionalProfile: { ...formData.professionalProfile, registrationNumber: e.target.value }
-                  })}
-                  placeholder="Ej: 12345/AD"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/5 font-bold transition-all"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Estudio / Empresa</label>
-                <input 
-                  type="text" 
-                  value={formData.professionalProfile.companyName}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    professionalProfile: { ...formData.professionalProfile, companyName: e.target.value }
-                  })}
-                  placeholder="Nombre de tu estudio de comercio exterior"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/5 font-bold transition-all"
-                />
-              </div>
-
-              <div className="md:col-span-2 space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Logo del Estudio</label>
-                <div className="flex items-center gap-6 p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 hover:border-[#c4a159] transition-all group">
-                  <div className="relative w-24 h-24 bg-white rounded-2xl shadow-inner flex items-center justify-center overflow-hidden border border-slate-100">
-                    {formData.professionalProfile.logo ? (
-                      <img src={formData.professionalProfile.logo} alt="Logo preview" className="w-full h-full object-contain" />
-                    ) : (
-                      <Building2 size={32} className="text-slate-200" />
-                    )}
-                    <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer text-white">
-                      <Camera size={20} />
-                      <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} />
-                    </label>
+              {activeTab === 'profile' && (
+                <div className="space-y-8 max-w-2xl">
+                  <div className="border-b border-slate-100 dark:border-slate-700 pb-6">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Perfil Profesional</h2>
+                    <p className="text-slate-500 dark:text-slate-400">Esta información aparecerá en tus dictámenes legales y reportes.</p>
                   </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-slate-700">Imagen de marca</p>
-                    <p className="text-xs text-slate-500 mt-1">Recomendado: PNG fondo transparente, máx 200KB.</p>
-                    {formData.professionalProfile.logo && (
-                      <button 
-                        onClick={() => setFormData({...formData, professionalProfile: {...formData.professionalProfile, logo: null}})}
-                        className="text-xs text-red-500 font-bold mt-2"
-                      >
-                        Eliminar logo
-                      </button>
-                    )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 md:col-span-2">
+                       <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Logo Corporativo</label>
+                       <div className="flex gap-6 items-start">
+                         <div className="relative w-32 h-32 bg-slate-50 dark:bg-slate-900 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden group hover:border-[#c4a159] transition-colors shrink-0">
+                            {formData.professionalProfile.logo ? (
+                              <img src={formData.professionalProfile.logo} alt="Logo" className="w-full h-full object-contain" />
+                            ) : (
+                              <Camera className="text-slate-300 dark:text-slate-600" size={32} />
+                            )}
+                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onChange={handleLogoUpload} />
+                         </div>
+                         <div className="flex-1 py-2">
+                            <h4 className="font-bold text-slate-900 dark:text-white">Imagen de Marca</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-3">Sube tu logo para personalizar los reportes PDF y la interfaz. Se recomienda formato PNG con fondo transparente.</p>
+                            {formData.professionalProfile.logo && (
+                              <button 
+                                onClick={() => setFormData({...formData, professionalProfile: {...formData.professionalProfile, logo: null}})}
+                                className="text-sm text-red-500 hover:text-red-600 font-bold"
+                              >
+                                Eliminar Logo
+                              </button>
+                            )}
+                         </div>
+                       </div>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Nombre del Estudio / Empresa</label>
+                      <input 
+                        type="text" 
+                        value={formData.professionalProfile.companyName}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          professionalProfile: { ...formData.professionalProfile, companyName: e.target.value }
+                        })}
+                        placeholder="Ej: Pérez & Asociados Comex"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/10 font-medium transition-all dark:text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Firma del Despachante</label>
+                      <input 
+                        type="text" 
+                        value={formData.professionalProfile.signatureName}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          professionalProfile: { ...formData.professionalProfile, signatureName: e.target.value }
+                        })}
+                        placeholder="Nombre y Apellido"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/10 font-medium transition-all dark:text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Nº Registro / Matrícula</label>
+                      <input 
+                        type="text" 
+                        value={formData.professionalProfile.registrationNumber}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          professionalProfile: { ...formData.professionalProfile, registrationNumber: e.target.value }
+                        })}
+                        placeholder="Ej: 99999/X"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/10 font-medium transition-all dark:text-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </section>
+              )}
 
-          {/* Preferencias Operativas */}
-          <section className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-[#c4a159]/10 rounded-2xl flex items-center justify-center text-[#c4a159]">
-                <Globe size={24} />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-slate-900">Operativa por Defecto</h3>
-                <p className="text-sm text-slate-500 font-medium">Agiliza la creación de nuevas valoraciones</p>
-              </div>
-            </div>
+              {activeTab === 'defaults' && (
+                <div className="space-y-8 max-w-2xl">
+                  <div className="border-b border-slate-100 dark:border-slate-700 pb-6">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Preferencias Operativas</h2>
+                    <p className="text-slate-500 dark:text-slate-400">Configura los valores predeterminados para nuevas valoraciones.</p>
+                  </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Moneda Principal</label>
-                <select 
-                  value={formData.defaults.currency}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    defaults: { ...formData.defaults, currency: e.target.value }
-                  })}
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] font-bold transition-all bg-white"
-                >
-                  <option value="DOL">Dólares (USD)</option>
-                  <option value="EUR">Euros (EUR)</option>
-                  <option value="PES">Pesos Arg (ARS)</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Incoterm Habitual</label>
-                <select 
-                  value={formData.defaults.incoterm}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    defaults: { ...formData.defaults, incoterm: e.target.value }
-                  })}
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] font-bold transition-all bg-white"
-                >
-                  <option value="FOB">FOB (Puerto Carga)</option>
-                  <option value="FCA">FCA (Lugar Entrega)</option>
-                  <option value="EXW">EXW (En Fábrica)</option>
-                  <option value="CIF">CIF (Costo, Seg y Flete)</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Aduana de Jurisdicción</label>
-                <input 
-                  type="text" 
-                  value={formData.defaults.habitualCustoms}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    defaults: { ...formData.defaults, habitualCustoms: e.target.value }
-                  })}
-                  placeholder="Ej: BUENOS AIRES (001)"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] font-bold transition-all"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Punto de Carga / Frontera</label>
-                <input 
-                  type="text" 
-                  value={formData.defaults.loadingPoint}
-                  onChange={e => setFormData({
-                    ...formData, 
-                    defaults: { ...formData.defaults, loadingPoint: e.target.value }
-                  })}
-                  placeholder="Ej: Paso de los Libres"
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-200 outline-none focus:border-[#c4a159] font-bold transition-all"
-                />
-              </div>
-            </div>
-          </section>
-        </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Moneda Principal</label>
+                      <select 
+                        value={formData.defaults.currency}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          defaults: { ...formData.defaults, currency: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] font-medium transition-all dark:text-white"
+                      >
+                        <option value="DOL">Dólares Estadounidenses (USD)</option>
+                        <option value="EUR">Euros (EUR)</option>
+                        <option value="PES">Pesos Argentinos (ARS)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Incoterm Habitual</label>
+                      <select 
+                        value={formData.defaults.incoterm}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          defaults: { ...formData.defaults, incoterm: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] font-medium transition-all dark:text-white"
+                      >
+                         <option value="FOB">FOB (Puerto Carga)</option>
+                         <option value="FCA">FCA (Lugar Entrega)</option>
+                         <option value="EXW">EXW (En Fábrica)</option>
+                         <option value="CIF">CIF (Costo, Seg y Flete)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Aduana Jurisdicción</label>
+                      <input 
+                        type="text" 
+                        value={formData.defaults.habitualCustoms}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          defaults: { ...formData.defaults, habitualCustoms: e.target.value }
+                        })}
+                        placeholder="Ej: BUENOS AIRES"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/10 font-medium transition-all dark:text-white"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1">Punto de Carga Default</label>
+                      <input 
+                        type="text" 
+                        value={formData.defaults.loadingPoint}
+                        onChange={e => setFormData({
+                          ...formData, 
+                          defaults: { ...formData.defaults, loadingPoint: e.target.value }
+                        })}
+                        placeholder="Ej: Ezeiza / Puerto Nuevo"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 outline-none focus:border-[#c4a159] focus:ring-4 focus:ring-[#c4a159]/10 font-medium transition-all dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'account' && (
+                <div className="space-y-8 max-w-2xl">
+                  <div className="border-b border-slate-100 dark:border-slate-700 pb-6">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Cuenta y Apariencia</h2>
+                    <p className="text-slate-500 dark:text-slate-400">Gestiona tu sesión y estilo visual.</p>
+                  </div>
+
+                  {/* Themes */}
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                      <Palette size={18} className="text-[#c4a159]" /> Apariencia
+                    </h3>
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={() => !darkMode && toggleDarkMode()} 
+                        className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${darkMode ? 'border-[#c4a159] bg-[#c4a159]/5' : 'border-slate-200 dark:border-slate-700 cursor-pointer'}`}
+                      >
+                         <Moon size={24} className={darkMode ? 'text-[#c4a159]' : 'text-slate-400'} />
+                         <span className={`font-bold ${darkMode ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>Oscuro</span>
+                      </button>
+                      <button 
+                        onClick={() => darkMode && toggleDarkMode()} 
+                        className={`flex-1 p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${!darkMode ? 'border-[#c4a159] bg-[#c4a159]/5' : 'border-slate-200 dark:border-slate-700 cursor-pointer'}`}
+                      >
+                         <Sun size={24} className={!darkMode ? 'text-[#c4a159]' : 'text-slate-400'} />
+                         <span className={`font-bold ${!darkMode ? 'text-slate-900 dark:text-white' : 'text-slate-500'}`}>Claro</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* User Info */}
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 flex items-center gap-4">
+                    <img src={user.photoURL} alt={user.displayName} className="w-16 h-16 rounded-full border-2 border-white dark:border-slate-600 shadow-sm" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg text-slate-900 dark:text-white truncate">{user.displayName}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 text-sm truncate">{user.email}</p>
+                      <div className="flex items-center gap-1 mt-1 text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wider">
+                         <ShieldCheck size={12} /> Cuenta Verificada
+                      </div>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={onLogout}
+                    className="w-full p-4 rounded-xl border border-red-200 dark:border-red-900/30 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 font-bold transition-all flex items-center justify-center gap-2"
+                  >
+                    <LogOut size={20} />
+                    Cerrar Sesión
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   );
