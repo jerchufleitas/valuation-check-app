@@ -2149,6 +2149,36 @@ option {
   color: #991b1b;
 }
 
+.dark .fine-warning {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.dark .fine-label {
+  color: #f87171;
+}
+
+.dark .fine-value {
+  color: #fca5a5;
+}
+
+.pending-selection {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  padding: 0.5rem;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  font-style: italic;
+}
+
+.dark .pending-selection {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .input-with-action {
   display: flex;
   align-items: center;
