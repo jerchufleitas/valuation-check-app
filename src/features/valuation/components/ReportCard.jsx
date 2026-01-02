@@ -194,7 +194,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
             <AlertTriangle size={20} />
             <p>
               <strong>SE REQUIEREN AJUSTES.</strong><br/>
-              La operación declara elementos que deben ser {totalAdditions > 0 ? "ADICIONADOS" : ""} {totalAdditions > 0 && totalDeductions > 0 ? "y" : ""} {totalDeductions > 0 ? "DEDUCIDOS del" : ""} 
+              La operación declara elementos que deben ser {totalAdditions > 0 ? "ADICIONADOS " : ""}{totalAdditions > 0 && totalDeductions > 0 ? "y " : ""}{totalDeductions > 0 ? "DEDUCIDOS del " : ""}
               precio de factura para alcanzar el valor imponible correcto según normativa MERCOSUR.
             </p>
           </div>
