@@ -98,8 +98,19 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
         {activeAdds.length > 0 && (
           <>
             <div className="adjustment-section-header">
-              <span className="section-title">Adiciones al Precio</span>
-              <span className="section-subtitle">RG 2010/2006</span>
+              <div className="section-header-left">
+                <span className="section-title">Adiciones al Precio</span>
+                <span className="section-subtitle">RG 2010/2006</span>
+              </div>
+              <div className="section-header-right">
+                <span className="section-total-label">Subtotal:</span>
+                <div className="flex items-center gap-2">
+                  <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+                  <span className="section-total-value text-emerald-600">
+                    + {currencySymbol} {totalAdditions.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
             </div>
             {activeAdds.map((adj, index) => (
               <div key={`add-${index}`} className="summary-item adjustment addition">
@@ -124,8 +135,19 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
         {activeSubs.length > 0 && (
           <>
             <div className="adjustment-section-header">
-              <span className="section-title">Deducciones al Precio</span>
-              <span className="section-subtitle">RG 2010/2006</span>
+              <div className="section-header-left">
+                <span className="section-title">Deducciones al Precio</span>
+                <span className="section-subtitle">RG 2010/2006</span>
+              </div>
+              <div className="section-header-right">
+                <span className="section-total-label">Subtotal:</span>
+                <div className="flex items-center gap-2">
+                  <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
+                  <span className="section-total-value text-rose-600">
+                    - {currencySymbol} {totalDeductions.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
             </div>
             {activeSubs.map((adj, index) => (
               <div key={`sub-${index}`} className="summary-item adjustment deduction">
