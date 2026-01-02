@@ -138,7 +138,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
             <Info size={18} className="total-icon" />
             VALOR IMPONIBLE (FOB/FCA)
           </span>
-          <div className="list-monto-group items-end">
+          <div className="flex items-center gap-2">
             <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
             <span className="value total">{currencySymbol} {finalValue.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
