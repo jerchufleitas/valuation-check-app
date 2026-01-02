@@ -89,7 +89,7 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
 
         <div className="summary-item main-base">
           <span className="label">Valor Total del Ítem ({transaction.incoterm})</span>
-          <div className="list-monto-group">
+          <div className="flex items-center gap-2">
             <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
             <span className="list-amount-value">{currencySymbol} {parseArgentineNumber(item.totalValue || '0').toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
           </div>
@@ -104,8 +104,8 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
               </span>
               <span className="adj-legal ml-4">{adj.legal}</span>
             </div>
-            <div className="list-monto-group items-end">
-              <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+            <div className="flex items-center gap-2 justify-end">
+              <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
               <span className="value font-bold text-emerald-600">
                 {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
@@ -122,8 +122,8 @@ const ReportCard = ({ finalValue, blocks, summary, onReset, settings }) => {
               </span>
               <span className="adj-legal ml-4">{adj.legal}</span>
             </div>
-            <div className="list-monto-group items-end">
-              <span className="list-currency-tag text-[9px]">{getCurrencyLabel(transaction.currency)}</span>
+            <div className="flex items-center gap-2 justify-end">
+              <span className="list-currency-tag">{getCurrencyLabel(transaction.currency)}</span>
               <span className="value font-bold text-rose-600">
                 {currencySymbol} {parseArgentineNumber(adj.amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
