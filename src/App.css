@@ -3660,3 +3660,11 @@ option {
   color: #a78bfa !important;
 }
 
+
+/* Compact OCR Dropzone Overrides */
+.ocr-dropzone {
+  min-height: auto !important;
+  padding: 1rem !important;
+  border-width: 1px !important;
+}
+

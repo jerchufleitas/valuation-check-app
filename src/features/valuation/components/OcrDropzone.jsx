@@ -131,18 +131,13 @@ const OcrDropzone = ({ onDataExtracted }) => {
            </div>
         ) : (
           <>
-            <div className="ocr-icon-group relative">
-              <Upload size={32} />
-              <FileText size={32} />
-              {/* Badge IA */}
-              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-1 shadow-lg animate-pulse">
-                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
-              </div>
+            <div className="ocr-icon-group relative flex gap-2 mb-2">
+              <Upload size={20} className="text-slate-400 dark:text-slate-500" />
+              <FileText size={20} className="text-slate-400 dark:text-slate-500" />
             </div>
             <div className="ocr-text">
-              <h4>MÓDULO IA / OCR</h4>
-              <p>Arrastre una Factura o Packing List para autocompletado inteligente</p>
-              <span className="file-types text-xs text-purple-300">Potenciado por Gemini 1.5 Flash</span>
+              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Carga Inteligente con IA</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 m-0">Arrastrá tus documentos aquí o hacé click para subir</p>
             </div>
           </>
         )}
