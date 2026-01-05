@@ -3634,3 +3634,29 @@ option {
   align-items: center;
   gap: 10px;
 }
+
+/* --- OCR DROPZONE DARK MODE FIX --- */
+.dark .ocr-dropzone {
+  background-color: #0f172a !important;
+  border: 2px dashed rgba(255, 255, 255, 0.2) !important;
+}
+
+.dark .ocr-dropzone:hover {
+  background-color: #1e293b !important;
+  border-color: var(--gold-accent) !important;
+}
+
+.dark .ocr-dropzone h4,
+.dark .ocr-dropzone p, 
+.dark .ocr-dropzone .ocr-text {
+   color: #e2e8f0 !important;
+}
+
+.dark .ocr-dropzone .ocr-icon-group {
+   color: var(--gold-accent) !important;
+}
+
+.dark .ocr-dropzone .file-types {
+  color: #a78bfa !important;
+}
+
