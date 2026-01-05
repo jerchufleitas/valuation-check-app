@@ -1,3 +1,5 @@
+import React, { useState, useRef } from 'react';
+import { Upload, FileText, Loader2 } from 'lucide-react';
 import { analyzeDocument } from '../../../services/geminiService';
 
 const OcrDropzone = ({ onDataExtracted }) => {
@@ -39,8 +41,9 @@ const OcrDropzone = ({ onDataExtracted }) => {
       const file = files[0];
       
       // Validar tipo (básico)
-      if (file.type !== 'application/pdf') {
-         throw new Error('Solo se admiten documentos PDF.');
+      // Validar tipo (básico) - PERMITIR IMAGENES PARA TESTING
+      if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+         throw new Error('Solo se admiten documentos PDF o Imágenes (JPG, PNG).');
       }
 
       setProgress(30);
@@ -65,6 +68,8 @@ const OcrDropzone = ({ onDataExtracted }) => {
         },
         item: {
           totalValue: aiData.item?.totalValue ? String(aiData.item.totalValue) : '',
+          quantity: aiData.item?.quantity || '', // New mapped field
+          unit: aiData.item?.unit || '',         // New mapped field
           ncmCode: aiData.item?.ncmCode || '',
           description: 'Productos varios (Autodetectado)'
         },
@@ -106,7 +111,7 @@ const OcrDropzone = ({ onDataExtracted }) => {
         ref={fileInputRef} 
         onChange={handleFileSelect} 
         style={{ display: 'none' }} 
-        accept="application/pdf"
+        accept="application/pdf,image/jpeg,image/png,image/webp"
       />
       
       <div className="ocr-content">

@@ -93,4 +93,20 @@ export const adjustmentQuestions = [
     legal: "Nota al Art. 1",
     inputLabel: "Monto de los derechos/impuestos",
   },
+  {
+    id: "freight_cost",
+    type: "addition",
+    text: "¿Existen gastos de transporte hasta el lugar de importación (Flete)?",
+    detail: "Art. 8.2.a - Si no están incluidos en el precio (ej: FOB/FCA).",
+    legal: "Art. 8.2.a",
+    inputLabel: "Monto del flete",
+  },
+  {
+    id: "insurance_cost",
+    type: "addition",
+    text: "¿Existen gastos de carga, descarga y manipulación o Seguro?",
+    detail: "Art. 8.2.b / 8.2.c - Gastos conexos al transporte.",
+    legal: "Art. 8.2.b / 8.2.c",
+    inputLabel: "Monto del seguro/gastos",
+  },
 ];

@@ -689,12 +689,33 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
     }
 
     // 3. Smart Suggestions (Freight/Insurance detection)
+    // 3. Smart Suggestions (Freight/Insurance detection)
     if (extractedData.ai_metadata?.detected_freight) {
-        if (confirm(`Gemini detectó un Flete por ${extractedData.ai_metadata.detected_freight}. ¿Desea agregarlo a los ajustes del Art. 8?`)) {
-            // TODO: Add logic to check 'SI' in valuation question for freight and set amount
-            // For now just logging, as mapping to specific question ID requires more logic
-            console.log("User accepted freight suggestion (Implementation pending mapping)");
-        }
+        // Normalizamos el valor a string formato AR
+        let freightValue = extractedData.ai_metadata.detected_freight;
+        
+        // Pequeño delay para no saturar al usuario inmediatamente
+        setTimeout(() => {
+          if (window.confirm(`Gemini detectó un Flete por ${freightValue}. ¿Desea agregarlo a los ajustes del Art. 8 (Gastos de Transporte)?`)) {
+              // Mapeamos a la pregunta 'freight_cost' que definimos en valuationLogic.js
+              updateSection('valuation', 'freight_cost', { 
+                  status: 'SI', 
+                  amount: freightValue 
+              }, true);
+          }
+        }, 500);
+    }
+
+    if (extractedData.ai_metadata?.detected_insurance) {
+       let insuranceValue = extractedData.ai_metadata.detected_insurance;
+        setTimeout(() => {
+          if (window.confirm(`Gemini detectó Seguro por ${insuranceValue}. ¿Desea agregarlo como ajuste?`)) {
+              updateSection('valuation', 'insurance_cost', { 
+                  status: 'SI', 
+                  amount: insuranceValue 
+              }, true);
+          }
+        }, 1200); // Un poco después del flete
     }
   };
 
