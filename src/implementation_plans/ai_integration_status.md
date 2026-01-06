@@ -23,17 +23,20 @@
     - Eliminada marca de agua "Gemini" para un look más profesional.
 
 4.  **Lógica de Valoración:**
+
     - Detección automática de **Flete y Seguro**.
     - UI de confirmación ("¿Desea agregar el flete detectado?").
     - Mapeo automático a las preguntas `freight_cost` e `insurance_cost` del formulario.
 
-## 🚧 Estado Pendiente (Acción Requerida por Usuario)
+5.  **Infraestructura IA Operativa:**
+    - **API Key #3 Creada y Validada:** Se generó una nueva clave limpia en Google Cloud.
+    - **Configuración Exitosa:** Se implementó en Vercel y se verificó que el OCR carga y procesa documentos correctamente en el entorno de producción.
+    - **Problema de bloqueo resuelto:** Al no subir el `.env` al repo, la clave se mantiene segura y funcional.
 
-1.  **Nueva API Key (Key #3):**
-    - La clave anterior (`...q54`) fue revocada por Google (o marcada como leaked).
-    - **TAREA:** Crear nueva clave en Google Cloud.
-    - **TAREA:** Ponerla en Vercel (Settings -> Environment Variables).
-    - **TAREA:** Actualizar `.env` local para desarrollo.
+## 🚧 Estado Pendiente
+
+1.  **Sincronización Local:**
+    - **TAREA:** Actualizar el archivo `.env` en el entorno local (tu PC) con la nueva API Key #3 para que puedas seguir desarrollando sin problemas. (Paso rápido al iniciar la próxima sesión).
 
 ## 🚀 Próximos Pasos (Hoja de Ruta)
 
