@@ -22,7 +22,7 @@ const parseArgentineNumber = (value) => {
 };
 
 const ValuationForm = ({ onCalculate, user, initialData }) => {
-  const [formData, setFormData] = useLocalStorage('valuation_data_v4', {
+  const [formData, setFormData] = useState({
     id: crypto.randomUUID(),
     status: 'BORRADOR', // 'BORRADOR' | 'FINALIZADO'
     createdAt: new Date().toISOString(),
