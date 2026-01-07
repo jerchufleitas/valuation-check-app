@@ -5,7 +5,7 @@ import { valuationQuestions, getQuestionsByCategory } from '../data/valuationLog
 import { currencyData, getCurrencySymbol, getCurrencyName } from '../data/currencyData';
 import { incoterms } from '../data/incotermsLogic';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import OcrDropzone from './OcrDropzone';
+import AiAssistantChat from './AiAssistantChat';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { HelpCircle, Search, User, Building2, CreditCard, ChevronRight } from 'lucide-react';
@@ -730,8 +730,10 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
   return (
     <div className="valuation-form fade-in">
       
-      {/* OCR Dropzone hidden for Manual Mode */}
-      <OcrDropzone onDataExtracted={handleOcrData} />
+      {/* AI Assistant Chat Section */}
+      <div className="mb-8">
+        <AiAssistantChat onDataExtracted={handleOcrData} />
+      </div>
 
       <form onSubmit={handleSubmit}>
         

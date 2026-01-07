@@ -140,3 +140,76 @@ export const analyzeDocument = async (file) => {
     throw new Error(`Error Técnico: ${error.message}`);
   }
 };
+
+/**
+ * Normaliza números para Argentina (Punto -> Coma)
+ */
+export const normalizeValue = (val) => {
+    if (!val) return '';
+    const str = String(val).replace(',', ''); 
+    return str.replace('.', ','); 
+};
+
+/**
+ * Inicia una sesión de chat con instrucciones de sistema para valoración aduanera.
+ */
+export const startAiChat = (history = []) => {
+    const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        systemInstruction: `
+            Actúa como un Auditor de Valoración Aduanera experto y asistente conversacional.
+            Ayuda al usuario a completar su Declaración de Valor analizando documentos y resolviendo dudas.
+            
+            REGLAS:
+            1. Sé amable y profesional.
+            2. Si el usuario sube un documento, analízalo y extrae los datos clave.
+            3. Si el usuario da instrucciones o comentarios (ej: 'ignorá el flete de la factura', 'el incoterm es EXW'), PRIORIZA siempre la instrucción del usuario sobre lo que dice el documento.
+            4. Explica qué cambios estás realizando si el usuario te lo pide o si detectas discrepancias.
+            5. Para actualizar el formulario, DEBES incluir al final de tu respuesta un bloque JSON con los cambios.
+            6. Utiliza el siguiente formato exacto para el JSON (solo incluye los campos que cambien):
+            
+             {
+               "formUpdates": {
+                 "header": { "exporterName": "STRING", "importerName": "STRING", "transportDocument": "STRING" },
+                 "transaction": { "currency": "STRING", "incoterm": "STRING", "internationalFreight": "NUMBER_STRING" },
+                 "item": { "totalValue": "NUMBER_STRING", "quantity": "NUMBER_STRING", "unit": "STRING", "ncmCode": "STRING" },
+                 "ai_metadata": { "detected_freight": "NUMBER_STRING", "detected_insurance": "NUMBER_STRING" }
+               },
+               "analysis_summary": "Breve resumen de lo detectado"
+             }
+            
+            RECUERDA: Los números deben usar PUNTO como decimal en el JSON. No inventes datos que no existan.
+        `
+    });
+    return model.startChat({ 
+        history,
+        generationConfig: {
+            maxOutputTokens: 2000,
+        }
+    });
+};
+
+/**
+ * Envía un mensaje (y opcionalmente un archivo) a la sesión de chat.
+ */
+export const sendChatMessage = async (chatSession, message, file = null) => {
+    try {
+        const parts = [];
+        if (message) parts.push(message);
+        if (file) {
+            const filePart = await fileToGenerativePart(file);
+            parts.push(filePart);
+        }
+
+        if (parts.length === 0) return null;
+
+        const result = await chatSession.sendMessage(parts);
+        const response = await result.response;
+        const text = response.text();
+
+        return text;
+    } catch (error) {
+        console.error("Error en sendChatMessage:", error);
+        throw error;
+    }
+};
