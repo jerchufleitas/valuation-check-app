@@ -3,10 +3,11 @@ import { Send, Paperclip, Bot, User, Loader2, X, MessageSquare, Sparkles, FileTe
 import { startAiChat, sendChatMessage, normalizeValue } from '../../../services/geminiService';
 import { motion, AnimatePresence } from 'motion/react';
 
-const AiAssistantChat = ({ onDataExtracted }) => {
-  const [messages, setMessages] = useState([
-    { role: 'assistant', text: '¡Hola! Soy tu asistente de valoración. Podés subir una factura o hacerme preguntas sobre la declaración.' }
-  ]);
+const AiAssistantChat = ({ onDataExtracted, initialMessages, initialHistory, onChatUpdate }) => {
+  const [messages, setMessages] = useState(() => {
+    if (initialMessages && initialMessages.length > 0) return initialMessages;
+    return [{ role: 'assistant', text: '¡Hola! Soy tu asistente de valoración. Podés subir una factura o hacerme preguntas sobre la declaración.' }];
+  });
   const [inputText, setInputText] = useState('');
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -14,11 +15,16 @@ const AiAssistantChat = ({ onDataExtracted }) => {
   const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Inicializar sesión de chat
+  // Inicializar o restaurar sesión de chat
   useEffect(() => {
-    const session = startAiChat();
+    const session = startAiChat(initialHistory || []);
     setChatSession(session);
-  }, []);
+
+    // Si hay mensajes iniciales, asegurarnos de que el estado local coincida
+    if (initialMessages && initialMessages.length > 0) {
+      setMessages(initialMessages);
+    }
+  }, [initialHistory, initialMessages]);
 
   // Auto-scroll al final
   useEffect(() => {
@@ -36,7 +42,8 @@ const AiAssistantChat = ({ onDataExtracted }) => {
       fileNames: attachedFiles.map(f => f.name)
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const newMessagesPostUser = [...messages, userMessage];
+    setMessages(newMessagesPostUser);
     setInputText('');
     const filesToSend = [...attachedFiles];
     setAttachedFiles([]);
@@ -62,7 +69,19 @@ const AiAssistantChat = ({ onDataExtracted }) => {
           }
       }
 
-      setMessages(prev => [...prev, { role: 'assistant', text: cleanText || 'Entendido. He procesado la información.' }]);
+      const assistantMessage = { role: 'assistant', text: cleanText || 'Entendido. He procesado la información.' };
+      const finalMessages = [...newMessagesPostUser, assistantMessage];
+      
+      setMessages(finalMessages);
+
+      // Sincronizar con el estado global (Formularios)
+      if (onChatUpdate) {
+          const geminiHistory = await chatSession.getHistory();
+          onChatUpdate({
+              messages: finalMessages,
+              history: geminiHistory
+          });
+      }
 
       if (formUpdates) {
           // Normalizar valores numéricos antes de enviar al formulario
@@ -76,10 +95,11 @@ const AiAssistantChat = ({ onDataExtracted }) => {
 
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { 
+      const errorMessage = { 
         role: 'assistant', 
         text: `Error de Conexión: ${error.message}. Por favor revisá tu consola o el archivo .env.` 
-      }]);
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsProcessing(false);
     }

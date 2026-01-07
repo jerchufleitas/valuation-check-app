@@ -84,6 +84,11 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       freightContractFile: null,
       purchaseContract: null,
       purchaseContractFile: null,
+    },
+    // AI Chat Persistance
+    chat: {
+      messages: [],
+      history: []
     }
   });
 
@@ -109,6 +114,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
         header: { ...prev.header, ...initialData.header },
         transaction: { ...prev.transaction, ...initialData.transaction },
         valuation: Object.keys(restoredValuation).length > 0 ? restoredValuation : (initialData.valuation || prev.valuation || {}),
+        chat: initialData.chat || { messages: [], history: [] },
         id: initialData.id || prev.id || crypto.randomUUID() 
       }));
     }
@@ -732,7 +738,17 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       
       {/* AI Assistant Chat Section */}
       <div className="mb-8">
-        <AiAssistantChat onDataExtracted={handleOcrData} />
+        <AiAssistantChat 
+          onDataExtracted={handleOcrData} 
+          initialMessages={formData.chat?.messages}
+          initialHistory={formData.chat?.history}
+          onChatUpdate={(newChatState) => {
+            setFormData(prev => ({
+              ...prev,
+              chat: newChatState
+            }));
+          }}
+        />
       </div>
 
       <form onSubmit={handleSubmit}>

@@ -155,7 +155,8 @@ function App() {
         freightContractFile: null, 
         purchaseContract: null, 
         purchaseContractFile: null 
-      }
+      },
+      chat: { messages: [], history: [] }
     };
 
     setEditingDraft(fullDraft);
