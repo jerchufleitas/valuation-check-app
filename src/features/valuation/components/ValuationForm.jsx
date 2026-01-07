@@ -21,7 +21,8 @@ const parseArgentineNumber = (value) => {
   return isNaN(parsed) ? 0 : parsed;
 };
 
-const ValuationForm = ({ onCalculate, user, initialData }) => {
+const ValuationForm = ({ onCalculate, user, initialData, onDirtyStateChange }) => {
+  const [isDirty, setIsDirty] = useState(false);
   const [formData, setFormData] = useState({
     id: crypto.randomUUID(),
     status: 'BORRADOR', // 'BORRADOR' | 'FINALIZADO'
@@ -120,6 +121,8 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
     }
   }, [initialData]);
 
+
+
   const [clients, setClients] = useState([]);
   const [showClientSuggestions, setShowClientSuggestions] = useState(false);
 
@@ -149,6 +152,8 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       }
     }));
     setShowClientSuggestions(false);
+    setIsDirty(true);
+    if (onDirtyStateChange) onDirtyStateChange(true);
   };
 
   const [simError, setSimError] = useState('');
@@ -367,6 +372,9 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       return next;
     });
     
+    setIsDirty(true);
+    if (onDirtyStateChange) onDirtyStateChange(true);
+
     if (isFromOcr) {
       const fieldKey = `${section}.${field}`;
       setHighlightedFields(prev => ({ ...prev, [fieldKey]: true }));
@@ -413,6 +421,8 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
         }
       };
     });
+    setIsDirty(true);
+    if (onDirtyStateChange) onDirtyStateChange(true);
   };
 
   const handleValuationAmount = (questionId, value) => {
@@ -427,6 +437,8 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
         }
       }
     }));
+    setIsDirty(true);
+    if (onDirtyStateChange) onDirtyStateChange(true);
   };
 
   const loadExample = () => {
@@ -598,6 +610,8 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
 
     try {
       await saveValuation(sessionToSave, user?.uid);
+      setIsDirty(false);
+      if (onDirtyStateChange) onDirtyStateChange(false);
       alert("Borrador guardado exitosamente.");
     } catch (error) {
       alert("Error al guardar borrador.");
@@ -747,6 +761,10 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
               ...prev,
               chat: newChatState
             }));
+            if (newChatState.messages.length > 1) {
+              setIsDirty(true);
+              if (onDirtyStateChange) onDirtyStateChange(true);
+            }
           }}
         />
       </div>

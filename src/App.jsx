@@ -23,6 +23,7 @@ function App() {
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form' | 'history'
   const [editingDraft, setEditingDraft] = useState(null);
   const [userSettings, setUserSettings] = useState(null);
+  const [isFormDirty, setIsFormDirty] = useState(false);
 
   const fetchSettings = async (userId) => {
     try {
@@ -63,6 +64,7 @@ function App() {
   };
 
   const handleCalculate = (data) => {
+    setIsFormDirty(false); // Al finalizar, ya no está sucia
     // Normalizar la data para que el ReportCard siempre reciba lo que espera
     // Caso 1: Viene del ValuationForm (ya tiene finalValue, blocks, summary)
     if (data.blocks && data.finalValue !== undefined) {
@@ -85,6 +87,7 @@ function App() {
 
   const handleReset = (dataToEdit) => {
     setResult(null);
+    setIsFormDirty(false); // Resetear estado al iniciar nueva o editar existente
     if (dataToEdit && typeof dataToEdit === 'object') {
       setEditingDraft(dataToEdit);
       setView('form');
@@ -94,9 +97,16 @@ function App() {
   };
 
   const handleSetView = (newView) => {
+    // Si el formulario está "sucio" (tiene cambios), preguntar antes de salir
+    if (view === 'form' && isFormDirty && newView !== 'form') {
+      const confirmLeave = window.confirm("Tenés cambios sin guardar en el dictamen. Si salís ahora, se perderán las actualizaciones que no hayas guardado como borrador. ¿Deseas salir de todas formas?");
+      if (!confirmLeave) return;
+    }
+
     // Crucial: Clear result when switching views to avoid "Report sticky" bug
     setResult(null);
     setEditingDraft(null);
+    setIsFormDirty(false); // Al cambiar de sección confirmadamente, reseteamos dirty
     setView(newView);
   };
 
@@ -233,6 +243,7 @@ function App() {
                 onCalculate={handleCalculate} 
                 user={user} 
                 initialData={editingDraft} 
+                onDirtyStateChange={setIsFormDirty}
               />
             ) : view === 'history' ? (
               <HistoryList 
