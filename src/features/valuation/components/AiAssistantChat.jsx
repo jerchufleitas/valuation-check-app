@@ -8,7 +8,7 @@ const AiAssistantChat = ({ onDataExtracted }) => {
     { role: 'assistant', text: '¡Hola! Soy tu asistente de valoración. Podés subir una factura o hacerme preguntas sobre la declaración.' }
   ]);
   const [inputText, setInputText] = useState('');
-  const [attachedFile, setAttachedFile] = useState(null);
+  const [attachedFiles, setAttachedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [chatSession, setChatSession] = useState(null);
   const scrollRef = useRef(null);
@@ -28,22 +28,22 @@ const AiAssistantChat = ({ onDataExtracted }) => {
   }, [messages]);
 
   const handleSend = async () => {
-    if ((!inputText.trim() && !attachedFile) || isProcessing) return;
+    if ((!inputText.trim() && attachedFiles.length === 0) || isProcessing) return;
 
     const userMessage = { 
       role: 'user', 
       text: inputText, 
-      fileName: attachedFile?.name 
+      fileNames: attachedFiles.map(f => f.name)
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
-    const fileToSend = attachedFile;
-    setAttachedFile(null);
+    const filesToSend = [...attachedFiles];
+    setAttachedFiles([]);
     setIsProcessing(true);
 
     try {
-      const responseText = await sendChatMessage(chatSession, inputText, fileToSend);
+      const responseText = await sendChatMessage(chatSession, inputText, filesToSend);
       
       // Procesar la respuesta para extraer JSON si existe
       let cleanText = responseText;
@@ -115,10 +115,14 @@ const AiAssistantChat = ({ onDataExtracted }) => {
               {m.role === 'assistant' && <Bot size={18} className="text-indigo-400 shrink-0 mt-0.5" />}
               <div className="space-y-2">
                 <p className="whitespace-pre-wrap leading-relaxed">{m.text}</p>
-                {m.fileName && (
-                  <div className="flex items-center gap-2 bg-slate-900/50 rounded-lg p-2 border border-slate-700/50 text-xs text-indigo-300">
-                    <FileText size={14} />
-                    <span className="truncate max-w-[150px]">{m.fileName}</span>
+                {m.fileNames && m.fileNames.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {m.fileNames.map((fname, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-slate-900/50 rounded-lg p-2 border border-slate-700/50 text-[10px] text-indigo-300">
+                        <FileText size={12} />
+                        <span className="truncate max-w-[120px]">{fname}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
@@ -138,24 +142,29 @@ const AiAssistantChat = ({ onDataExtracted }) => {
       {/* Input area */}
       <div className="p-4 bg-slate-800/30 border-t border-slate-700/50">
         <AnimatePresence>
-          {attachedFile && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              className="mb-3 flex items-center justify-between bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-2"
-            >
-              <div className="flex items-center gap-2 text-indigo-300">
-                <FileText size={16} />
-                <span className="text-xs font-bold truncate max-w-[200px]">{attachedFile.name}</span>
-              </div>
-              <button 
-                onClick={() => setAttachedFile(null)}
-                className="p-1 hover:bg-indigo-500/20 rounded-full transition-colors"
-              >
-                <X size={14} className="text-indigo-400" />
-              </button>
-            </motion.div>
+          {attachedFiles.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {attachedFiles.map((file, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 rounded-xl px-2 py-1.5"
+                >
+                  <div className="flex items-center gap-1.5 text-indigo-300">
+                    <FileText size={14} />
+                    <span className="text-[10px] font-bold truncate max-w-[100px]">{file.name}</span>
+                  </div>
+                  <button 
+                    onClick={() => setAttachedFiles(prev => prev.filter((_, i) => i !== idx))}
+                    className="p-1 hover:bg-indigo-500/20 rounded-full transition-colors"
+                  >
+                    <X size={12} className="text-indigo-400" />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
           )}
         </AnimatePresence>
 
@@ -172,7 +181,12 @@ const AiAssistantChat = ({ onDataExtracted }) => {
             type="file" 
             ref={fileInputRef} 
             className="hidden" 
-            onChange={(e) => setAttachedFile(e.target.files[0])}
+            multiple
+            onChange={(e) => {
+              const files = Array.from(e.target.files);
+              setAttachedFiles(prev => [...prev, ...files]);
+              e.target.value = null; // Reset para poder subir el mismo archivo
+            }}
             accept="application/pdf,image/*"
           />
 
@@ -187,9 +201,9 @@ const AiAssistantChat = ({ onDataExtracted }) => {
 
           <button 
             onClick={handleSend}
-            disabled={(!inputText.trim() && !attachedFile) || isProcessing}
+            disabled={(!inputText.trim() && attachedFiles.length === 0) || isProcessing}
             className={`p-3 rounded-xl transition-all shadow-lg ${
-              (!inputText.trim() && !attachedFile) || isProcessing
+              (!inputText.trim() && attachedFiles.length === 0) || isProcessing
                 ? 'bg-slate-700 text-slate-500 scale-95 cursor-not-allowed'
                 : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-500/20 active:scale-90'
             }`}
