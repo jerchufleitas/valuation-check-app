@@ -59,6 +59,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       incoterm: 'FOB',
       loadingPlace: '',
       paymentMethod: '',
+      internationalFreight: '',
     },
     item: {
       ncmCode: '',
@@ -441,6 +442,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       incoterm: 'FOB',
       loadingPlace: 'Mendoza, Argentina',
       paymentMethod: '04',
+      internationalFreight: '1200,00',
     };
     const exampleItem = {
       ncmCode: '2204.21.00.100G',
@@ -492,7 +494,7 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
       valoracion: { incoterm: 'FOB', precioBase: 0, ajustes: {}, totales: { fob: 0, cif: 0 } },
       ncm: { codigo: '', descripcion: '' },
       header: { userType: '', exporterName: '', exporterTaxId: '', importerName: '', importerDetails: '', transportDocument: '', transportMode: 'Terrestre', presence: null, airportCategory: '', airport: '', airportOther: '', customsCategory: '', borderCrossing: '' },
-      transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '' },
+      transaction: { currency: 'DOL', incoterm: 'FOB', loadingPlace: '', paymentMethod: '', internationalFreight: '' },
       item: { ncmCode: '', quantity: '', unit: '', unitValue: '', totalValue: '', description: '' },
       valuation: {},
       documentation: { originCertificateAttached: null, originCertificate: '', invoiceAttached: null, invoiceType: null, invoiceFile: null, insuranceContractAttached: null, insuranceContractFile: null, freightContractAttached: null, freightContractFile: null, purchaseContract: null, purchaseContractFile: null }
@@ -673,6 +675,10 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
     }
     if (extractedData.transaction) {
       Object.entries(extractedData.transaction).forEach(([field, value]) => updateSection('transaction', field, value, true));
+      // Map detected freight directly if available in metadata
+      if (extractedData.ai_metadata?.detected_freight) {
+        updateSection('transaction', 'internationalFreight', extractedData.ai_metadata.detected_freight, true);
+      }
     }
     if (extractedData.item) {
       Object.entries(extractedData.item).forEach(([field, value]) => updateSection('item', field, value, true));
@@ -1037,6 +1043,18 @@ const ValuationForm = ({ onCalculate, user, initialData }) => {
                   <option key={pm.code} value={pm.code}>{pm.code} - {pm.name}</option>
                 ))}
               </select>
+            </div>
+            <div className={`official-cell span-4 ${isHighlighted('transaction', 'internationalFreight')}`}>
+              <label>10. FLETE INTERNACIONAL</label>
+              <div className="currency-input-wrapper">
+                <span className="ccy-tag">{getCurrencySymbol(transaction.currency)}</span>
+                <input 
+                  type="text" 
+                  value={transaction.internationalFreight || ''} 
+                  onChange={(e) => updateSection('transaction', 'internationalFreight', e.target.value)} 
+                  placeholder="Monto detectar..." 
+                />
+              </div>
             </div>
           </div>
         </section>
