@@ -178,7 +178,8 @@ function App() {
     try {
       await loginWithGoogle();
     } catch (error) {
-      alert("Error al iniciar sesión. Por favor, intenta de nuevo.");
+      console.error("Error de login:", error);
+      alert(`Error al iniciar sesión: ${error.code || error.message || 'Error desconocido'}. Por favor, intenta de nuevo.`);
     }
   };
 
