@@ -34,8 +34,8 @@ async function fileToGenerativePart(file) {
  */
 export const analyzeDocument = async (file) => {
   try {
-    // Usamos el modelo 2.5 Flash pedido explícitamente por el usuario
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Volvemos al modelo 2.5 Flash que el usuario confirmó que estaba disponible
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     // Definimos un esquema JSON estricto para que la IA no invente campos
     const prompt = `
@@ -154,8 +154,12 @@ export const normalizeValue = (val) => {
  * Inicia una sesión de chat con instrucciones de sistema para valoración aduanera.
  */
 export const startAiChat = (history = []) => {
-    const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+    try {
+        if (!API_KEY) {
+            console.error("❌ API_KEY no configurada en .env (VITE_GEMINI_API_KEY)");
+        }
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.5-flash",
         systemInstruction: `
             Actúa como un Auditor de Valoración Aduanera experto y asistente conversacional.
             Ayuda al usuario a completar su Declaración de Valor analizando documentos y resolviendo dudas.
@@ -181,12 +185,16 @@ export const startAiChat = (history = []) => {
             RECUERDA: Los números deben usar PUNTO como decimal en el JSON. No inventes datos que no existan.
         `
     });
-    return model.startChat({ 
-        history,
-        generationConfig: {
-            maxOutputTokens: 2000,
-        }
-    });
+        return model.startChat({ 
+            history,
+            generationConfig: {
+                maxOutputTokens: 2000,
+            }
+        });
+    } catch (error) {
+        console.error("Error al iniciar chat:", error);
+        throw error;
+    }
 };
 
 /**

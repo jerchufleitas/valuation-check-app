@@ -76,7 +76,10 @@ const AiAssistantChat = ({ onDataExtracted }) => {
 
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'assistant', text: 'Lo siento, hubo un error al procesar tu solicitud. ¿Podrías intentar de nuevo?' }]);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        text: `Error de Conexión: ${error.message}. Por favor revisá tu consola o el archivo .env.` 
+      }]);
     } finally {
       setIsProcessing(false);
     }
@@ -94,7 +97,7 @@ const AiAssistantChat = ({ onDataExtracted }) => {
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest">Asistente IA</h4>
             <div className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-[10px] text-slate-400 font-medium italic">Online - Gemini 1.5 Flash</span>
+              <span className="text-[10px] text-slate-400 font-medium italic">Online - Gemini 2.5 Flash</span>
             </div>
           </div>
         </div>
