@@ -35,7 +35,7 @@ async function fileToGenerativePart(file) {
 export const analyzeDocument = async (file) => {
   try {
     // Usamos el modelo 2.5 Flash pedido explícitamente por el usuario
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Definimos un esquema JSON estricto para que la IA no invente campos
     const prompt = `
@@ -155,7 +155,7 @@ export const normalizeValue = (val) => {
  */
 export const startAiChat = (history = []) => {
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         systemInstruction: `
             Actúa como un Auditor de Valoración Aduanera experto y asistente conversacional.
             Ayuda al usuario a completar su Declaración de Valor analizando documentos y resolviendo dudas.

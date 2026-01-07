@@ -1,4 +1,4 @@
-# Estado de Integración AI (Gemini 2.5 Flash)
+# Estado de Integración AI (Gemini 1.5 Flash)
 
 **Última Actualización:** 05/01/2026 - Sesión de Seguridad y Despliegue.
 
