@@ -10,18 +10,27 @@ export default function Dashboard({ user, onNewValuation, setView, onSelect }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchValuations = async () => {
-      if (!user?.uid) return;
+      if (!user?.uid) {
+        if (mounted) setLoading(false);
+        return;
+      }
+      
       try {
+        setLoading(true);
         const data = await getValuations(user.uid);
-        setValuations(data);
+        if (mounted) setValuations(data);
       } catch (error) {
         console.error("Error fetching valuations for dashboard:", error);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
+
     fetchValuations();
+    return () => { mounted = false; };
   }, [user?.uid]);
 
   return (
